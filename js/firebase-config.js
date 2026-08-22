@@ -17,7 +17,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCXyKSTImIzkYnH2LW408cVWWV1CPvlFbO",
+    apiKey: "AIzaSyCXyKSTlmlzkYnH2LW408cVVWV1CPvlfBo",
     authDomain: "cmfilings-6a37c.firebaseapp.com",
     projectId: "cmfilings-6a37c",
     storageBucket: "cmfilings-6a37c.firebasestorage.app",
