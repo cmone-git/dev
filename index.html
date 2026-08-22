@@ -1,10 +1,777 @@
-<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b3b66"><link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="css/cm.css"><link rel="stylesheet" href="css/dashboard.css"><link rel="stylesheet" href="css/responsive.css">
-<title>CM | Developers</title></head>
-<body><div id="splash-root"></div><div id="app"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b3b66">
+
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="stylesheet" href="css/cm.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <title>CM | BIZODIT</title>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
 <script src="https://unpkg.com/lucide@latest"></script>
-<script type="module">import {initApp} from "./js/app.js";initApp();</script>
-</body></html>
+
+<script type="module">
+
+import { firebaseConfig } from "./js/firebase-config.js";
+
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const appContainer = document.getElementById("app");
+
+
+// --------------------------------------------------
+// CHECK AUTHENTICATION
+// --------------------------------------------------
+
+auth.onAuthStateChanged(async (firebaseUser) => {
+
+  if (!firebaseUser) {
+
+    // Not signed in → login page
+    window.location.replace("auth/signin.html");
+    return;
+
+  }
+
+  try {
+
+    // Get user profile
+    const userRef = db.collection("users").doc(firebaseUser.uid);
+    const userSnap = await userRef.get();
+
+    if (!userSnap.exists) {
+
+      await auth.signOut();
+
+      alert("User profile was not found.");
+
+      window.location.replace("auth/signin.html");
+
+      return;
+    }
+
+    const user = userSnap.data();
+
+
+    // --------------------------------------------------
+    // ACCOUNT STATUS
+    // --------------------------------------------------
+
+    if (user.status !== "active") {
+
+      await auth.signOut();
+
+      alert("Your account is inactive.");
+
+      window.location.replace("auth/signin.html");
+
+      return;
+    }
+
+
+    // --------------------------------------------------
+    // ROLE VALIDATION
+    // --------------------------------------------------
+
+    if (!["admin", "user"].includes(user.role)) {
+
+      await auth.signOut();
+
+      alert("Invalid user role.");
+
+      window.location.replace("auth/signin.html");
+
+      return;
+    }
+
+
+    // Staff must have a branch
+    if (user.role === "user" && !user.branchId) {
+
+      await auth.signOut();
+
+      alert("No branch has been assigned to this account.");
+
+      window.location.replace("auth/signin.html");
+
+      return;
+    }
+
+
+    // --------------------------------------------------
+    // LOAD DASHBOARD
+    // --------------------------------------------------
+
+    renderDashboard(firebaseUser, user);
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    await auth.signOut();
+
+    window.location.replace("auth/signin.html");
+
+  }
+
+});
+
+
+// --------------------------------------------------
+// DASHBOARD
+// --------------------------------------------------
+
+function renderDashboard(firebaseUser, user) {
+
+  const isAdmin = user.role === "admin";
+
+  const branchText =
+    isAdmin
+      ? "All Branches"
+      : (user.branchName || "Assigned Branch");
+
+
+  appContainer.innerHTML = `
+
+<header class="cm-header">
+
+  <div class="cm-header-inner">
+
+    <div class="cm-header-left">
+
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+
+      <div class="cm-brand">
+
+        <div class="cm-logo">
+          CM
+        </div>
+
+        <div>
+
+          <div class="cm-brand-title">
+            CM | BIZODIT
+          </div>
+
+          <div class="cm-brand-subtitle">
+            Business Management
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+      <button
+        class="header-icon"
+        type="button">
+        <i data-lucide="search"></i>
+      </button>
+
+      <button
+        class="header-icon"
+        type="button">
+        <i data-lucide="bell"></i>
+      </button>
+
+
+      <button
+        class="profile"
+        id="profileButton"
+        type="button">
+
+        <div class="profile-avatar">
+          ${getInitials(user.name || firebaseUser.email)}
+        </div>
+
+        <div class="profile-info">
+
+          <div class="profile-name">
+            ${escapeHTML(user.name || firebaseUser.email)}
+          </div>
+
+          <div class="profile-role">
+
+            ${isAdmin ? "Administrator" : "Staff"}
+            ·
+            ${escapeHTML(branchText)}
+
+          </div>
+
+        </div>
+
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+  <div class="sidebar-inner">
+
+    <div class="sidebar-label">
+      MAIN
+    </div>
+
+
+    <a
+      class="nav-item active"
+      href="index.html">
+
+      <i data-lucide="house"></i>
+
+      HOME
+
+    </a>
+
+
+    ${moduleNavigation()}
+
+  </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+  <div class="page">
+
+
+    <section class="dashboard-hero">
+
+      <div class="module-header">
+
+        <div class="module-title">
+
+          <h1>
+            Good day, ${escapeHTML(user.name || "User")}
+          </h1>
+
+          <p>
+            Manage your business from one place.
+          </p>
+
+
+          <div class="report-as-on">
+
+            Report as on :
+
+            <strong>
+              ${formatDate(new Date())}
+            </strong>
+
+            &nbsp; · &nbsp;
+
+            ${isAdmin ? "All Branches" : escapeHTML(branchText)}
+
+          </div>
+
+        </div>
+
+
+        <div class="module-actions">
+
+          <button
+            class="btn btn-primary"
+            onclick="location.href='modules/company/company.html'">
+
+            <i data-lucide="plus"></i>
+
+            <span>Quick Add</span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SUMMARY -->
+
+    <section class="summary-grid">
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          <i data-lucide="building-2"></i>
+        </div>
+
+        <div class="summary-label">
+          Companies
+        </div>
+
+        <div class="summary-value">
+          0
+        </div>
+
+        <div class="summary-note">
+          Business entities
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          <i data-lucide="users-round"></i>
+        </div>
+
+        <div class="summary-label">
+          Clients
+        </div>
+
+        <div class="summary-value">
+          0
+        </div>
+
+        <div class="summary-note">
+          ${isAdmin ? "All branches" : "Your branch"}
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          <i data-lucide="wallet"></i>
+        </div>
+
+        <div class="summary-label">
+          Cash & Bank
+        </div>
+
+        <div class="summary-value">
+          ₹0
+        </div>
+
+        <div class="summary-note">
+          Current balance
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          <i data-lucide="file-check-2"></i>
+        </div>
+
+        <div class="summary-label">
+          Compliance
+        </div>
+
+        <div class="summary-value">
+          0
+        </div>
+
+        <div class="summary-note">
+          Pending cases
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- MODULES -->
+
+    <div class="dashboard-grid">
+
+      ${moduleCards()}
+
+    </div>
+
+
+  </div>
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+  <div class="bottom-nav-inner">
+
+
+    <a
+      class="bottom-item active"
+      href="index.html">
+
+      <i data-lucide="house"></i>
+
+      <span>HOME</span>
+
+    </a>
+
+
+    <a
+      class="bottom-item"
+      href="modules/crm/crm.html">
+
+      <i data-lucide="users-round"></i>
+
+      <span>CRM</span>
+
+    </a>
+
+
+    <a
+      class="bottom-item"
+      href="modules/accounts/accounts.html">
+
+      <i data-lucide="wallet"></i>
+
+      <span>ACCOUNTS</span>
+
+    </a>
+
+
+    <a
+      class="bottom-item"
+      href="modules/settings/settings.html">
+
+      <i data-lucide="settings-2"></i>
+
+      <span>SETTINGS</span>
+
+    </a>
+
+
+  </div>
+
+</nav>
+
+
+<!-- PROFILE MODAL -->
+
+<div
+  id="profileModal"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.25);
+    z-index:3000;
+    align-items:center;
+    justify-content:center;
+  ">
+
+  <div
+    style="
+      background:#fff;
+      border:1px solid #d8dee5;
+      border-radius:10px;
+      width:min(92%,360px);
+      padding:20px;
+    ">
+
+    <div style="font-size:16px;font-weight:700;">
+      ${escapeHTML(user.name || "User")}
+    </div>
+
+    <div style="margin-top:5px;font-size:11px;color:#687583;">
+      ${escapeHTML(firebaseUser.email || "")}
+    </div>
+
+    <div style="margin-top:15px;font-size:12px;">
+      <strong>Role:</strong>
+      ${isAdmin ? "Admin" : "User"}
+    </div>
+
+    <div style="margin-top:7px;font-size:12px;">
+      <strong>Branch:</strong>
+      ${escapeHTML(branchText)}
+    </div>
+
+    <div style="margin-top:18px;display:flex;gap:8px;">
+
+      <button
+        class="btn btn-secondary"
+        id="closeProfile"
+        style="flex:1;">
+        Close
+      </button>
+
+      <button
+        class="btn btn-primary"
+        id="logoutButton"
+        style="flex:1;">
+        Sign Out
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+`;
+
+
+  // Lucide
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+
+
+  // Mobile menu
+  const menuToggle =
+    document.getElementById("menuToggle");
+
+  if (menuToggle) {
+
+    menuToggle.addEventListener(
+      "click",
+      () => {
+
+        document.body.classList.toggle(
+          "sidebar-open"
+        );
+
+      }
+    );
+
+  }
+
+
+  // Profile
+  const profileButton =
+    document.getElementById("profileButton");
+
+  const profileModal =
+    document.getElementById("profileModal");
+
+  profileButton?.addEventListener(
+    "click",
+    () => {
+
+      profileModal.style.display = "flex";
+
+    }
+  );
+
+
+  document.getElementById(
+    "closeProfile"
+  )?.addEventListener(
+    "click",
+    () => {
+
+      profileModal.style.display = "none";
+
+    }
+  );
+
+
+  // Logout
+  document.getElementById(
+    "logoutButton"
+  )?.addEventListener(
+    "click",
+    async () => {
+
+      await auth.signOut();
+
+      sessionStorage.removeItem(
+        "cmBizoditUser"
+      );
+
+      window.location.replace(
+        "auth/signin.html"
+      );
+
+    }
+  );
+
+}
+
+
+// --------------------------------------------------
+// MODULES
+// --------------------------------------------------
+
+function moduleNavigation() {
+
+  const modules = [
+
+    ["company","COMPANY","building-2"],
+    ["crm","CRM","users-round"],
+    ["accounts","ACCOUNTS","wallet"],
+    ["projects","PROJECTS","folder-kanban"],
+    ["employees","EMPLOYEES","briefcase-business"],
+    ["data","DATA","database"],
+    ["tax-compliance","TAX COMPLIANCE","file-check-2"],
+    ["settings","SETTINGS","settings-2"],
+    ["users","USERS","user-round-cog"],
+    ["sign","SIGN","pen-line"]
+
+  ];
+
+  return modules.map(m => `
+
+    <a
+      class="nav-item"
+      href="modules/${m[0]}/${m[0]}.html">
+
+      <i data-lucide="${m[2]}"></i>
+
+      ${m[1]}
+
+    </a>
+
+  `).join("");
+
+}
+
+
+// --------------------------------------------------
+// DASHBOARD CARDS
+// --------------------------------------------------
+
+function moduleCards() {
+
+  const modules = [
+
+    ["company","Company","Company and branch information","building-2"],
+    ["crm","CRM","Clients, contacts and compliance","users-round"],
+    ["accounts","Accounts","Ledgers, vouchers and transactions","wallet"],
+    ["projects","Projects","Projects, tasks and reports","folder-kanban"],
+    ["employees","Employees","Employees and payroll","briefcase-business"],
+    ["data","Data","Business documents and data","database"],
+    ["tax-compliance","Tax Compliance","GST, income tax and TDS","file-check-2"],
+    ["settings","Settings","Business configuration","settings-2"],
+    ["users","Users","Users and permissions","user-round-cog"],
+    ["sign","Sign","Digital documents and signatures","pen-line"]
+
+  ];
+
+  return modules.map(m => `
+
+    <a
+      class="module-card"
+      href="modules/${m[0]}/${m[0]}.html">
+
+      <div class="module-card-icon">
+
+        <i data-lucide="${m[3]}"></i>
+
+      </div>
+
+      <h3>
+        ${m[1]}
+      </h3>
+
+      <p>
+        ${m[2]}
+      </p>
+
+    </a>
+
+  `).join("");
+
+}
+
+
+// --------------------------------------------------
+// DATE — DD/MM/YYYY
+// --------------------------------------------------
+
+function formatDate(date) {
+
+  const d = new Date(date);
+
+  return String(d.getDate()).padStart(2,"0")
+    + "/"
+    + String(d.getMonth()+1).padStart(2,"0")
+    + "/"
+    + d.getFullYear();
+
+}
+
+
+// --------------------------------------------------
+// HELPERS
+// --------------------------------------------------
+
+function getInitials(name) {
+
+  return String(name)
+    .trim()
+    .split(/\s+/)
+    .slice(0,2)
+    .map(x => x.charAt(0))
+    .join("")
+    .toUpperCase();
+
+}
+
+
+function escapeHTML(value) {
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+// Service Worker
+if ("serviceWorker" in navigator) {
+
+  navigator.serviceWorker
+    .register("sw.js")
+    .catch(() => {});
+
+}
+
+</script>
+
+</body>
+</html>
