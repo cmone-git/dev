@@ -1,592 +1,548 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#0b3b66">
-<title>Clients | CM | BIZODIT</title>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-<style>
-:root{
-  --primary:#0b3b66;
-  --primary-dark:#082d4e;
-  --bg:#f4f6f8;
-  --card:#ffffff;
-  --text:#202b36;
-  --muted:#687583;
-  --border:#d8dee5;
-  --soft:#edf1f4;
-  --danger:#b42318;
-  --success:#147a4b;
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",Arial,sans-serif}
-body{padding-bottom:0}
-button,input,select,textarea{font:inherit}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-/* HEADER */
-.header{
-  height:70px;background:#fff;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 20px;position:sticky;top:0;z-index:50
-}
-.brand{display:flex;align-items:center;gap:11px;min-width:0}
-.logo{
-  width:42px;height:42px;border-radius:8px;background:var(--primary);
-  color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px;flex:none
-}
-.brand b{font-size:17px;white-space:nowrap}
-.brand small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
-.header-actions{display:flex;align-items:center;gap:8px}
-.icon-btn{
-  width:42px;height:42px;border:1px solid var(--border);border-radius:8px;
-  background:#fff;color:var(--muted);display:grid;place-items:center;cursor:pointer
-}
-.icon-btn:hover{color:var(--primary);border-color:#b8c6d3}
-.icon-btn svg{width:21px}
-.profile{
-  width:42px;height:42px;border-radius:8px;background:#e9eef2;color:var(--primary);
-  display:grid;place-items:center;font-size:12px;font-weight:700
-}
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
 
-/* LAYOUT */
-.layout{display:flex;min-height:calc(100vh - 70px)}
-.side{
-  width:220px;background:#fff;border-right:1px solid var(--border);
-  padding:18px 12px;flex:none
-}
-.side-label{font-size:9px;color:#8a95a3;font-weight:700;padding:0 10px 9px}
-.side a{
-  display:flex;align-items:center;gap:10px;height:42px;padding:0 12px;
-  border-radius:7px;color:var(--muted);text-decoration:none;font-size:11px;
-  font-weight:700;margin-bottom:4px
-}
-.side a.active,.side a:hover{background:#e7f0f7;color:var(--primary)}
-.side svg{width:18px}
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-.main{flex:1;min-width:0;padding:24px}
-.top{
-  display:flex;justify-content:space-between;gap:15px;margin-bottom:18px
-}
-.top h1{margin:0;font-size:25px;line-height:1.2}
-.top p{margin:6px 0 0;color:var(--muted);font-size:13px}
-.report{margin-top:9px;font-size:11px;color:var(--muted)}
-.report strong{color:var(--primary)}
-.actions{display:flex;gap:7px}
-.btn{
-  min-height:40px;border:1px solid var(--border);border-radius:7px;
-  background:#fff;color:var(--primary);padding:0 13px;display:inline-flex;
-  align-items:center;justify-content:center;gap:7px;font-size:11px;
-  font-weight:700;cursor:pointer
-}
-.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
-.btn svg{width:17px}
+  <title>Clients — CM | BIZODIT</title>
 
-/* SUB NAV */
-.subnav{
-  display:flex;gap:6px;margin-bottom:18px;overflow:auto;
-  scrollbar-width:none
-}
-.subnav::-webkit-scrollbar{display:none}
-.subnav a{
-  padding:11px 15px;border-radius:7px;color:var(--muted);
-  text-decoration:none;font-size:11px;font-weight:700;white-space:nowrap
-}
-.subnav a.active,.subnav a:hover{background:#e7f0f7;color:var(--primary)}
+  <style>
+    .client-id-box {
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-/* CARDS */
-.cards{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px
-}
-.card{
-  background:var(--card);border:1px solid var(--border);border-radius:9px;
-  padding:17px;min-height:125px
-}
-.ci{
-  width:38px;height:38px;border-radius:7px;background:var(--soft);
-  display:grid;place-items:center;color:#687583;margin-bottom:13px
-}
-.ci svg{width:21px}
-.cl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase}
-.cv{font-size:23px;font-weight:700;margin-top:5px}
-.cn{font-size:11px;color:var(--muted);margin-top:5px}
+    .client-id-box input {
+      flex:1;
+    }
 
-/* FORM */
-.panel{
-  background:#fff;border:1px solid var(--border);border-radius:9px;
-  padding:18px;margin-bottom:18px
-}
-.panel-head{
-  display:flex;justify-content:space-between;gap:10px;align-items:center;
-  margin-bottom:14px
-}
-.panel-title{font-size:15px;font-weight:700}
-.notice{
-  background:#f3f7fa;border-radius:7px;padding:10px 12px;color:var(--primary);
-  font-size:10px;margin-bottom:14px
-}
-.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.field label{display:block;font-size:10px;font-weight:700;margin-bottom:6px}
-.req{color:var(--danger)}
-.field input,.field select,.field textarea{
-  width:100%;height:42px;border:1px solid #c6ced6;border-radius:7px;
-  padding:0 10px;outline:none;background:#fff;font-size:11px;color:var(--text)
-}
-.field textarea{height:78px;padding-top:9px;resize:vertical}
-.field input:focus,.field select:focus,.field textarea:focus{
-  border-color:var(--primary);box-shadow:0 0 0 3px rgba(11,59,102,.07)
-}
-.field.invalid input,.field.invalid select,.field.invalid textarea{
-  border-color:var(--danger);box-shadow:0 0 0 3px rgba(180,35,24,.07)
-}
-.hint{font-size:9px;color:var(--muted);margin-top:4px}
-.error-text{font-size:9px;color:var(--danger);margin-top:4px;min-height:11px}
-.full{grid-column:1/-1}
-.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
-.msg{text-align:center;font-size:10px;color:var(--success);min-height:17px;margin-top:10px}
-.msg.error{color:var(--danger)}
+    .id-status {
+      min-width:24px;
+      font-size:14px;
+      text-align:center;
+    }
 
-/* SEARCH / FILTER / EXPORT — PRESENT ON ALL SUBPAGES */
-.data-tools{
-  border:1px solid var(--border);background:#fff;border-radius:9px;
-  padding:14px;margin-bottom:18px
-}
-.search-row{display:flex;gap:10px;margin-bottom:10px}
-.search{
-  position:relative;flex:1;min-width:0
-}
-.search>svg{
-  position:absolute;left:13px;top:50%;transform:translateY(-50%);
-  width:18px;color:#687583;pointer-events:none
-}
-.search input{
-  width:100%;height:44px;padding:0 12px 0 42px;border:1px solid #c6ced6;
-  border-radius:7px;outline:none;font-size:11px;background:#fff
-}
-.search input:focus{border-color:var(--primary)}
-.filter-row{
-  display:grid;grid-template-columns:1.1fr 1fr 1fr auto auto auto auto;
-  gap:8px;align-items:center
-}
-.date-box{
-  position:relative
-}
-.date-box svg{
-  position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  width:17px;color:#687583;pointer-events:none
-}
-.date-box input{
-  width:100%;height:42px;padding:0 10px 0 38px;border:1px solid #c6ced6;
-  border-radius:7px;background:#fff;font-size:11px;outline:none
-}
-.date-box input:focus{border-color:var(--primary)}
-.date-sep{font-size:15px;color:var(--muted);text-align:center}
-.tool-btn{
-  height:42px;border:1px solid var(--border);border-radius:7px;background:#f0f3f6;
-  color:var(--text);padding:0 13px;display:inline-flex;align-items:center;
-  justify-content:center;gap:7px;font-size:11px;font-weight:700;cursor:pointer
-}
-.tool-btn.outline{background:#fff;border-color:var(--primary);color:var(--primary)}
-.tool-btn svg{width:18px}
-.filter-status{
-  margin-top:8px;font-size:10px;color:var(--muted);min-height:14px
-}
+    .form-message {
+      display:none;
+      margin:0 0 14px;
+      padding:10px 12px;
+      border-radius:8px;
+      font-size:13px;
+      line-height:1.4;
+    }
 
-/* TABLE */
-.table{overflow:auto}
-.table table{width:100%;border-collapse:collapse;min-width:820px}
-.table th,.table td{
-  padding:11px 9px;border-bottom:1px solid #edf0f2;text-align:left;font-size:10px
-}
-.table th{
-  font-size:9px;color:var(--muted);text-transform:uppercase;background:#fafbfc
-}
-.id{color:var(--primary);font-weight:700}
-.empty{text-align:center;color:#8a95a3;padding:28px}
+    .form-message.show {
+      display:block;
+    }
 
-/* MOBILE BOTTOM */
-.bottom{display:none}
+    .form-message.error {
+      background:#fff1f1;
+      color:#b42318;
+      border:1px solid #f3c2c2;
+    }
 
-@media(max-width:1050px){
-  .cards{grid-template-columns:repeat(2,1fr)}
-  .filter-row{grid-template-columns:1fr 1fr 1fr 1fr}
-  .date-sep{display:none}
-}
-@media(max-width:650px){
-  .header{height:64px;padding:0 14px}
-  .brand b{font-size:16px}
-  .brand small{font-size:9px}
-  .logo,.icon-btn,.profile{width:40px;height:40px}
-  .header-actions{gap:6px}
-  .layout{display:block}
-  .side{display:none}
-  .main{padding:16px 14px 90px}
-  .top h1{font-size:23px}
-  .top p{font-size:12px}
-  .actions .btn span{display:none}
-  .actions .btn{width:40px;padding:0}
-  .cards{gap:9px}
-  .card{padding:13px;min-height:118px}
-  .cv{font-size:20px}
-  .cn{font-size:10px}
-  .form-grid{grid-template-columns:1fr}
-  .full{grid-column:auto}
-  .panel{padding:14px}
-  .panel-head{align-items:flex-start}
-  .search-row{display:block}
-  .search{margin-bottom:9px}
-  .filter-row{
-    display:grid;grid-template-columns:1fr 1fr;gap:7px
-  }
-  .date-box:first-child{grid-column:1/2}
-  .date-box:nth-child(2){grid-column:2/3}
-  .date-sep{display:none}
-  .tool-btn{width:100%;padding:0 7px}
-  .bottom{
-    position:fixed;display:flex;bottom:0;left:0;right:0;height:68px;
-    background:#fff;border-top:1px solid var(--border);z-index:100;
-    padding-bottom:env(safe-area-inset-bottom)
-  }
-  .bottom a{
-    flex:1;display:flex;flex-direction:column;align-items:center;
-    justify-content:center;gap:4px;text-decoration:none;color:var(--muted);
-    font-size:9px;font-weight:700
-  }
-  .bottom a.active{color:var(--primary)}
-  .bottom svg{width:21px}
-}
-</style>
+    .form-message.success {
+      background:#effaf3;
+      color:#16723a;
+      border:1px solid #b9e4c7;
+    }
 
-<style>
-.auto-id{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  min-height:48px;padding:0 12px;margin-bottom:14px;
-  border:1px solid #d8dee5;border-radius:7px;background:#f7f9fa;
-}
-.auto-id-label{font-size:10px;font-weight:700;color:#687583}
-.auto-id-value{
-  display:inline-flex;align-items:center;gap:7px;
-  font-size:13px;font-weight:700;color:#0b3b66;
-}
-.auto-id-value svg{width:16px}
-</style>
+    .saving .save-text {
+      opacity:.7;
+    }
+
+    .saving .save-icon {
+      animation:spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform:rotate(360deg); }
+    }
+  </style>
 </head>
+
 <body>
-<header class="header">
-  <div class="brand">
-    <div class="logo">CM</div>
-    <div><b>CM | BIZODIT</b><small>Business Management</small></div>
-  </div>
-  <div class="header-actions">
-    <button class="icon-btn" title="Search"><i data-lucide="search"></i></button>
-    <button class="icon-btn" title="Notifications"><i data-lucide="bell"></i></button>
-    <div class="profile" title="Profile">CM</div>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
   </div>
 </header>
-<div class="layout">
-<aside class="side">
-  <div class="side-label">CRM</div>
-  
-<a href="crm.html" class="active"> <i data-lucide="layout-dashboard"></i>CRM</a>
-<a href="clients.html"><i data-lucide="users-round"></i>Clients</a>
-<a href="credentials.html"><i data-lucide="key-round"></i>Credentials</a>
-<a href="compliance.html"><i data-lucide="file-check-2"></i>Compliance</a>
 
-  <a href="../../index.html"><i data-lucide="house"></i>Home</a>
-</aside>
 <main class="main">
-<div class="top">
- <div>
-  <h1>Clients</h1>
-  <p>CRM clients management</p>
-  <div class="report">Report as on : <strong id="reportDate"></strong></div>
- </div>
- <div class="actions">
-  <button class="btn" onclick="loadData()"><i data-lucide="refresh-cw"></i><span>Refresh</span></button>
-  <button class="btn primary" onclick="document.getElementById('form').scrollIntoView({behavior:'smooth'})"><i data-lucide="plus"></i><span>Add</span></button>
- </div>
-</div>
+  <div class="page">
+    <div class="form-page">
 
-<nav class="subnav">
- <a href="crm.html">CRM</a>
- <a class="active" href="clients.html">Clients</a>
- <a class="" href="credentials.html">Credentials</a>
- <a class="" href="compliance.html">Compliance</a>
-</nav>
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" onclick="history.back()" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
 
-<section class="cards"><div class="card"><div class="ci"><i data-lucide="users-round"></i></div><div class="cl">Total Clients</div><div class="cv" id="total">0</div><div class="cn">Registered clients</div></div><div class="card"><div class="ci"><i data-lucide="circle-check"></i></div><div class="cl">Active</div><div class="cv" id="active">0</div><div class="cn">Active records</div></div><div class="card"><div class="ci"><i data-lucide="file-text"></i></div><div class="cl">Documents</div><div class="cv" id="documents">0</div><div class="cn">Client records</div></div><div class="card"><div class="ci"><i data-lucide="hash"></i></div><div class="cl">Next ID</div><div class="cv" id="next">0</div><div class="cn">Auto sequence</div></div></section>
+          <div class="module-title">
+            <h1>Clients</h1>
+            <p>Create and manage client records</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<section class="panel" id="form">
- <div class="panel-head">
-  <div class="panel-title">Add Client</div>
-  <div class="time">Next ID: <strong id="nextId"></strong></div>
- </div>
- <div class="auto-id">
-  <span class="auto-id-label">RECORD ID · AUTO GENERATED</span>
-  <span class="auto-id-value"><i data-lucide="lock-keyhole"></i><span id="lockedId">—</span></span>
-</div>
-<div class="notice">ID is automatic, locked and read-only. The next ID is based on the highest existing number + 1. Mandatory fields are marked <span class="req">*</span>.</div>
- <form id="recordForm">
-  <div class="form-grid"><div class="field"><label>Client Name <span class="req">*</span></label><input id="f_clientName" type="text"  required><div class="hint">Required</div><div class="error-text" id="e_clientName"></div></div><div class="field"><label>Legal Name <span class="req">*</span></label><input id="f_legalName" type="text"  required><div class="hint">Required</div><div class="error-text" id="e_legalName"></div></div><div class="field"><label>Mobile <span class="req">*</span></label><input id="f_mobile" type="tel" maxlength="10" inputmode="numeric" required><div class="hint">10-digit Indian mobile</div><div class="error-text" id="e_mobile"></div></div><div class="field"><label>Email <span class="req">*</span></label><input id="f_email" type="email"  required><div class="hint">Valid email</div><div class="error-text" id="e_email"></div></div><div class="field"><label>PAN <span class="req">*</span></label><input id="f_pan" type="text" maxlength="10" required><div class="hint">ABCDE1234F</div><div class="error-text" id="e_pan"></div></div><div class="field"><label>Aadhaar</label><input id="f_aadhaar" type="text" maxlength="12" inputmode="numeric" ><div class="hint">12 digits</div><div class="error-text" id="e_aadhaar"></div></div><div class="field"><label>GSTIN</label><input id="f_gstin" type="text" maxlength="15" ><div class="hint">15-character GSTIN</div><div class="error-text" id="e_gstin"></div></div><div class="field"><label>Constitution <span class="req">*</span></label><select id="f_constitution" required><option value="">Select</option><option>Proprietorship</option><option>Partnership Firm</option><option>LLP</option><option>Private Limited Company</option><option>Public Limited Company</option><option>OPC</option><option>Trust</option><option>Society</option><option>HUF</option><option>Other</option></select><div class="hint">Required</div><div class="error-text" id="e_constitution"></div></div><div class="field"><label>Client Type <span class="req">*</span></label><select id="f_clientType" required><option value="">Select</option><option>Individual</option><option>Business</option><option>Company</option><option>Firm</option><option>LLP</option><option>Trust</option><option>Society</option><option>Other</option></select><div class="hint">Required</div><div class="error-text" id="e_clientType"></div></div><div class="field"><label>Status <span class="req">*</span></label><select id="f_status" required><option value="">Select</option><option>Active</option><option>Inactive</option><option>Prospect</option><option>Closed</option></select><div class="hint">Required</div><div class="error-text" id="e_status"></div></div><div class="field full"><label>Address <span class="req">*</span></label><textarea id="f_address" required></textarea><div class="hint">Required</div><div class="error-text" id="e_address"></div></div><div class="field"><label>City <span class="req">*</span></label><input id="f_city" type="text"  required><div class="hint">Required</div><div class="error-text" id="e_city"></div></div><div class="field"><label>State <span class="req">*</span></label><select id="f_state" required><option value="">Select</option><option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Andaman and Nicobar Islands</option><option>Chandigarh</option><option>Dadra and Nagar Haveli and Daman and Diu</option><option>Delhi</option><option>Jammu and Kashmir</option><option>Ladakh</option><option>Lakshadweep</option><option>Puducherry</option></select><div class="hint">Required</div><div class="error-text" id="e_state"></div></div><div class="field"><label>Pincode <span class="req">*</span></label><input id="f_pincode" type="text" maxlength="6" inputmode="numeric" required><div class="hint">6 digits</div><div class="error-text" id="e_pincode"></div></div><div class="field full"><label>Notes</label><textarea id="f_notes" ></textarea><div class="hint">Optional</div><div class="error-text" id="e_notes"></div></div></div>
-  <div class="form-actions">
-   <button class="btn" type="reset">Clear</button>
-   <button class="btn primary" type="submit"><i data-lucide="save"></i>Save</button>
+      <form class="form-section" id="clientForm">
+        <h2>Client Entry</h2>
+
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Client ID</label>
+            <div class="client-id-box">
+              <input id="clientId" type="text" readonly placeholder="Generating...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Client Name <span class="required">*</span></label>
+            <input id="clientName" type="text" required
+                   placeholder="Enter client name"
+                   autocomplete="organization">
+          </div>
+
+          <div class="field">
+            <label>Legal Name</label>
+            <input id="legalName" type="text" placeholder="Legal / registered name">
+          </div>
+
+          <div class="field">
+            <label>Constitution</label>
+            <select id="constitution">
+              <option value="">Select Constitution...</option>
+              <option value="Proprietorship">Proprietorship</option>
+              <option value="Partnership">Partnership</option>
+              <option value="LLP">LLP</option>
+              <option value="Private Limited">Private Limited</option>
+              <option value="Public Limited">Public Limited</option>
+              <option value="OPC">OPC</option>
+              <option value="HUF">HUF</option>
+              <option value="Trust">Trust</option>
+              <option value="Society">Society</option>
+              <option value="Individual">Individual</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Mobile</label>
+            <input id="mobile" type="tel" inputmode="numeric"
+                   maxlength="10" placeholder="10 digit mobile number">
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input id="email" type="email" placeholder="client@example.com">
+          </div>
+
+          <div class="field">
+            <label>PAN</label>
+            <input id="pan" type="text" maxlength="10"
+                   placeholder="ABCDE1234F"
+                   style="text-transform:uppercase">
+          </div>
+
+          <div class="field">
+            <label>Aadhaar</label>
+            <input id="adhar" type="text" inputmode="numeric"
+                   maxlength="12" placeholder="12 digit Aadhaar">
+          </div>
+
+          <div class="field">
+            <label>GSTIN</label>
+            <input id="gstin" type="text" maxlength="15"
+                   placeholder="15 digit GSTIN"
+                   style="text-transform:uppercase">
+          </div>
+
+          <div class="field">
+            <label>Branch ID</label>
+            <input id="branchId" type="text" placeholder="Branch ID">
+          </div>
+
+          <div class="field full">
+            <label>Address</label>
+            <textarea id="address" rows="3"
+                      placeholder="Complete address"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Status</label>
+            <select id="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Client Folder URL</label>
+            <input id="clientFolderUrl" type="url"
+                   placeholder="Google Drive / client folder URL">
+          </div>
+
+          <div class="field full">
+            <label>Notes</label>
+            <textarea id="notes" rows="3"
+                      placeholder="Additional client information..."></textarea>
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="history.back()">
+            Cancel
+          </button>
+
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Client</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
   </div>
-  <div class="msg" id="msg"></div>
- </form>
-</section>
-
-<section class="data-tools">
- <div class="search-row">
-  <div class="search">
-   <i data-lucide="search"></i>
-   <input id="search" placeholder="Search clients...">
-  </div>
- </div>
- <div class="filter-row">
-  <div class="date-box">
-   <i data-lucide="calendar-days"></i>
-   <input id="fromDate" type="date" title="From date">
-  </div>
-  <div class="date-box">
-   <i data-lucide="calendar-days"></i>
-   <input id="toDate" type="date" title="To date">
-  </div>
-  <select id="sortBy" class="tool-btn" aria-label="Sort">
-   <option value="newest">Sort: Newest</option>
-   <option value="oldest">Sort: Oldest</option>
-   <option value="name">Sort: Name</option>
-   <option value="id">Sort: ID</option>
-  </select>
-  <button class="tool-btn" id="filterBtn"><i data-lucide="sliders-horizontal"></i>Filter</button>
-  <button class="tool-btn outline" id="clearFilter"><i data-lucide="x"></i>Clear</button>
-  <button class="tool-btn outline" id="csvBtn"><i data-lucide="file-spreadsheet"></i>CSV</button>
-  <button class="tool-btn outline" id="pdfBtn"><i data-lucide="file-down"></i>PDF</button>
- </div>
- <div class="filter-status" id="filterStatus"></div>
-</section>
-
-<section class="panel">
- <div class="panel-head"><div class="panel-title">Records</div></div>
- <div class="table">
-  <table>
-   <thead><tr><th>Client ID</th><th>Client Name</th><th>Mobile</th><th>PAN</th><th>GSTIN</th><th>Status</th></tr></thead>
-   <tbody id="tbody"><tr><td class="empty" colspan="6">Loading...</td></tr></tbody>
-  </table>
- </div>
-</section>
-
-<script>
-
-const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID"
-};
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-
-const TZ="Asia/Kolkata";
-const dateIN=d=>new Intl.DateTimeFormat("en-IN",{timeZone:TZ,day:"2-digit",month:"2-digit",year:"numeric"}).format(d);
-const timeIN=d=>new Intl.DateTimeFormat("en-IN",{timeZone:TZ,day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(d);
-const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const norm=v=>String(v||"").trim().toUpperCase();
-const validEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v).trim());
-const validMobile=v=>/^[6-9]\d{9}$/.test(String(v).replace(/\D/g,""));
-const validPAN=v=>/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(norm(v));
-const validAadhaar=v=>/^\d{12}$/.test(String(v).replace(/\s/g,""));
-const validGSTIN=v=>/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(norm(v));
-const validPIN=v=>/^[1-9][0-9]{5}$/.test(String(v).trim());
-
-async function nextId(collection,prefix,start){
-  const snap=await db.collection(collection).get();
-  let max=start-1;
-  snap.forEach(doc=>{
-    const d=doc.data();
-    [doc.id,d.clientId,d.credentialID,d.complianceID].forEach(v=>{
-      if(typeof v==="string" && v.startsWith(prefix)){
-        const n=parseInt(v.slice(prefix.length),10);
-        if(Number.isFinite(n)) max=Math.max(max,n);
-      }
-    });
-  });
-  return prefix+String(max+1).padStart(4,"0");
-}
-
-document.getElementById("reportDate").textContent=dateIN(new Date());
-lucide.createIcons();
-const COLLECTION="clients", PREFIX="C", START=40001;
-let records=[],viewRecords=[];
-
-
-const FORM_REQUIRED=['clientName','mobile'];
-function clearErrors(){
- document.querySelectorAll(".field").forEach(x=>x.classList.remove("invalid"));
- document.querySelectorAll(".error-text").forEach(x=>x.textContent="");
-}
-function setErr(id,text){
- const field=document.getElementById("f_"+id)?.closest(".field");
- if(field)field.classList.add("invalid");
- const e=document.getElementById("e_"+id);if(e)e.textContent=text;
-}
-function validate(){
- clearErrors();let ok=true;
- FORM_REQUIRED.forEach(id=>{
-   const el=document.getElementById("f_"+id);
-   if(el && !el.value.trim()){setErr(id,"This field is required.");ok=false;}
- });
- const mobile=document.getElementById("f_mobile");
- if(mobile&&mobile.value&&!validMobile(mobile.value)){setErr("mobile","Enter a valid 10-digit Indian mobile number.");ok=false;}
- const email=document.getElementById("f_email");
- if(email&&email.value&&!validEmail(email.value)){setErr("email","Enter a valid email address.");ok=false;}
- const pan=document.getElementById("f_pan");
- if(pan&&pan.value&&!validPAN(pan.value)){setErr("pan","Enter a valid PAN, e.g. ABCDE1234F.");ok=false;}
- const aad=document.getElementById("f_aadhaar");
- if(aad&&aad.value&&!validAadhaar(aad.value)){setErr("aadhaar","Enter exactly 12 Aadhaar digits.");ok=false;}
- const gst=document.getElementById("f_gstin");
- if(gst&&gst.value&&!validGSTIN(gst.value)){setErr("gstin","Enter a valid 15-character GSTIN.");ok=false;}
- const pin=document.getElementById("f_pincode");
- if(pin&&pin.value&&!validPIN(pin.value)){setErr("pincode","Enter a valid 6-digit pincode.");ok=false;}
- return ok;
-}
-
-
-async function refreshNext(){
- try{const nid=await nextId(COLLECTION,PREFIX,START);
- document.getElementById("nextId").textContent=nid;
- const locked=document.getElementById("lockedId"); if(locked) locked.textContent=nid;
- const nextCard=document.getElementById("next"); if(nextCard) nextCard.textContent=nid;}
- catch(e){document.getElementById("nextId").textContent="—"}
-}
-
-async function loadData(){
- try{
-  const snap=await db.collection(COLLECTION).get();
-  records=snap.docs.map(d=>({_id:d.id,...d.data()}));
-  applyFilters();
-  document.getElementById("total").textContent=records.length;document.getElementById("active").textContent=records.filter(r=>String(r.status||"").toLowerCase()=="active").length;document.getElementById("documents").textContent=records.length;
-  await refreshNext();
- }catch(e){
-  console.error(e);
-  document.getElementById("tbody").innerHTML='<tr><td colspan="6" class="empty">Unable to load Firestore data.</td></tr>';
- }
-}
-
-function dateValue(r){
- const raw=r.createdAt||r.updatedAt||r.dueDate||"";
- const d=new Date(raw);
- return Number.isNaN(d.getTime())?0:d.getTime();
-}
-
-function applyFilters(){
- const q=(document.getElementById("search").value||"").toLowerCase().trim();
- const from=document.getElementById("fromDate").value;
- const to=document.getElementById("toDate").value;
- const sort=document.getElementById("sortBy").value;
-
- viewRecords=records.filter(r=>{
-   const hay=JSON.stringify(r).toLowerCase();
-   if(q&&!hay.includes(q))return false;
-   const dRaw=r.dueDate||r.createdAt||r.updatedAt||"";
-   const d=new Date(dRaw);
-   if(from&&!Number.isNaN(d.getTime())&&d<new Date(from+"T00:00:00"))return false;
-   if(to&&!Number.isNaN(d.getTime())&&d>new Date(to+"T23:59:59"))return false;
-   return true;
- });
-
- viewRecords.sort((a,b)=>{
-   if(sort==="name")return String(a.clientName||"").localeCompare(String(b.clientName||""));
-   if(sort==="id")return String(a.clientId||a._id).localeCompare(String(b.clientId||b._id));
-   return sort==="oldest"?dateValue(a)-dateValue(b):dateValue(b)-dateValue(a);
- });
- render(viewRecords);
- document.getElementById("filterStatus").textContent=
-   viewRecords.length+" of "+records.length+" records";
-}
-
-function render(list){
- const tb=document.getElementById("tbody");
- if(!list.length){tb.innerHTML='<tr><td class="empty" colspan="6">No records found.</td></tr>';return}
- tb.innerHTML=list.map(r=>"<tr>"+`<td class="id">${esc(r.clientId||r._id)}</td><td>${esc(r.clientName)}</td><td>${esc(r.mobile)}</td><td>${esc(r.pan)}</td><td>${esc(r.gstin)}</td><td>${esc(r.status)}</td>`+"</tr>").join("");
-}
-
-document.getElementById("search").addEventListener("input",applyFilters);
-document.getElementById("sortBy").addEventListener("change",applyFilters);
-document.getElementById("filterBtn").addEventListener("click",applyFilters);
-document.getElementById("clearFilter").addEventListener("click",()=>{
- document.getElementById("search").value="";
- document.getElementById("fromDate").value="";
- document.getElementById("toDate").value="";
- document.getElementById("sortBy").value="newest";
- applyFilters();
-});
-
-document.getElementById("recordForm").addEventListener("submit",async e=>{
- e.preventDefault();
- if(!validate()){
-   document.querySelector(".field.invalid input,.field.invalid select,.field.invalid textarea")?.focus();
-   return;
- }
- const msg=document.getElementById("msg");
- try{
-   const id=await nextId(COLLECTION,PREFIX,START);
-   const data={};
-   data["clientName"]=document.getElementById("f_clientName").value.trim();data["legalName"]=document.getElementById("f_legalName").value.trim();data["mobile"]=document.getElementById("f_mobile").value.trim();data["email"]=document.getElementById("f_email").value.trim();data["pan"]=document.getElementById("f_pan").value.trim();data["aadhaar"]=document.getElementById("f_aadhaar").value.trim();data["gstin"]=document.getElementById("f_gstin").value.trim();data["constitution"]=document.getElementById("f_constitution").value.trim();data["clientType"]=document.getElementById("f_clientType").value.trim();data["status"]=document.getElementById("f_status").value.trim();data["address"]=document.getElementById("f_address").value.trim();data["city"]=document.getElementById("f_city").value.trim();data["state"]=document.getElementById("f_state").value.trim();data["pincode"]=document.getElementById("f_pincode").value.trim();data["notes"]=document.getElementById("f_notes").value.trim();
-   data["clientId"]=id;
-   if("clients"==="clients" && !data.status)data.status="Active";
-   data.createdAt=timeIN(new Date());
-   data.updatedAt=timeIN(new Date());
-   await db.collection(COLLECTION).doc(id).set(data);
-   msg.className="msg";
-   msg.textContent="Saved "+id+" successfully.";
-   e.target.reset();
-   clearErrors();
-   await loadData();
- }catch(err){
-   console.error(err);
-   msg.className="msg error";
-   msg.textContent=err.message||"Save failed.";
- }
-});
-
-document.getElementById("recordForm").addEventListener("reset",()=>setTimeout(clearErrors,0));
-
-document.getElementById("csvBtn").addEventListener("click",()=>{
- if(!viewRecords.length)return;
- const headers=['Client ID', 'Client Name', 'Mobile', 'PAN', 'GSTIN', 'Status'];
- const keys=['clientId', 'clientName', 'mobile', 'pan', 'gstin', 'status'];
- const rows=[headers,...viewRecords.map(r=>keys.map(k=>String(r[k]??"").replace(/"/g,'""')))];
- const csv=rows.map(row=>row.map(v=>'"'+v+'"').join(",")).join("\r\n");
- const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);
- a.download="clients-"+dateIN(new Date()).replaceAll("/","-")+".csv";a.click();
- URL.revokeObjectURL(a.href);
-});
-
-document.getElementById("pdfBtn").addEventListener("click",()=>{
- const w=window.open("","_blank");
- if(!w)return;
- const rows=viewRecords.map(r=>"<tr>"+`<td class="id">${esc(r.clientId||r._id)}</td><td>${esc(r.clientName)}</td><td>${esc(r.mobile)}</td><td>${esc(r.pan)}</td><td>${esc(r.gstin)}</td><td>${esc(r.status)}</td>`+"</tr>").join("");
- w.document.write(`<!doctype html><html><head><title>Clients</title>
- <style>body{font-family:Arial;padding:25px;color:#202b36}h1{color:#0b3b66}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;font-size:10px;text-align:left}th{background:#f1f4f6}.meta{font-size:11px;color:#687583;margin-bottom:15px}</style>
- </head><body><h1>CM | BIZODIT — Clients</h1><div class="meta">Report as on: ${dateIN(new Date())}</div><table><thead><tr><th>Client ID</th><th>Client Name</th><th>Mobile</th><th>PAN</th><th>GSTIN</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
- w.document.close();w.focus();setTimeout(()=>w.print(),400);
-});
-
-loadData();
-</script>
 </main>
-</div>
-<nav class="bottom">
-  <a href="../../index.html"><i data-lucide="house"></i>HOME</a>
-  <a class="active" href="crm.html"><i data-lucide="users-round"></i>CRM</a>
-  <a href="../accounts/accounts.html"><i data-lucide="wallet"></i>ACCOUNTS</a>
-  <a href="../settings/settings.html"><i data-lucide="settings-2"></i>SETTINGS</a>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
 </nav>
+
+<script type="module">
+  import { formatIndianDate, todayISO } from "../../../js/date.js";
+
+  /*
+   * Firebase
+   * ------------------------------------------------------------
+   * This page expects your existing Firebase configuration.
+   *
+   * If your current app.js already exposes Firebase, you can
+   * replace the CONFIG block below with your existing setup.
+   *
+   * The Firestore structure used by this form is:
+   *
+   * clients/{clientId}
+   * counters/clientCounter
+   *
+   * Client IDs are generated with a Firestore transaction on
+   * counters/clientCounter, so two users saving at the same
+   * time cannot receive the same Client ID.
+   */
+
+  import {
+    initializeApp,
+    getApps,
+    getApp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+  import {
+    getFirestore,
+    doc,
+    runTransaction,
+    collection,
+    query,
+    where,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  /*
+   * IMPORTANT:
+   * Put the same Firebase config used by your existing BIZODIT app here
+   * if it is not already available in window.CM_FIREBASE_CONFIG.
+   */
+  const firebaseConfig = window.CM_FIREBASE_CONFIG || {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = getApps().length
+    ? getApp()
+    : initializeApp(firebaseConfig);
+
+  const db = getFirestore(app);
+
+  const form = document.getElementById("clientForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const clientIdInput = document.getElementById("clientId");
+  const idStatus = document.getElementById("idStatus");
+  const message = document.getElementById("formMessage");
+
+  document.getElementById("presentDate").textContent =
+    formatIndianDate(new Date());
+
+  function showMessage(text, type = "error") {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  }
+
+  function clearMessage() {
+    message.textContent = "";
+    message.className = "form-message";
+  }
+
+  function clean(value) {
+    return String(value || "").trim();
+  }
+
+  function upper(value) {
+    return clean(value).toUpperCase();
+  }
+
+  /*
+   * Generates the next Cxxxxx ID atomically.
+   *
+   * Example:
+   * C40001
+   * C40002
+   * C40003
+   *
+   * The counter transaction is the important part:
+   * it prevents duplicate IDs when two users save simultaneously.
+   */
+  async function getNextClientId(transaction) {
+    const counterRef = doc(db, "counters", "clientCounter");
+
+    const counterSnap = await transaction.get(counterRef);
+
+    let nextNumber = 40001;
+
+    if (counterSnap.exists()) {
+      const data = counterSnap.data();
+      const current = Number(data.lastNumber);
+
+      if (Number.isFinite(current) && current >= 40000) {
+        nextNumber = current + 1;
+      }
+    }
+
+    transaction.set(
+      counterRef,
+      {
+        lastNumber: nextNumber,
+        updatedAt: new Date().toISOString()
+      },
+      { merge: true }
+    );
+
+    return `C${String(nextNumber).padStart(5, "0")}`;
+  }
+
+  /*
+   * Extra duplicate protection.
+   *
+   * Client ID itself is already protected by the counter
+   * transaction. These checks stop accidental duplicate
+   * records using the same PAN / GSTIN / mobile / email.
+   */
+  async function checkDuplicate(field, value) {
+    if (!value) return false;
+
+    const ref = collection(db, "clients");
+    const q = query(ref, where(field, "==", value));
+    const snap = await getDocs(q);
+
+    return !snap.empty;
+  }
+
+  async function validateDuplicates() {
+    const pan = upper(document.getElementById("pan").value);
+    const gstin = upper(document.getElementById("gstin").value);
+    const mobile = clean(document.getElementById("mobile").value);
+    const email = clean(document.getElementById("email").value).toLowerCase();
+
+    if (pan && await checkDuplicate("pan", pan)) {
+      return "A client with this PAN already exists.";
+    }
+
+    if (gstin && await checkDuplicate("gstin", gstin)) {
+      return "A client with this GSTIN already exists.";
+    }
+
+    if (mobile && await checkDuplicate("mobile", mobile)) {
+      return "A client with this mobile number already exists.";
+    }
+
+    if (email && await checkDuplicate("email", email)) {
+      return "A client with this email already exists.";
+    }
+
+    return "";
+  }
+
+  /*
+   * Form submit.
+   *
+   * Client ID generation and client document creation happen
+   * inside ONE Firestore transaction.
+   */
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+
+    if (saveBtn.disabled) return;
+
+    const clientName = clean(document.getElementById("clientName").value);
+
+    if (!clientName) {
+      showMessage("Client Name is required.");
+      document.getElementById("clientName").focus();
+      return;
+    }
+
+    const pan = upper(document.getElementById("pan").value);
+    const gstin = upper(document.getElementById("gstin").value);
+    const mobile = clean(document.getElementById("mobile").value);
+    const email = clean(document.getElementById("email").value).toLowerCase();
+
+    if (mobile && !/^[0-9]{10}$/.test(mobile)) {
+      showMessage("Enter a valid 10 digit mobile number.");
+      document.getElementById("mobile").focus();
+      return;
+    }
+
+    if (pan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+      showMessage("Enter a valid PAN.");
+      document.getElementById("pan").focus();
+      return;
+    }
+
+    if (gstin && !/^[0-9A-Z]{15}$/.test(gstin)) {
+      showMessage("Enter a valid 15 digit GSTIN.");
+      document.getElementById("gstin").focus();
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const duplicateMessage = await validateDuplicates();
+
+      if (duplicateMessage) {
+        throw new Error(duplicateMessage);
+      }
+
+      const now = new Date().toISOString();
+
+      await runTransaction(db, async (transaction) => {
+        const clientId = await getNextClientId(transaction);
+        const clientRef = doc(db, "clients", clientId);
+
+        /*
+         * Final transaction-level existence check.
+         * Normally this can never exist because the counter is
+         * atomic, but it adds another protection layer.
+         */
+        const existing = await transaction.get(clientRef);
+
+        if (existing.exists()) {
+          throw new Error(`Client ID ${clientId} already exists. Please try again.`);
+        }
+
+        const clientData = {
+          clientId,
+          clientName,
+          legalName: clean(document.getElementById("legalName").value),
+          constitution: clean(document.getElementById("constitution").value),
+          address: clean(document.getElementById("address").value),
+          mobile,
+          email,
+          pan,
+          adhar: clean(document.getElementById("adhar").value),
+          gstin,
+          branchId: clean(document.getElementById("branchId").value),
+          clientFolderUrl: clean(document.getElementById("clientFolderUrl").value),
+          notes: clean(document.getElementById("notes").value),
+          status: clean(document.getElementById("status").value) || "Active",
+          createdAt: now,
+          updatedAt: now
+        };
+
+        transaction.set(clientRef, clientData);
+        clientIdInput.value = clientId;
+      });
+
+      idStatus.textContent = "✓";
+      showMessage(`Client ${clientIdInput.value} saved successfully.`, "success");
+
+      form.reset();
+      document.getElementById("status").value = "Active";
+
+      /*
+       * Keep the generated ID visible after reset.
+       * The next ID is generated only when the next record is saved,
+       * so unused IDs are not consumed.
+       */
+      clientIdInput.value = "";
+
+    } catch (error) {
+      console.error(error);
+      idStatus.textContent = "";
+
+      showMessage(
+        error?.message || "Unable to save client. Please try again."
+      );
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Client";
+    }
+  });
+
+  window.lucide.createIcons();
+</script>
+
 </body>
 </html>
