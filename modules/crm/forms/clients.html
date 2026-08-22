@@ -29,6 +29,147 @@
       text-align:center;
     }
 
+    .list-toolbar {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .list-search {
+      flex:1 1 180px;
+      min-width:150px;
+    }
+
+    .list-icon-btn {
+      width:40px;
+      height:40px;
+      border:1px solid #d7dce2;
+      background:#fff;
+      border-radius:8px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+
+    .list-icon-btn.active {
+      background:#f1f4f7;
+    }
+
+    .add-form-btn {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      min-width:72px;
+      height:40px;
+      padding:0 12px;
+    }
+
+    .list-panel {
+      display:block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display:none;
+    }
+
+    .data-list {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .data-row {
+      border:1px solid #e0e3e7;
+      border-radius:10px;
+      padding:12px 14px;
+      background:#fff;
+      cursor:pointer;
+    }
+
+    .data-row-main {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .data-row-title {
+      font-weight:600;
+      font-size:15px;
+    }
+
+    .data-row-sub {
+      margin-top:4px;
+      color:#727983;
+      font-size:12px;
+    }
+
+    .data-row-meta {
+      text-align:right;
+      font-size:12px;
+      color:#727983;
+      white-space:nowrap;
+    }
+
+    .empty-list {
+      padding:28px 12px;
+      text-align:center;
+      color:#777;
+      font-size:13px;
+    }
+
+    .filter-panel {
+      display:none;
+      margin-bottom:12px;
+      padding:12px;
+      border:1px solid #e0e3e7;
+      border-radius:10px;
+      background:#fafbfc;
+    }
+
+    .filter-panel.show {
+      display:block;
+    }
+
+    .filter-panel .field {
+      margin-bottom:8px;
+    }
+
+    .sort-menu {
+      display:none;
+      position:relative;
+    }
+
+    .sort-menu.show {
+      display:block;
+      margin-bottom:10px;
+    }
+
+    .sort-options {
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .sort-option {
+      border:1px solid #d7dce2;
+      background:#fff;
+      border-radius:7px;
+      padding:7px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .sort-option.active {
+      background:#eef2f5;
+      font-weight:600;
+    }
+
     .form-message {
       display:none;
       margin:0 0 14px;
@@ -105,7 +246,31 @@
         </div>
       </section>
 
-      <form class="form-section" id="clientForm">
+      <div id="clientListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="clientSearch" class="list-search" type="search" placeholder="Search clients...">
+          <button id="clientSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="clientFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="addClientBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+        <div id="clientSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="name">Name A–Z</button>
+            <button class="sort-option" data-sort="name-desc">Name Z–A</button>
+            <button class="sort-option" data-sort="id">Client ID</button>
+            <button class="sort-option" data-sort="newest">Newest</button>
+          </div>
+        </div>
+        <div id="clientFilterPanel" class="filter-panel">
+          <div class="field">
+            <label>Status</label>
+            <select id="clientStatusFilter"><option value="">All Status</option><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
+          </div>
+        </div>
+        <div id="clientList" class="data-list"><div class="empty-list">Loading clients...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="clientForm">
         <h2>Client Entry</h2>
 
         <div id="formMessage" class="form-message"></div>
@@ -331,29 +496,36 @@
 
     if (counterSnap.exists()) {
       const current = Number(counterSnap.data().lastNumber);
+
       if (Number.isFinite(current) && current >= 40000) {
         nextNumber = current + 1;
       }
     }
 
-    // If the counter is new or behind the existing clients, walk forward
-    // until an unused document ID is found. These reads are inside the same
-    // transaction, so an ID cannot be assigned twice concurrently.
+    /*
+     * IMPORTANT:
+     * Every transaction READ must happen before any WRITE.
+     *
+     * We therefore only READ candidate client documents here.
+     * The counter update and client document write happen later,
+     * after all reads have completed.
+     */
     while (true) {
-      const candidateId = `C${String(nextNumber).padStart(5, "0")}`;
-      const candidateRef = doc(db, "clients", candidateId);
-      const candidateSnap = await transaction.get(candidateRef);
+      const candidateId =
+        `C${String(nextNumber).padStart(5, "0")}`;
+
+      const candidateRef =
+        doc(db, "clients", candidateId);
+
+      const candidateSnap =
+        await transaction.get(candidateRef);
 
       if (!candidateSnap.exists()) {
-        transaction.set(
+        return {
+          clientId: candidateId,
           counterRef,
-          {
-            lastNumber: nextNumber,
-            updatedAt: new Date().toISOString()
-          },
-          { merge: true }
-        );
-        return candidateId;
+          nextNumber
+        };
       }
 
       nextNumber++;
@@ -400,6 +572,146 @@
     }
 
     return "";
+  }
+
+  /*
+   * ============================================================
+   * CLIENT LIST VIEW
+   * ============================================================
+   */
+
+  const clientListPanel = document.getElementById("clientListPanel");
+  const addClientBtn = document.getElementById("addClientBtn");
+  const clientSearch = document.getElementById("clientSearch");
+  const clientSortBtn = document.getElementById("clientSortBtn");
+  const clientFilterBtn = document.getElementById("clientFilterBtn");
+  const clientSortMenu = document.getElementById("clientSortMenu");
+  const clientFilterPanel = document.getElementById("clientFilterPanel");
+  const clientStatusFilter = document.getElementById("clientStatusFilter");
+  const clientList = document.getElementById("clientList");
+
+  let clientSort = "name";
+
+  function renderClientList() {
+    const term = clean(clientSearch.value).toLowerCase();
+    const status = clean(clientStatusFilter.value);
+
+    let rows = [...clientsCache].filter(client => {
+      const matchesSearch =
+        !term ||
+        String(client.clientId || "").toLowerCase().includes(term) ||
+        String(client.clientName || "").toLowerCase().includes(term) ||
+        String(client.mobile || "").toLowerCase().includes(term) ||
+        String(client.gstin || "").toLowerCase().includes(term);
+
+      const matchesStatus =
+        !status || String(client.status || "") === status;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    rows.sort((a, b) => {
+      if (clientSort === "name")
+        return String(a.clientName || "").localeCompare(String(b.clientName || ""));
+      if (clientSort === "name-desc")
+        return String(b.clientName || "").localeCompare(String(a.clientName || ""));
+      if (clientSort === "id")
+        return String(a.clientId || "").localeCompare(String(b.clientId || ""), undefined, {numeric:true});
+      if (clientSort === "newest")
+        return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+      return 0;
+    });
+
+    if (!rows.length) {
+      clientList.innerHTML = '<div class="empty-list">No clients found.</div>';
+      return;
+    }
+
+    clientList.innerHTML = rows.map(client => `
+      <div class="data-row" data-client-id="${String(client.clientId || client.id).replace(/"/g, '&quot;')}">
+        <div class="data-row-main">
+          <div>
+            <div class="data-row-title">${escapeHtml(client.clientName || "Unnamed Client")}</div>
+            <div class="data-row-sub">${escapeHtml(client.clientId || client.id || "")} · ${escapeHtml(client.mobile || client.email || "")}</div>
+          </div>
+          <div class="data-row-meta">${escapeHtml(client.status || "Active")}</div>
+        </div>
+      </div>
+    `).join("");
+
+    clientList.querySelectorAll(".data-row").forEach(row => {
+      row.addEventListener("click", () => {
+        const selected = findClientById(row.dataset.clientId);
+        if (selected) fillClient(selected);
+        clientListPanel.classList.add("hidden");
+        form.classList.remove("hidden");
+        window.scrollTo({top:0, behavior:"smooth"});
+      });
+    });
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function openClientForm() {
+    form.reset();
+    document.getElementById("status").value = "Active";
+    clientIdInput.value = "";
+    clientListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    clearMessage();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function openClientList() {
+    form.classList.add("hidden");
+    clientListPanel.classList.remove("hidden");
+    renderClientList();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  addClientBtn.addEventListener("click", openClientForm);
+  clientSearch.addEventListener("input", renderClientList);
+  clientStatusFilter.addEventListener("change", renderClientList);
+
+  clientSortBtn.addEventListener("click", () => {
+    clientSortMenu.classList.toggle("show");
+  });
+
+  clientFilterBtn.addEventListener("click", () => {
+    clientFilterPanel.classList.toggle("show");
+  });
+
+  clientSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      clientSort = option.dataset.sort;
+      clientSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      clientSortMenu.classList.remove("show");
+      renderClientList();
+    });
+  });
+
+  /*
+   * Back button: list is the first view. If the entry form is open,
+   * return to the list before leaving the page.
+   */
+  const originalBackButton = document.querySelector(".back-btn");
+  if (originalBackButton) {
+    originalBackButton.onclick = (event) => {
+      event.preventDefault();
+      if (!form.classList.contains("hidden")) {
+        openClientList();
+      } else {
+        history.back();
+      }
+    };
   }
 
   /*
@@ -460,19 +772,26 @@
       const now = new Date().toISOString();
 
       await runTransaction(db, async (transaction) => {
-        const clientId = await getNextClientId(transaction);
-        const clientRef = doc(db, "clients", clientId);
 
         /*
-         * Final transaction-level existence check.
-         * Normally this can never exist because the counter is
-         * atomic, but it adds another protection layer.
+         * ALL TRANSACTION READS happen first.
          */
-        const existing = await transaction.get(clientRef);
+        const result =
+          await getNextClientId(transaction);
 
-        if (existing.exists()) {
-          throw new Error(`Client ID ${clientId} already exists. Please try again.`);
-        }
+        const clientId =
+          result.clientId;
+
+        const clientRef =
+          doc(db, "clients", clientId);
+
+        /*
+         * getNextClientId() has already read this candidate
+         * document and confirmed that it does not exist.
+         *
+         * No further transaction.get() calls are made after
+         * the first write.
+         */
 
         const clientData = {
           clientId,
@@ -493,8 +812,25 @@
           updatedAt: now
         };
 
-        transaction.set(clientRef, clientData);
-        clientIdInput.value = clientId;
+        /*
+         * ALL WRITES happen after ALL READS.
+         */
+        transaction.set(
+          result.counterRef,
+          {
+            lastNumber: result.nextNumber,
+            updatedAt: now
+          },
+          { merge: true }
+        );
+
+        transaction.set(
+          clientRef,
+          clientData
+        );
+
+        clientIdInput.value =
+          clientId;
       });
 
       idStatus.textContent = "✓";
@@ -509,6 +845,8 @@
        * so unused IDs are not consumed.
        */
       clientIdInput.value = "";
+
+      openClientList();
 
     } catch (error) {
       console.error(error);
