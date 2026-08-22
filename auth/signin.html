@@ -1,356 +1,519 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0b3b66">
-<title>CM —Admin Login</title>
 
-<!-- External CSS Links (Same as earlier) -->
-<link rel="stylesheet" href="../../css/cm.css">
-<link rel="stylesheet" href="../../css/responsive.css">
+  <meta charset="UTF-8">
 
-<script src="https://unpkg.com/lucide@latest"></script>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <meta
+    name="theme-color"
+    content="#0b3b66">
+
+  <link
+    rel="stylesheet"
+    href="../css/cm.css">
+
+  <link
+    rel="stylesheet"
+    href="../css/auth.css">
+
+  <title>
+    Sign In — CM | BIZODIT
+  </title>
+
 </head>
 
-<body style="margin: 0; padding: 0; height: 100dvh; width: 100vw; overflow: hidden; background: #f4f6f8;">
 
-<div class="login-page" style="height: 100%; display: flex; align-items: center; justify-content: center; padding: 12px; box-sizing: border-box;">
+<body>
 
-    <div class="login-card" style="width: 100%; max-width: 420px; max-height: 100%; display: flex; flex-direction: column; justify-content: center;">
 
-        <!-- =====================================================
-             BRAND
-        ===================================================== -->
-        <div class="brand" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-            <div class="brand-logo" style="width: 48px; height: 48px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                <img src="assets/logo.png" alt="CM Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-            </div>
-            <div>
-                <div class="brand-name" style="font-weight: 700; font-size: 16px;">CM | Admin</div>
-                <div class="brand-subtitle" style="font-size: 10px; color: #687583; margin-top: 2px;">Admin Management Platform</div>
-            </div>
-        </div>
+<main class="auth-page">
 
-        <!-- =====================================================
-             LOGIN HEADING
-        ===================================================== -->
-        <div class="login-heading" style="margin-bottom: 16px;">
-            <h1 style="margin: 0; font-size: 20px; font-weight: 700;">Welcome back</h1>
-            <p style="margin: 4px 0 0; font-size: 11px; color: #687583;">Sign in to continue to your dashboard.</p>
-        </div>
+  <section class="auth-card">
 
-        <!-- =====================================================
-             LOGIN FORM
-        ===================================================== -->
-        <form id="loginForm" style="display: flex; flex-direction: column; gap: 12px;">
 
-            <div class="form-group">
-                <label class="form-label" for="loginEmail" style="display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px;">Email address</label>
-                <div class="input-wrap" style="position: relative;">
-                    <i class="input-icon" data-lucide="mail" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; color: #687583;"></i>
-                    <input class="form-input" id="loginEmail" type="email" placeholder="Enter your email" autocomplete="email" required style="width: 100%; height: 40px; padding: 0 10px 0 34px; border: 1px solid #c6ced6; border-radius: 6px; box-sizing: border-box; font-size: 12px;">
-                </div>
-            </div>
+    <!-- LOGO -->
 
-            <div class="form-group">
-                <label class="form-label" for="loginPassword" style="display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px;">Password</label>
-                <div class="input-wrap" style="position: relative;">
-                    <i class="input-icon" data-lucide="lock-keyhole" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; color: #687583;"></i>
-                    <input class="form-input" id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password" required style="width: 100%; height: 40px; padding: 0 34px 0 34px; border: 1px solid #c6ced6; border-radius: 6px; box-sizing: border-box; font-size: 12px;">
-                    <button type="button" class="password-toggle" id="loginPasswordToggle" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; color: #687583; display: flex; align-items: center; justify-content: center; height: 32px; width: 32px;">
-                        <i data-lucide="eye" style="width: 16px;"></i>
-                    </button>
-                </div>
-            </div>
+    <div class="auth-logo">
+      CM
+    </div>
 
-            <div class="login-options" style="display: flex; align-items: center; justify-content: space-between;">
-                <label class="remember" style="display: flex; align-items: center; gap: 4px; font-size: 10px; color: #687583;">
-                    <input type="checkbox" id="rememberMe">
-                    <span>Remember me</span>
-                </label>
-                <button type="button" class="forgot-password" id="forgotButton" style="border: none; background: transparent; color: #0b3b66; font-size: 10px; font-weight: 700; cursor: pointer; padding: 0;">
-                    Forgot password?
-                </button>
-            </div>
 
-            <button type="submit" class="sign-in-btn btn btn-primary" style="height: 42px; width: 100%; background: #0b3b66; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
-                <i data-lucide="log-in" style="width: 16px;"></i>
-                <span>Sign In</span>
-            </button>
+    <div class="auth-title">
+      Welcome back
+    </div>
 
-            <div class="message" id="loginMessage" style="font-size: 10px; text-align: center; min-height: 12px;"></div>
+    <div class="auth-subtitle">
+      Sign in to CM | BIZODIT
+    </div>
 
-        </form>
 
-        <!-- =====================================================
-             DIVIDER & SIGN UP
-        ===================================================== -->
-        <div class="divider" style="display: flex; align-items: center; gap: 8px; margin: 12px 0; color: #9aa4ae; font-size: 9px;">
-            <span style="flex: 1; height: 1px; background: #d8dee5;"></span>OR<span style="flex: 1; height: 1px; background: #d8dee5;"></span>
-        </div>
+    <!-- LOGIN -->
 
-        <div style="text-align:center;">
-            <button type="button" class="signup-btn btn btn-outline" id="signupButton" style="height: 40px; width: 100%; border: 1px solid #0b3b66; background: #fff; color: #0b3b66; border-radius: 6px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
-                <i data-lucide="user-plus" style="width: 16px;"></i>
-                Create an Account
-            </button>
-        </div>
+    <form id="signInForm">
 
-        <!-- FOOTER -->
-        <div class="login-footer" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #d8dee5; text-align: center; color: #8a95a3; font-size: 9px;">
-            <strong>CM | Admin</strong><br>Secure Admin Management
-        </div>
+
+      <div class="auth-field">
+
+        <label for="email">
+          Email
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          autocomplete="username"
+          placeholder="Enter your email"
+          required>
+
+      </div>
+
+
+      <div class="auth-field">
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Enter your password"
+          required>
+
+      </div>
+
+
+      <button
+        class="auth-submit"
+        id="signInButton"
+        type="submit">
+
+        Sign In
+
+      </button>
+
+
+      <div
+        class="auth-message"
+        id="message">
+      </div>
+
+
+    </form>
+
+
+    <div class="auth-footer">
+
+      Authorized users only
+
+      <br>
+
+      CM | BIZODIT
 
     </div>
-</div>
 
-<!-- =====================================================
-     SIGN UP MODAL
-===================================================== -->
-<div class="modal" id="signupModal" style="position: fixed; inset: 0; background: rgba(20,30,40,.28); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 5000;">
-    <div class="modal-card" style="width: 100%; max-width: 390px; background: #fff; border-radius: 10px; padding: 20px;">
-        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <div class="modal-title" style="font-size: 16px; font-weight: 700;">Create Account</div>
-                <div class="modal-description" style="font-size: 10px; color: #687583; margin-top: 4px;">Create your CM | BIZODIT account.</div>
-            </div>
-            <button type="button" class="modal-close" id="closeSignup" style="border: none; background: #edf1f4; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                <i data-lucide="x" style="width: 14px;"></i>
-            </button>
-        </div>
-        <div class="modal-body" style="margin-top: 16px;">
-            <form id="signupForm" style="display: flex; flex-direction: column; gap: 10px;">
-                <!-- Signup fields omitted for brevity but remain fully functional; add back specific styles if needed. I kept structural inline styles to ensure it remains compact. -->
-                <input class="form-input" id="signupName" type="text" placeholder="Full name" required style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #c6ced6; border-radius: 6px; font-size: 12px; box-sizing: border-box;">
-                <input class="form-input" id="signupMobile" type="tel" placeholder="Mobile number" required style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #c6ced6; border-radius: 6px; font-size: 12px; box-sizing: border-box;">
-                <input class="form-input" id="signupEmail" type="email" placeholder="Email address" required style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #c6ced6; border-radius: 6px; font-size: 12px; box-sizing: border-box;">
-                <div style="position: relative;">
-                    <input class="form-input" id="signupPassword" type="password" placeholder="Create password" minlength="6" required style="width: 100%; height: 38px; padding: 0 34px 0 10px; border: 1px solid #c6ced6; border-radius: 6px; font-size: 12px; box-sizing: border-box;">
-                    <button type="button" id="signupPasswordToggle" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; color: #687583;"><i data-lucide="eye" style="width: 16px;"></i></button>
-                </div>
-                <div class="message" id="signupMessage" style="font-size: 10px; text-align: center; min-height: 12px;"></div>
-                <div class="modal-actions" style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button type="button" id="cancelSignup" style="flex: 1; height: 38px; border: 1px solid #c6ced6; background: #fff; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">Cancel</button>
-                    <button type="submit" id="createAccountButton" style="flex: 1; height: 38px; border: none; background: #0b3b66; color: #fff; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">Create Account</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- =====================================================
-     FORGOT PASSWORD MODAL
-===================================================== -->
-<div class="modal" id="forgotModal" style="position: fixed; inset: 0; background: rgba(20,30,40,.28); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 5000;">
-    <div class="modal-card" style="width: 100%; max-width: 390px; background: #fff; border-radius: 10px; padding: 20px;">
-        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <div class="modal-title" style="font-size: 16px; font-weight: 700;">Reset Password</div>
-                <div class="modal-description" style="font-size: 10px; color: #687583; margin-top: 4px;">Enter your registered email address.</div>
-            </div>
-            <button type="button" class="modal-close" id="closeForgot" style="border: none; background: #edf1f4; border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                <i data-lucide="x" style="width: 14px;"></i>
-            </button>
-        </div>
-        <div class="modal-body" style="margin-top: 16px;">
-            <input class="form-input" id="resetEmail" type="email" placeholder="Enter your email" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #c6ced6; border-radius: 6px; font-size: 12px; box-sizing: border-box; margin-bottom: 8px;">
-            <div class="message" id="resetMessage" style="font-size: 10px; text-align: center; min-height: 12px;"></div>
-            <div class="modal-actions" style="display: flex; gap: 8px; margin-top: 8px;">
-                <button type="button" id="cancelForgot" style="flex: 1; height: 38px; border: 1px solid #c6ced6; background: #fff; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">Cancel</button>
-                <button type="button" id="resetButton" style="flex: 1; height: 38px; border: none; background: #0b3b66; color: #fff; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;">Send Link</button>
-            </div>
-        </div>
-    </div>
-</div>
+  </section>
 
-<script>
-/* =========================================================
-   FIREBASE CONFIG
-========================================================= */
-// Replace this in your admin page script:
-const firebaseConfig = {
-    apiKey: "AIzaSyCXyKSTImIzkYnH2LW408cVWWV1CPvlFbO", // <-- Corrected Key
-    authDomain: "cmfilings-6a37c.firebaseapp.com",
-    projectId: "cmfilings-6a37c",
-    storageBucket: "cmfilings-6a37c.firebasestorage.app",
-    messagingSenderId: "138705123778",
-    appId: "1:138705123778:web:9561bff9f0f5d89bb6fe5b",
-    measurementId: "G-09DM4NZF8D"
-};
+</main>
 
-/* =========================================================
-   FIREBASE INITIALIZATION
-========================================================= */
-let firebaseReady = false;
-try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    firebaseReady = true;
-} catch(error){
-    console.error("Firebase initialization failed:", error);
+
+<!-- FIREBASE -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+
+<script type="module">
+
+import {
+  firebaseConfig
+} from "../js/firebase-config.js";
+
+
+const message =
+  document.getElementById("message");
+
+const form =
+  document.getElementById("signInForm");
+
+const button =
+  document.getElementById("signInButton");
+
+
+// --------------------------------------------------
+// FIREBASE CONFIG CHECK
+// --------------------------------------------------
+
+const configMissing =
+  Object.values(firebaseConfig)
+    .some(value =>
+      String(value).includes("YOUR_")
+    );
+
+
+if (configMissing) {
+
+  message.textContent =
+    "Firebase configuration is missing.";
+
+  message.style.color =
+    "#b42318";
+
 }
 
-/* =========================================================
-   LUCIDE
-========================================================= */
-lucide.createIcons();
+else {
 
-/* =========================================================
-   PASSWORD TOGGLE
-========================================================= */
-function setupPasswordToggle(inputId, buttonId){
-    const input = document.getElementById(inputId);
-    const button = document.getElementById(buttonId);
 
-    button.addEventListener("click", function(){
-        const hidden = input.type === "password";
-        input.type = hidden ? "text" : "password";
-        button.innerHTML = hidden ? '<i data-lucide="eye-off" style="width:16px;"></i>' : '<i data-lucide="eye" style="width:16px;"></i>';
-        lucide.createIcons();
-    });
-}
-setupPasswordToggle("loginPassword", "loginPasswordToggle");
-setupPasswordToggle("signupPassword", "signupPasswordToggle");
+  // --------------------------------------------------
+  // FIREBASE INIT
+  // --------------------------------------------------
 
-/* =========================================================
-   MODAL HELPERS
-========================================================= */
-function openModal(id){
-    document.getElementById(id).style.display = "flex";
-}
-function closeModal(id){
-    document.getElementById(id).style.display = "none";
-}
+  if (!firebase.apps.length) {
 
-/* =========================================================
-   SIGNUP MODAL EVENTS
-========================================================= */
-document.getElementById("signupButton").addEventListener("click", () => openModal("signupModal"));
-document.getElementById("closeSignup").addEventListener("click", () => closeModal("signupModal"));
-document.getElementById("cancelSignup").addEventListener("click", () => closeModal("signupModal"));
+    firebase.initializeApp(
+      firebaseConfig
+    );
 
-/* =========================================================
-   SIGNUP — FIREBASE
-========================================================= */
-document.getElementById("signupForm").addEventListener("submit", async function(event){
-    event.preventDefault();
+  }
 
-    const name = document.getElementById("signupName").value.trim();
-    const mobile = document.getElementById("signupMobile").value.trim();
-    const email = document.getElementById("signupEmail").value.trim();
-    const password = document.getElementById("signupPassword").value;
-    const message = document.getElementById("signupMessage");
-    const createButton = document.getElementById("createAccountButton");
 
-    if (!firebaseReady){
-        message.textContent = "Firebase is not configured.";
-        message.style.color = "#b42318";
-        return;
+  const auth =
+    firebase.auth();
+
+  const db =
+    firebase.firestore();
+
+
+  // --------------------------------------------------
+  // IF ALREADY SIGNED IN
+  // --------------------------------------------------
+
+  auth.onAuthStateChanged(
+    user => {
+
+      if (user) {
+
+        window.location.replace(
+          "../index.html"
+        );
+
+      }
+
     }
-    if (!name || !mobile || !email || !password){
-        message.textContent = "Please complete all fields.";
-        message.style.color = "#b42318";
-        return;
-    }
-    if (password.length < 6){
-        message.textContent = "Password must contain at least 6 characters.";
-        message.style.color = "#b42318";
-        return;
-    }
+  );
 
-    createButton.disabled = true;
-    createButton.textContent = "Creating...";
 
-    try {
-        const credential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        const firebaseUser = credential.user;
+  // --------------------------------------------------
+  // LOGIN
+  // --------------------------------------------------
 
-        await firebase.firestore().collection("users").doc(firebaseUser.uid).set({
-            uid: firebaseUser.uid,
-            name: name,
-            email: email,
-            mobile: mobile,
-            status: "active",
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+  form.addEventListener(
+    "submit",
+    async event => {
 
-        message.textContent = "Account created successfully.";
-        message.style.color = "#147a4b";
-        createButton.textContent = "Created";
+      event.preventDefault();
 
-        setTimeout(function(){
-            closeModal("signupModal");
-            document.getElementById("loginEmail").value = email;
-            document.getElementById("loginMessage").textContent = "Account created. You can sign in when authentication is enabled.";
-            document.getElementById("loginMessage").style.color = "#147a4b";
-        }, 900);
 
-    } catch(error){
-        console.error(error);
-        let text = "Unable to create account.";
-        switch(error.code){
-            case "auth/email-already-in-use": text = "An account already exists with this email."; break;
-            case "auth/invalid-email": text = "Please enter a valid email address."; break;
-            case "auth/weak-password": text = "Please choose a stronger password."; break;
-            case "auth/network-request-failed": text = "Network connection failed."; break;
-            default: text = error.message || text;
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("password")
+          .value;
+
+
+      message.textContent =
+        "Signing in...";
+
+      message.style.color =
+        "#687583";
+
+      button.disabled = true;
+
+      button.textContent =
+        "Signing in...";
+
+
+      try {
+
+
+        // Firebase Authentication
+
+        const credential =
+          await auth.signInWithEmailAndPassword(
+            email,
+            password
+          );
+
+
+        const firebaseUser =
+          credential.user;
+
+
+        // --------------------------------------------------
+        // USER PROFILE
+        // --------------------------------------------------
+
+        const userRef =
+          db
+            .collection("users")
+            .doc(firebaseUser.uid);
+
+
+        const userSnap =
+          await userRef.get();
+
+
+        if (!userSnap.exists) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "User profile was not found."
+          );
+
         }
-        message.textContent = text;
-        message.style.color = "#b42318";
-        createButton.disabled = false;
-        createButton.textContent = "Create Account";
+
+
+        const user =
+          userSnap.data();
+
+
+        // --------------------------------------------------
+        // STATUS
+        // --------------------------------------------------
+
+        if (user.status !== "active") {
+
+          await auth.signOut();
+
+          throw new Error(
+            "Your account is inactive."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // ROLE
+        // --------------------------------------------------
+
+        if (
+          user.role !== "admin" &&
+          user.role !== "user"
+        ) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "Invalid user role."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // STAFF BRANCH
+        // --------------------------------------------------
+
+        if (
+          user.role === "user" &&
+          !user.branchId
+        ) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "No branch has been assigned to this account."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // ADMIN
+        // --------------------------------------------------
+
+        if (
+          user.role === "admin" &&
+          !user.companyId
+        ) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "No company has been assigned to this administrator."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // SAVE SESSION INFO
+        // --------------------------------------------------
+
+        sessionStorage.setItem(
+
+          "cmBizoditUser",
+
+          JSON.stringify({
+
+            uid:
+              firebaseUser.uid,
+
+            email:
+              firebaseUser.email,
+
+            name:
+              user.name || "",
+
+            role:
+              user.role,
+
+            companyId:
+              user.companyId || "",
+
+            branchId:
+              user.branchId || "",
+
+            branchName:
+              user.branchName || "",
+
+            status:
+              user.status
+
+          })
+
+        );
+
+
+        // --------------------------------------------------
+        // SUCCESS
+        // --------------------------------------------------
+
+        message.textContent =
+          "Login successful.";
+
+        message.style.color =
+          "#147a4b";
+
+
+        window.location.replace(
+          "../index.html"
+        );
+
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "Login error:",
+          error
+        );
+
+
+        let text =
+          "Unable to sign in.";
+
+
+        switch (error.code) {
+
+          case "auth/invalid-email":
+
+            text =
+              "Please enter a valid email.";
+
+            break;
+
+
+          case "auth/user-not-found":
+
+            text =
+              "No account found with this email.";
+
+            break;
+
+
+          case "auth/wrong-password":
+
+            text =
+              "Incorrect password.";
+
+            break;
+
+
+          case "auth/invalid-credential":
+
+            text =
+              "Invalid email or password.";
+
+            break;
+
+
+          case "auth/too-many-requests":
+
+            text =
+              "Too many attempts. Please try again later.";
+
+            break;
+
+
+          case "auth/network-request-failed":
+
+            text =
+              "Network connection failed.";
+
+            break;
+
+
+          default:
+
+            if (error.message) {
+
+              text =
+                error.message;
+
+            }
+
+        }
+
+
+        message.textContent =
+          text;
+
+        message.style.color =
+          "#b42318";
+
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          "Sign In";
+
+      }
+
     }
-});
+  );
 
-/* =========================================================
-   SIGN IN — UI ONLY
-========================================================= */
-document.getElementById("loginForm").addEventListener("submit", function(event){
-    event.preventDefault();
-    const message = document.getElementById("loginMessage");
-    message.textContent = "Sign in will be connected to Firebase later.";
-    message.style.color = "#687583";
-});
+}
 
-/* =========================================================
-   FORGOT PASSWORD
-========================================================= */
-document.getElementById("forgotButton").addEventListener("click", () => openModal("forgotModal"));
-document.getElementById("closeForgot").addEventListener("click", () => closeModal("forgotModal"));
-document.getElementById("cancelForgot").addEventListener("click", () => closeModal("forgotModal"));
-document.getElementById("resetButton").addEventListener("click", function(){
-    const email = document.getElementById("resetEmail").value.trim();
-    const message = document.getElementById("resetMessage");
-
-    if(!email){
-        message.textContent = "Please enter your email address.";
-        message.style.color = "#b42318";
-        return;
-    }
-    message.textContent = "Password reset will be connected later.";
-    message.style.color = "#687583";
-});
-
-/* =========================================================
-   MODAL CLOSURE EVENTS
-========================================================= */
-document.querySelectorAll(".modal").forEach(modal => {
-    modal.addEventListener("click", function(event){
-        if(event.target === modal) modal.style.display = "none";
-    });
-});
-document.addEventListener("keydown", function(event){
-    if(event.key === "Escape"){
-        document.querySelectorAll(".modal").forEach(modal => modal.style.display = "none");
-    }
-});
 </script>
+
 </body>
 </html>
