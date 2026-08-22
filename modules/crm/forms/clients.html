@@ -262,8 +262,7 @@
    * ------------------------------------------------------------
    * This page expects your existing Firebase configuration.
    *
-   * If your current app.js already exposes Firebase, you can
-   * replace the CONFIG block below with your existing setup.
+   * Firebase is loaded only from the shared js/firebase-config.js file.
    *
    * The Firestore structure used by this form is:
    *
@@ -275,41 +274,16 @@
    * time cannot receive the same Client ID.
    */
 
-  import {
-    initializeApp,
-    getApps,
-    getApp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { db } from "../../../js/firebase-config.js";
 
   import {
-    getFirestore,
     doc,
     runTransaction,
     collection,
     query,
     where,
     getDocs
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  /*
-   * IMPORTANT:
-   * Put the same Firebase config used by your existing BIZODIT app here
-   * if it is not already available in window.CM_FIREBASE_CONFIG.
-   */
-  const firebaseConfig = window.CM_FIREBASE_CONFIG || {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  const app = getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig);
-
-  const db = getFirestore(app);
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
   const form = document.getElementById("clientForm");
   const saveBtn = document.getElementById("saveBtn");
@@ -351,30 +325,39 @@
    */
   async function getNextClientId(transaction) {
     const counterRef = doc(db, "counters", "clientCounter");
-
     const counterSnap = await transaction.get(counterRef);
 
     let nextNumber = 40001;
 
     if (counterSnap.exists()) {
-      const data = counterSnap.data();
-      const current = Number(data.lastNumber);
-
+      const current = Number(counterSnap.data().lastNumber);
       if (Number.isFinite(current) && current >= 40000) {
         nextNumber = current + 1;
       }
     }
 
-    transaction.set(
-      counterRef,
-      {
-        lastNumber: nextNumber,
-        updatedAt: new Date().toISOString()
-      },
-      { merge: true }
-    );
+    // If the counter is new or behind the existing clients, walk forward
+    // until an unused document ID is found. These reads are inside the same
+    // transaction, so an ID cannot be assigned twice concurrently.
+    while (true) {
+      const candidateId = `C${String(nextNumber).padStart(5, "0")}`;
+      const candidateRef = doc(db, "clients", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
 
-    return `C${String(nextNumber).padStart(5, "0")}`;
+      if (!candidateSnap.exists()) {
+        transaction.set(
+          counterRef,
+          {
+            lastNumber: nextNumber,
+            updatedAt: new Date().toISOString()
+          },
+          { merge: true }
+        );
+        return candidateId;
+      }
+
+      nextNumber++;
+    }
   }
 
   /*
