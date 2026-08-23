@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <title>Payment Request Generator — CM | BIZODIT</title>
+
+  <style>
+    .qr-page-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .qr-grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .qr-grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    /* UPI Card Preview */
+    .qr-card-preview {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+
+    .qr-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .qr-card-logo {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .qr-card-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0b3b66;
+      margin: 0;
+    }
+
+    .qr-amount-pill {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      font-size: 22px;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin: 8px 0;
+    }
+
+    .qr-img-wrapper {
+      width: 180px;
+      height: 180px;
+      margin: 12px auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .qr-upi-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      background: #f8fafc;
+      padding: 5px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .qr-payer-info {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .qr-footer-tag {
+      margin-top: 14px;
+      font-size: 10.5px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Buttons */
+    .btn-whatsapp {
+      background: #15803d;
+      color: #fff;
+      border-color: #15803d;
+    }
+
+    .btn-whatsapp:hover {
+      background: #166534;
+    }
+
+    .btn-download {
+      background: #0b3b66;
+      color: #fff;
+      border-color: #0b3b66;
+    }
+
+    .btn-download:hover {
+      background: #082845;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show { display: block; }
+    .form-message.error { background: #fff1f1; color: #b42318; border: 1px solid #f3c2c2; }
+    .form-message.success { background: #effaf3; color: #16723a; border: 1px solid #b9e4c7; }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page qr-page-container">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" onclick="history.back()" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Payment Request QR</h1>
+            <p>Generate on-demand UPI payment links & WhatsApp QR cards</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="formMessage" class="form-message"></div>
+
+      <div class="qr-grid-layout">
+        <!-- Generator Form -->
+        <form class="form-section entry-panel" id="qrGeneratorForm" style="display:block;">
+          <h2 style="font-size: 15px; margin-bottom: 12px;">Payment Details</h2>
+
+          <div class="form-grid">
+            <!-- Created At (ddmmyy non-editable) -->
+            <div class="field">
+              <label>Created At (DDMMYY)</label>
+              <input id="createdAtDisplay" type="text" readonly style="background:#f8fafc; font-weight:600; color:#334155;">
+            </div>
+
+            <!-- Default UPI ID from company.html -->
+            <div class="field">
+              <label>Payee UPI ID <span class="required">*</span></label>
+              <input id="upiId" type="text" required placeholder="Fetching company UPI...">
+              <div class="input-hint" id="upiSourceHint">Loaded from Company Setup</div>
+            </div>
+
+            <!-- Client / Custom Payer Name -->
+            <div class="field full">
+              <label>Payer / Client Name <span class="required">*</span></label>
+              <input id="clientNameInput" type="text" required list="clientListOptions" placeholder="Select existing client or type custom name..." autocomplete="off">
+              <datalist id="clientListOptions"></datalist>
+            </div>
+
+            <div class="field">
+              <label>Client Mobile (for WhatsApp) <span class="required">*</span></label>
+              <input id="clientMobile" type="tel" inputmode="numeric" maxlength="10" required placeholder="10 digit number">
+            </div>
+
+            <div class="field">
+              <label>Amount (₹) <span class="required">*</span></label>
+              <input id="requestAmount" type="number" min="1" step="0.01" required placeholder="0.00">
+            </div>
+
+            <div class="field full">
+              <label>Payment Description / Purpose</label>
+              <textarea id="paymentRemarks" rows="2" placeholder="e.g. Professional fees for ITR Filing"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 14px;">
+            <button id="generateQrBtn" class="btn btn-primary" type="submit" style="width: 100%; justify-content: center; height: 40px;">
+              <i data-lucide="qr-code"></i> Generate Payment QR
+            </button>
+          </div>
+        </form>
+
+        <!-- Dynamic Output & Card Preview -->
+        <div>
+          <div class="qr-card-preview" id="qrCardElement">
+            <div class="qr-card-header">
+              <img id="cardLogo" class="qr-card-logo" style="display:none;" alt="Logo">
+              <h3 id="cardCompanyName">BIZODIT FINANCIAL</h3>
+            </div>
+
+            <div style="font-size: 12px; color: #64748b;">Scan to Pay via Any UPI App</div>
+            
+            <div class="qr-amount-pill" id="cardAmountDisplay">₹0.00</div>
+
+            <div class="qr-img-wrapper">
+              <img id="generatedQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay" alt="UPI QR">
+            </div>
+
+            <div class="qr-upi-text" id="cardUpiDisplay">upi@bank</div>
+
+            <div class="qr-payer-info">
+              <div>Requested From: <strong id="cardPayerDisplay">Client</strong></div>
+              <div id="cardDescDisplay" style="color:#0b3b66; font-weight:500; margin-top:2px;">Payment Request</div>
+              <div style="font-size:11px; margin-top:4px; color:#94a3b8;">Date: <span id="cardDateDisplay">--</span></div>
+            </div>
+
+            <div class="qr-footer-tag">GPay • PhonePe • Paytm • BHIM • Cred</div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-whatsapp" id="sendWhatsAppBtn" style="flex:1; justify-content:center; height:40px;">
+              <i data-lucide="message-circle"></i> Send Request (WhatsApp)
+            </button>
+            <button type="button" class="btn btn-download" id="downloadJpegBtn" style="flex:1; justify-content:center; height:40px;">
+              <i data-lucide="download"></i> Save as JPEG
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item active" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { db } from "../../../js/firebase-config.js";
+  import {
+    doc,
+    getDoc,
+    collection,
+    getDocs,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("qrGeneratorForm");
+  const message = document.getElementById("formMessage");
+  const upiIdInput = document.getElementById("upiId");
+  const clientNameInput = document.getElementById("clientNameInput");
+  const clientMobileInput = document.getElementById("clientMobile");
+  const requestAmountInput = document.getElementById("requestAmount");
+  const paymentRemarksInput = document.getElementById("paymentRemarks");
+  const clientListOptions = document.getElementById("clientListOptions");
+  const createdAtDisplay = document.getElementById("createdAtDisplay");
+
+  const cardLogo = document.getElementById("cardLogo");
+  const cardCompanyName = document.getElementById("cardCompanyName");
+  const cardAmountDisplay = document.getElementById("cardAmountDisplay");
+  const generatedQrImg = document.getElementById("generatedQrImg");
+  const cardUpiDisplay = document.getElementById("cardUpiDisplay");
+  const cardPayerDisplay = document.getElementById("cardPayerDisplay");
+  const cardDescDisplay = document.getElementById("cardDescDisplay");
+  const cardDateDisplay = document.getElementById("cardDateDisplay");
+  const qrCardElement = document.getElementById("qrCardElement");
+
+  let companyData = null;
+  let clientsCache = [];
+
+  const clean = v => String(v || "").trim();
+
+  // Formats date into non-editable DDMMYY format
+  function getDDMMYY(dateObj) {
+    const d = String(dateObj.getDate()).padStart(2, "0");
+    const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const y = String(dateObj.getFullYear()).slice(-2);
+    return `${d}${m}${y}`;
+  }
+
+  const now = new Date();
+  createdAtDisplay.value = getDDMMYY(now);
+  cardDateDisplay.textContent = new Intl.DateTimeFormat("en-IN", {
+    day: "2-digit", month: "2-digit", year: "numeric"
+  }).format(now);
+  document.getElementById("presentDate").textContent = cardDateDisplay.textContent;
+
+  function showMessage(text, type = "error") {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  }
+
+  function formatRupees(num) {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+  }
+
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
+  // 1. Load Company Profile (Bank UPI, Logo, Name)
+  async function loadCompanyProfile() {
+    try {
+      const snap = await getDoc(doc(db, "settings", "companyProfile"));
+      if (snap.exists()) {
+        companyData = snap.data();
+        if (companyData.upiId) {
+          upiIdInput.value = companyData.upiId;
+          cardUpiDisplay.textContent = companyData.upiId;
+        }
+        if (companyData.companyName) {
+          cardCompanyName.textContent = companyData.companyName;
+        }
+        if (companyData.logo) {
+          cardLogo.src = companyData.logo;
+          cardLogo.style.display = "block";
+        }
+      }
+    } catch (e) {
+      console.warn("Company settings fetch error", e);
+    }
+  }
+
+  // 2. Load Clients into Dropdown Search
+  async function loadClients() {
+    try {
+      const snapshot = await getDocs(query(collection(db, "clients"), limit(500)));
+      clientsCache = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      clientListOptions.innerHTML = "";
+      clientsCache.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.clientName;
+        opt.setAttribute("data-mobile", c.mobile || "");
+        clientListOptions.appendChild(opt);
+      });
+    } catch (e) {
+      console.warn("Clients load error", e);
+    }
+  }
+
+  // Auto-fill mobile if matched
+  clientNameInput.addEventListener("input", () => {
+    const val = clean(clientNameInput.value).toLowerCase();
+    const match = clientsCache.find(c => clean(c.clientName).toLowerCase() === val);
+    if (match && match.mobile) {
+      clientMobileInput.value = match.mobile;
+    }
+  });
+
+  // Build UPI URI & QR Code Image
+  function updateQrPreview() {
+    const upi = clean(upiIdInput.value);
+    const payeeName = companyData?.upiPayeeName || companyData?.companyName || "Merchant";
+    const amount = Number(requestAmountInput.value) || 0;
+    const client = clean(clientNameInput.value) || "Customer";
+    const note = clean(paymentRemarksInput.value) || `Payment by ${client}`;
+
+    cardUpiDisplay.textContent = upi || "upi@bank";
+    cardAmountDisplay.textContent = formatRupees(amount);
+    cardPayerDisplay.textContent = client;
+    cardDescDisplay.textContent = note;
+
+    if (upi && amount > 0) {
+      const upiUrl = `upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+      generatedQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data=${encodeURIComponent(upiUrl)}`;
+    }
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!clean(upiIdInput.value)) { showMessage("Please enter a valid Payee UPI ID."); return; }
+    if (!Number(requestAmountInput.value) || Number(requestAmountInput.value) <= 0) { showMessage("Please enter a valid amount."); return; }
+    
+    updateQrPreview();
+    showMessage("QR Code generated successfully.", "success");
+  });
+
+  // Save Card as JPEG
+  async function generateJpegBlob() {
+    return new Promise((resolve) => {
+      html2canvas(qrCardElement, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then((canvas) => {
+        canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.95);
+      });
+    });
+  }
+
+  document.getElementById("downloadJpegBtn").addEventListener("click", async () => {
+    updateQrPreview();
+    const blob = await generateJpegBlob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `UPI_Payment_Request_${clean(clientNameInput.value) || 'Client'}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  // Send WhatsApp CTA with pre-filled message & dynamic links
+  document.getElementById("sendWhatsAppBtn").addEventListener("click", async () => {
+    updateQrPreview();
+    const phone = clean(clientMobileInput.value);
+    if (!phone) {
+      alert("Please provide the client's mobile number.");
+      return;
+    }
+
+    const upi = clean(upiIdInput.value);
+    const amount = formatRupees(Number(requestAmountInput.value) || 0);
+    const client = clean(clientNameInput.value) || "Valued Client";
+    const compName = companyData?.companyName || "BIZODIT";
+    const note = clean(paymentRemarksInput.value) || "Professional Services";
+    
+    // Direct UPI Deep-link for mobile click
+    const payeeName = companyData?.upiPayeeName || companyData?.companyName || "Merchant";
+    const upiDeepLink = `upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(payeeName)}&am=${Number(requestAmountInput.value)||0}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+    // Generate online QR image link for easy scan
+    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(upiDeepLink)}`;
+
+    const text = `Dear *${client}*,\n\n` +
+      `Here is your payment request for *${amount}* from *${compName}*.\n\n` +
+      `📌 *Purpose:* ${note}\n` +
+      `💳 *UPI ID:* ${upi}\n\n` +
+      `📲 *Click to Pay directly via UPI Apps:*\n${upiDeepLink}\n\n` +
+      `🖼️ *View & Scan Payment QR:*\n${qrImageUrl}\n\n` +
+      `Please let us know once the payment is completed. Thank you!`;
+
+    // Download copy of JPEG image
+    const blob = await generateJpegBlob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Payment_Request_${client}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Open WhatsApp Web/App
+    const waUrl = `https://wa.me/${whatsappClean(phone)}?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, "_blank", "noopener");
+  });
+
+  clientMobileInput.addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10));
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadCompanyProfile().then(loadClients);
+</script>
+
+</body>
+</html>
