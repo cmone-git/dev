@@ -1,0 +1,1929 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Contacts — CM | BIZODIT</title>
+
+  <style>
+    /* =========================================================
+       CONTACTS PWA
+       Standalone app layout — no header / no bottom navigation
+       ========================================================= */
+
+    :root {
+      --app-bg: #f6f7f9;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --border-light: #eef1f4;
+      --text: #172033;
+      --muted: #64748b;
+      --soft: #f8fafc;
+      --primary: #0b3b66;
+      --danger: #b42318;
+      --green: #15803d;
+      --yellow: #b45309;
+      --purple: #7e22ce;
+      --indigo: #4f46e5;
+      --orange: #c2410c;
+
+      --app-radius: 10px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: var(--app-bg);
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* =========================================================
+       APP SHELL
+       ========================================================= */
+
+    .contacts-app {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--app-bg);
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
+
+    .contacts-app-inner {
+      width: 100%;
+      max-width: 850px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* =========================================================
+       APP TOP BAR
+       ========================================================= */
+
+    .contacts-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .contacts-title-area {
+      min-width: 0;
+    }
+
+    .contacts-title {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text);
+    }
+
+    .contacts-subtitle {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contacts-count {
+      flex-shrink: 0;
+      min-width: 42px;
+      height: 34px;
+      padding: 0 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* =========================================================
+       TOOLBAR
+       ========================================================= */
+
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 9px;
+    }
+
+    .list-search {
+      flex: 1;
+      min-width: 0;
+      height: 40px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .list-search::placeholder {
+      color: #94a3b8;
+    }
+
+    .list-search:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(11, 59, 102, .06);
+    }
+
+    .list-icon-btn,
+    .refresh-btn {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    .list-icon-btn svg,
+    .refresh-btn svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .list-icon-btn.active {
+      background: #eef2f5;
+      border-color: #cbd5e1;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    /* =========================================================
+       SORT
+       ========================================================= */
+
+    .sort-menu {
+      display: none;
+      margin-bottom: 9px;
+    }
+
+    .sort-menu.show {
+      display: block;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      height: 32px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 7px;
+      padding: 0 10px;
+      font-size: 12px;
+      color: #475569;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      color: var(--text);
+      font-weight: 600;
+      border-color: #cbd5e1;
+    }
+
+    /* =========================================================
+       FILTER
+       ========================================================= */
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 10px;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show {
+      display: block;
+    }
+
+    .filter-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-grid .field {
+      flex: 1 1 180px;
+      min-width: 140px;
+      margin: 0;
+    }
+
+    .filter-grid label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .filter-grid select {
+      width: 100%;
+      height: 35px;
+      border: 1px solid #d7dce2;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      padding: 0 8px;
+      outline: none;
+    }
+
+    /* =========================================================
+       TOAST
+       ========================================================= */
+
+    .toast-msg {
+      display: none;
+      margin-bottom: 9px;
+      padding: 8px 11px;
+      border-radius: 7px;
+      font-size: 12px;
+    }
+
+    .toast-msg.show {
+      display: block;
+    }
+
+    .toast-msg.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .toast-msg.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    /* =========================================================
+       CONTACT LIST
+       ========================================================= */
+
+    .contact-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .contact-card-row {
+      width: 100%;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border-light);
+      background: #fff;
+      transition: background .15s ease;
+    }
+
+    .contact-card-row:last-child {
+      border-bottom: none;
+    }
+
+    .contact-card-row:active {
+      background: #f8fafc;
+    }
+
+    /* =========================================================
+       PROFILE COLOURS
+       CSS ONLY — no inline colours
+       ========================================================= */
+
+    .contact-avatar {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 700;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .avatar-blue {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .avatar-yellow {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .avatar-green {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .avatar-purple {
+      background: #f3e8ff;
+      color: #7e22ce;
+    }
+
+    .avatar-red {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .avatar-orange {
+      background: #ffedd5;
+      color: #c2410c;
+    }
+
+    .avatar-indigo {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+
+    .avatar-cyan {
+      background: #cffafe;
+      color: #0e7490;
+    }
+
+    /* =========================================================
+       CONTACT DETAILS
+       ========================================================= */
+
+    .contact-main {
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .contact-name {
+      font-size: 14px;
+      line-height: 1.25;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-meta {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 3px;
+      font-size: 11px;
+      line-height: 1.2;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .contact-meta > span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-tag {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      height: 19px;
+      padding: 0 5px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    .contact-tag.missing {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #fed7d7;
+    }
+
+    /* =========================================================
+       ACTIONS
+       ========================================================= */
+
+    .contact-action-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .contact-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease;
+    }
+
+    .contact-action-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .contact-action-btn.call {
+      color: var(--primary);
+    }
+
+    .contact-action-btn.whatsapp {
+      color: var(--green);
+    }
+
+    .contact-action-btn.attach-contact {
+      color: var(--yellow);
+      background: #fefce8;
+      border-color: #fef08a;
+    }
+
+    .contact-action-btn.email {
+      color: var(--indigo);
+    }
+
+    .contact-action-btn.open-btn {
+      color: #334155;
+    }
+
+    .contact-action-btn:active {
+      background: #f1f5f9;
+    }
+
+    /* =========================================================
+       ALPHABET
+       ========================================================= */
+
+    .alphabet-divider {
+      min-height: 26px;
+      display: flex;
+      align-items: center;
+      padding: 4px 12px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-light);
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: .4px;
+    }
+
+    .alphabet-divider:first-child {
+      border-top: none;
+    }
+
+    /* =========================================================
+       EMPTY
+       ========================================================= */
+
+    .empty-list {
+      padding: 40px 14px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 560px) {
+      .contacts-app-inner {
+        padding: 12px 10px;
+      }
+
+      .contacts-title {
+        font-size: 24px;
+      }
+
+      .contacts-subtitle {
+        font-size: 11px;
+      }
+
+      .contact-card-row {
+        padding: 9px 8px;
+      }
+
+      .contact-avatar {
+        width: 37px;
+        height: 37px;
+        flex-basis: 37px;
+      }
+
+      .contact-action-group {
+        gap: 2px;
+      }
+
+      .contact-action-btn {
+        width: 29px;
+        height: 29px;
+      }
+
+      .contact-meta {
+        max-width: 100%;
+      }
+
+      .contact-meta .contact-tag:last-child {
+        display: none;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .contact-action-btn.email {
+        display: none;
+      }
+
+      .contact-action-btn.open-btn {
+        display: none;
+      }
+
+      .contact-action-group {
+        gap: 3px;
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="contacts-app">
+
+  <div class="contacts-app-inner">
+
+    <!-- APP TOP BAR -->
+    <section class="contacts-topbar">
+
+      <div class="contacts-title-area">
+        <h1 class="contacts-title">Contacts</h1>
+        <p class="contacts-subtitle">Client contact directory</p>
+      </div>
+
+      <div class="contacts-count" id="contactCount">
+        0
+      </div>
+
+    </section>
+
+    <!-- TOAST -->
+    <div id="toastMessage" class="toast-msg"></div>
+
+    <!-- TOOLBAR -->
+    <div class="list-toolbar">
+
+      <input
+        id="contactSearch"
+        class="list-search"
+        type="search"
+        placeholder="Search contacts..."
+        autocomplete="off"
+      >
+
+      <button
+        id="contactSortBtn"
+        class="list-icon-btn"
+        type="button"
+        title="Sort Contacts"
+      >
+        <i data-lucide="arrow-up-down"></i>
+      </button>
+
+      <button
+        id="contactFilterBtn"
+        class="list-icon-btn"
+        type="button"
+        title="Filter Contacts"
+      >
+        <i data-lucide="list-filter"></i>
+      </button>
+
+      <button
+        id="exportVCardBtn"
+        class="list-icon-btn"
+        type="button"
+        title="Export Contacts"
+      >
+        <i data-lucide="download"></i>
+      </button>
+
+      <button
+        id="contactRefreshBtn"
+        class="refresh-btn"
+        type="button"
+        title="Refresh"
+      >
+        <i data-lucide="refresh-cw"></i>
+      </button>
+
+    </div>
+
+    <!-- SORT MENU -->
+    <div id="contactSortMenu" class="sort-menu">
+
+      <div class="sort-options">
+
+        <button
+          class="sort-option active"
+          data-sort="name"
+          type="button"
+        >
+          Name A–Z
+        </button>
+
+        <button
+          class="sort-option"
+          data-sort="name-desc"
+          type="button"
+        >
+          Name Z–A
+        </button>
+
+        <button
+          class="sort-option"
+          data-sort="id"
+          type="button"
+        >
+          Client ID ↑
+        </button>
+
+        <button
+          class="sort-option"
+          data-sort="id-desc"
+          type="button"
+        >
+          Client ID ↓
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- FILTER PANEL -->
+    <div id="contactFilterPanel" class="filter-panel">
+
+      <div class="filter-grid">
+
+        <div class="field">
+
+          <label for="constitutionFilter">
+            Constitution
+          </label>
+
+          <select id="constitutionFilter">
+
+            <option value="">
+              All Constitutions
+            </option>
+
+            <option value="Proprietorship">
+              Proprietorship
+            </option>
+
+            <option value="Partnership">
+              Partnership
+            </option>
+
+            <option value="LLP">
+              LLP
+            </option>
+
+            <option value="Private Limited">
+              Private Limited
+            </option>
+
+            <option value="Public Limited">
+              Public Limited
+            </option>
+
+            <option value="OPC">
+              OPC
+            </option>
+
+            <option value="HUF">
+              HUF
+            </option>
+
+            <option value="Individual">
+              Individual
+            </option>
+
+            <option value="Trust">
+              Trust
+            </option>
+
+            <option value="Society">
+              Society
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label for="phoneStatusFilter">
+            Mobile Number
+          </label>
+
+          <select id="phoneStatusFilter">
+
+            <option value="">
+              All Contacts
+            </option>
+
+            <option value="has-phone">
+              Has Mobile Number
+            </option>
+
+            <option value="no-phone">
+              Missing Mobile Number
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CONTACT LIST -->
+    <div id="contactList" class="contact-list">
+
+      <div class="empty-list">
+        Loading contacts...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+  import { db } from "../../../js/firebase-config.js";
+
+  import {
+    doc,
+    updateDoc,
+    collection,
+    getDocs,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+  /* =========================================================
+     ELEMENTS
+     ========================================================= */
+
+  const contactList =
+    document.getElementById("contactList");
+
+  const contactSearch =
+    document.getElementById("contactSearch");
+
+  const contactRefreshBtn =
+    document.getElementById("contactRefreshBtn");
+
+  const contactCount =
+    document.getElementById("contactCount");
+
+  const toastMsg =
+    document.getElementById("toastMessage");
+
+  const contactSortBtn =
+    document.getElementById("contactSortBtn");
+
+  const contactFilterBtn =
+    document.getElementById("contactFilterBtn");
+
+  const contactSortMenu =
+    document.getElementById("contactSortMenu");
+
+  const contactFilterPanel =
+    document.getElementById("contactFilterPanel");
+
+  const constitutionFilter =
+    document.getElementById("constitutionFilter");
+
+  const phoneStatusFilter =
+    document.getElementById("phoneStatusFilter");
+
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+
+  const CACHE =
+    "bizodit_clients_cache_v3";
+
+  let clients = [];
+
+  let sortMode = "name";
+
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+
+  const clean = value =>
+    String(value || "").trim();
+
+
+  function showToast(text, type = "success") {
+
+    toastMsg.textContent = text;
+
+    toastMsg.className =
+      `toast-msg show ${type}`;
+
+    setTimeout(() => {
+
+      toastMsg.className =
+        "toast-msg";
+
+    }, 3500);
+
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  function whatsappClean(number) {
+
+    let value =
+      String(number || "")
+        .replace(/\D/g, "");
+
+    if (value.length === 10) {
+      value = "91" + value;
+    }
+
+    if (
+      value.length === 11 &&
+      value.startsWith("0")
+    ) {
+      value =
+        "91" + value.slice(1);
+    }
+
+    return value;
+
+  }
+
+
+  function getInitials(name) {
+
+    const parts =
+      clean(name)
+        .split(" ")
+        .filter(Boolean);
+
+    if (!parts.length) {
+      return "C";
+    }
+
+    if (parts.length === 1) {
+      return parts[0]
+        .slice(0, 2)
+        .toUpperCase();
+    }
+
+    return (
+      parts[0][0] +
+      parts[1][0]
+    ).toUpperCase();
+
+  }
+
+
+  /* =========================================================
+     CSS AVATAR COLOUR ENGINE
+     ========================================================= */
+
+  const AVATAR_CLASSES = [
+    "avatar-blue",
+    "avatar-yellow",
+    "avatar-green",
+    "avatar-purple",
+    "avatar-red",
+    "avatar-orange",
+    "avatar-indigo",
+    "avatar-cyan"
+  ];
+
+
+  function getColorForName(name) {
+
+    let hash = 0;
+
+    const value =
+      String(name || "").toLowerCase();
+
+    for (
+      let i = 0;
+      i < value.length;
+      i++
+    ) {
+
+      hash =
+        value.charCodeAt(i) +
+        ((hash << 5) - hash);
+
+    }
+
+    return AVATAR_CLASSES[
+      Math.abs(hash) %
+      AVATAR_CLASSES.length
+    ];
+
+  }
+
+
+  /* =========================================================
+     PHONEBOOK
+     ========================================================= */
+
+  function contactPickerSupported() {
+
+    return (
+      "contacts" in navigator &&
+      "ContactsManager" in window
+    );
+
+  }
+
+
+  async function attachContactFromPhone(clientId) {
+
+    if (!contactPickerSupported()) {
+
+      showToast(
+        "Phonebook picker is not supported on this browser.",
+        "error"
+      );
+
+      return;
+
+    }
+
+    try {
+
+      const selected =
+        await navigator.contacts.select(
+          ["name", "tel"],
+          { multiple: false }
+        );
+
+      if (
+        !selected ||
+        !selected.length
+      ) {
+        return;
+      }
+
+      const phone =
+        (selected[0].tel || [])[0];
+
+      if (!phone) {
+
+        showToast(
+          "The selected contact has no phone number.",
+          "error"
+        );
+
+        return;
+
+      }
+
+      let number =
+        String(phone)
+          .replace(/\D/g, "");
+
+      if (
+        number.startsWith("91") &&
+        number.length === 12
+      ) {
+        number =
+          number.slice(2);
+      }
+
+      if (
+        number.startsWith("0") &&
+        number.length === 11
+      ) {
+        number =
+          number.slice(1);
+      }
+
+      if (number.length !== 10) {
+
+        showToast(
+          "Please select a valid 10-digit mobile number.",
+          "error"
+        );
+
+        return;
+
+      }
+
+      const clientRef =
+        doc(db, "clients", clientId);
+
+      const now =
+        new Date().toISOString();
+
+      await updateDoc(
+        clientRef,
+        {
+          mobile: number,
+          updatedAt: now
+        }
+      );
+
+      const index =
+        clients.findIndex(
+          c =>
+            String(
+              c.clientId || c.id
+            ) === String(clientId)
+        );
+
+      if (index >= 0) {
+
+        clients[index].mobile =
+          number;
+
+        clients[index].updatedAt =
+          now;
+
+        localStorage.setItem(
+          CACHE,
+          JSON.stringify(clients)
+        );
+
+      }
+
+      showToast(
+        `Mobile ${number} attached successfully.`,
+        "success"
+      );
+
+      renderContacts();
+
+    } catch (error) {
+
+      if (
+        error?.name !==
+        "AbortError"
+      ) {
+
+        console.error(error);
+
+        showToast(
+          "Unable to access phone contacts.",
+          "error"
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================================================
+     FIREBASE LOAD
+     ========================================================= */
+
+  async function loadContacts() {
+
+    try {
+
+      const cached =
+        JSON.parse(
+          localStorage.getItem(CACHE) ||
+          "[]"
+        );
+
+      if (
+        Array.isArray(cached) &&
+        cached.length
+      ) {
+
+        clients = cached;
+
+        renderContacts();
+
+      }
+
+    } catch (error) {
+
+      console.warn(error);
+
+    }
+
+
+    try {
+
+      const snapshot =
+        await getDocs(
+          query(
+            collection(db, "clients"),
+            limit(500)
+          )
+        );
+
+      clients =
+        snapshot.docs
+          .map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+          }))
+          .filter(
+            client =>
+              client.clientId &&
+              client.clientName
+          );
+
+      localStorage.setItem(
+        CACHE,
+        JSON.stringify(clients)
+      );
+
+      renderContacts();
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load contacts:",
+        error
+      );
+
+      if (!clients.length) {
+
+        contactList.innerHTML = `
+          <div class="empty-list">
+            Unable to load contacts.<br>
+            Tap Refresh to retry.
+          </div>
+        `;
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================================================
+     RENDER
+     ========================================================= */
+
+  function renderContacts() {
+
+    const term =
+      clean(
+        contactSearch.value
+      ).toLowerCase();
+
+    const constFilter =
+      clean(
+        constitutionFilter.value
+      );
+
+    const phoneFilter =
+      clean(
+        phoneStatusFilter.value
+      );
+
+
+    let filtered =
+      clients.filter(client => {
+
+        const id =
+          String(
+            client.clientId ||
+            client.id ||
+            ""
+          ).toLowerCase();
+
+        const name =
+          String(
+            client.clientName ||
+            ""
+          ).toLowerCase();
+
+        const mobile =
+          clean(client.mobile);
+
+        const email =
+          String(
+            client.email ||
+            ""
+          ).toLowerCase();
+
+
+        const matchesSearch =
+          !term ||
+          id.includes(term) ||
+          name.includes(term) ||
+          mobile.includes(term) ||
+          email.includes(term);
+
+
+        const matchesConst =
+          !constFilter ||
+          String(
+            client.constitution ||
+            ""
+          ) === constFilter;
+
+
+        const matchesPhone =
+          !phoneFilter ||
+          (
+            phoneFilter === "has-phone"
+              ? !!mobile
+              : !mobile
+          );
+
+
+        return (
+          matchesSearch &&
+          matchesConst &&
+          matchesPhone
+        );
+
+      });
+
+
+    /* =======================================================
+       SORT
+       ======================================================= */
+
+    filtered.sort((a, b) => {
+
+      if (sortMode === "name") {
+
+        return String(
+          a.clientName || ""
+        ).localeCompare(
+          String(
+            b.clientName || ""
+          )
+        );
+
+      }
+
+
+      if (sortMode === "name-desc") {
+
+        return String(
+          b.clientName || ""
+        ).localeCompare(
+          String(
+            a.clientName || ""
+          )
+        );
+
+      }
+
+
+      if (sortMode === "id") {
+
+        return String(
+          a.clientId ||
+          a.id ||
+          ""
+        ).localeCompare(
+          String(
+            b.clientId ||
+            b.id ||
+            ""
+          ),
+          undefined,
+          { numeric: true }
+        );
+
+      }
+
+
+      if (sortMode === "id-desc") {
+
+        return String(
+          b.clientId ||
+          b.id ||
+          ""
+        ).localeCompare(
+          String(
+            a.clientId ||
+            a.id ||
+            ""
+          ),
+          undefined,
+          { numeric: true }
+        );
+
+      }
+
+      return 0;
+
+    });
+
+
+    /* =======================================================
+       COUNT
+       ======================================================= */
+
+    contactCount.textContent =
+      filtered.length;
+
+
+    if (!filtered.length) {
+
+      contactList.innerHTML = `
+        <div class="empty-list">
+          No contacts found matching criteria.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    /* =======================================================
+       HTML
+       ======================================================= */
+
+    let currentLetter = "";
+
+    let html = "";
+
+
+    filtered.forEach(client => {
+
+      const name =
+        client.clientName ||
+        "Unnamed Client";
+
+      const firstChar =
+        name.charAt(0)
+          .toUpperCase();
+
+      const groupLetter =
+        /^[A-Z]$/.test(firstChar)
+          ? firstChar
+          : "#";
+
+
+      if (
+        sortMode.startsWith("name") &&
+        groupLetter !== currentLetter
+      ) {
+
+        currentLetter =
+          groupLetter;
+
+        html += `
+          <div class="alphabet-divider">
+            ${escapeHtml(currentLetter)}
+          </div>
+        `;
+
+      }
+
+
+      const id =
+        String(
+          client.clientId ||
+          client.id
+        );
+
+      const phone =
+        clean(client.mobile);
+
+      const email =
+        clean(client.email);
+
+      const wa =
+        whatsappClean(phone);
+
+      const initials =
+        getInitials(name);
+
+      const avatarClass =
+        getColorForName(name);
+
+
+      html += `
+
+        <div class="contact-card-row">
+
+          <div
+            class="contact-avatar ${avatarClass}"
+            aria-hidden="true"
+          >
+            ${escapeHtml(initials)}
+          </div>
+
+
+          <div
+            class="contact-main"
+            onclick="location.href='clients.html'"
+          >
+
+            <div class="contact-name">
+              ${escapeHtml(name)}
+            </div>
+
+            <div class="contact-meta">
+
+              ${
+                phone
+                  ? `<span>${escapeHtml(phone)}</span>`
+                  : `
+                    <span class="contact-tag missing">
+                      No Mobile
+                    </span>
+                  `
+              }
+
+              <span class="contact-tag">
+                ${escapeHtml(id)}
+              </span>
+
+              ${
+                client.constitution
+                  ? `
+                    <span class="contact-tag">
+                      ${escapeHtml(
+                        client.constitution
+                      )}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+          </div>
+
+
+          <div class="contact-action-group">
+
+            ${
+              phone
+                ? `
+                  <a
+                    class="contact-action-btn call"
+                    href="tel:${escapeHtml(phone)}"
+                    title="Call Client"
+                  >
+                    <i data-lucide="phone"></i>
+                  </a>
+                `
+                : ""
+            }
+
+
+            ${
+              phone
+                ? `
+                  <a
+                    class="contact-action-btn whatsapp"
+                    href="https://wa.me/${escapeHtml(wa)}"
+                    target="_blank"
+                    rel="noopener"
+                    title="WhatsApp"
+                  >
+                    <i data-lucide="message-circle"></i>
+                  </a>
+                `
+                : ""
+            }
+
+
+            ${
+              !phone
+                ? `
+                  <button
+                    class="contact-action-btn attach-contact"
+                    data-attach-id="${escapeHtml(id)}"
+                    type="button"
+                    title="Attach Mobile"
+                  >
+                    <i data-lucide="user-plus"></i>
+                  </button>
+                `
+                : ""
+            }
+
+
+            ${
+              email
+                ? `
+                  <a
+                    class="contact-action-btn email"
+                    href="mailto:${escapeHtml(email)}"
+                    title="Send Email"
+                  >
+                    <i data-lucide="mail"></i>
+                  </a>
+                `
+                : ""
+            }
+
+
+            <a
+              class="contact-action-btn open-btn"
+              href="clients.html"
+              title="Open Client"
+            >
+              <i data-lucide="arrow-up-right"></i>
+            </a>
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+
+    contactList.innerHTML =
+      html;
+
+    window.lucide?.createIcons();
+
+
+    contactList
+      .querySelectorAll(
+        "[data-attach-id]"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          event => {
+
+            event.stopPropagation();
+
+            attachContactFromPhone(
+              button.dataset.attachId
+            );
+
+          }
+        );
+
+      });
+
+  }
+
+
+  /* =========================================================
+     VCF EXPORT
+     ========================================================= */
+
+  document
+    .getElementById("exportVCardBtn")
+    .addEventListener(
+      "click",
+      () => {
+
+        if (!clients.length) {
+
+          alert(
+            "No contacts available to export."
+          );
+
+          return;
+
+        }
+
+
+        let vcardData = "";
+
+
+        clients.forEach(client => {
+
+          vcardData +=
+            "BEGIN:VCARD\n";
+
+          vcardData +=
+            "VERSION:3.0\n";
+
+          vcardData +=
+            `FN:${client.clientName || "Client"}\n`;
+
+
+          if (client.mobile) {
+
+            vcardData +=
+              `TEL;TYPE=CELL:${client.mobile}\n`;
+
+          }
+
+
+          if (client.email) {
+
+            vcardData +=
+              `EMAIL;TYPE=WORK:${client.email}\n`;
+
+          }
+
+
+          if (client.address) {
+
+            vcardData +=
+              `ADR;TYPE=WORK:;;${String(
+                client.address
+              ).replace(/\n/g, " ")};;;;\n`;
+
+          }
+
+
+          if (client.clientId) {
+
+            vcardData +=
+              `NOTE:Client ID: ${client.clientId}\n`;
+
+          }
+
+
+          vcardData +=
+            "END:VCARD\n";
+
+        });
+
+
+        const blob =
+          new Blob(
+            [vcardData],
+            {
+              type:
+                "text/vcard;charset=utf-8;"
+            }
+          );
+
+
+        const url =
+          URL.createObjectURL(blob);
+
+        const link =
+          document.createElement("a");
+
+        link.href = url;
+
+        link.download =
+          `contacts_${new Date()
+            .toISOString()
+            .slice(0, 10)}.vcf`;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+
+      }
+    );
+
+
+  /* =========================================================
+     SORT / FILTER
+     ========================================================= */
+
+  contactSortBtn.addEventListener(
+    "click",
+    () => {
+
+      contactSortMenu
+        .classList
+        .toggle("show");
+
+      contactSortBtn
+        .classList
+        .toggle(
+          "active",
+          contactSortMenu.classList.contains("show")
+        );
+
+    }
+  );
+
+
+  contactFilterBtn.addEventListener(
+    "click",
+    () => {
+
+      contactFilterPanel
+        .classList
+        .toggle("show");
+
+      contactFilterBtn
+        .classList
+        .toggle(
+          "active",
+          contactFilterPanel.classList.contains("show")
+        );
+
+    }
+  );
+
+
+  contactSortMenu
+    .querySelectorAll(".sort-option")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          sortMode =
+            button.dataset.sort;
+
+          contactSortMenu
+            .querySelectorAll(
+              ".sort-option"
+            )
+            .forEach(item =>
+              item.classList.remove(
+                "active"
+              )
+            );
+
+          button.classList.add(
+            "active"
+          );
+
+          contactSortMenu
+            .classList
+            .remove("show");
+
+          contactSortBtn
+            .classList
+            .remove("active");
+
+          renderContacts();
+
+        }
+      );
+
+    });
+
+
+  /* =========================================================
+     SEARCH / FILTER EVENTS
+     ========================================================= */
+
+  contactSearch.addEventListener(
+    "input",
+    renderContacts
+  );
+
+  constitutionFilter.addEventListener(
+    "change",
+    renderContacts
+  );
+
+  phoneStatusFilter.addEventListener(
+    "change",
+    renderContacts
+  );
+
+
+  /* =========================================================
+     REFRESH
+     ========================================================= */
+
+  contactRefreshBtn.addEventListener(
+    "click",
+    async () => {
+
+      contactRefreshBtn
+        .classList
+        .add("spinning");
+
+      try {
+
+        localStorage.removeItem(
+          CACHE
+        );
+
+        await loadContacts();
+
+      } finally {
+
+        contactRefreshBtn
+          .classList
+          .remove("spinning");
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     START
+     ========================================================= */
+
+  window.lucide?.createIcons();
+
+  loadContacts();
+
+</script>
+
+</body>
+</html>
