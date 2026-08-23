@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Cheque Register — CM | BIZODIT</title>
+
+  <style>
+    .id-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .id-box input {
+      flex: 1;
+    }
+
+    .id-status {
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Standard Toolbar */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .add-form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .date-range {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .date-range .field {
+      flex: 1 1 140px;
+      min-width: 130px;
+      margin-bottom: 0;
+    }
+
+    .date-range .field label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .list-panel {
+      display: block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display: none;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Item */
+    .data-row {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .data-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .data-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .data-row-sub {
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .data-row-meta {
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .data-row-date {
+      font-size: 11px;
+      color: #727983;
+    }
+
+    .cheque-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0b3b66;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .status-badge.issued,
+    .status-badge.received { background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
+    .status-badge.cleared,
+    .status-badge.withdrawn { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+    .status-badge.bounced { background: #fff1f1; color: #b42318; border: 1px solid #f3c2c2; }
+    .status-badge.cancelled,
+    .status-badge.stopped { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+    /* Card Action Toolbar */
+    .cheque-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .cheque-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .cheque-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .cheque-action-btn.print { color: #b45309; }
+    .cheque-action-btn.open-btn { color: #334155; }
+
+    .ledger-balance-hint {
+      font-size: 11px;
+      color: #0b3b66;
+      font-weight: 500;
+      margin-top: 3px;
+      min-height: 16px;
+    }
+
+    /* View / Edit Mode Form Actions */
+    .form-view-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      width: auto;
+      height: auto;
+      border: 0;
+      background: transparent;
+      margin: -4px 0 10px;
+    }
+
+    .form-view-action.delete { color: #b42318; }
+    .form-view-action.hidden { display: none; }
+
+    .view-mode input:not([readonly]),
+    .view-mode select,
+    .view-mode textarea {
+      background: #f7f8f9;
+      color: #33404c;
+      pointer-events: none;
+    }
+
+    .view-mode .form-actions { display: none; }
+
+    .form-mode-label {
+      display: none;
+      margin: -7px 0 14px;
+      font-size: 11px;
+      color: #7b8791;
+    }
+
+    .view-mode .form-mode-label { display: block; }
+
+    .empty-list {
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show { display: block; }
+    .filter-panel .field { margin-bottom: 8px; }
+
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show { display: block; margin-bottom: 10px; }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show { display: block; }
+    .form-message.error { background: #fff1f1; color: #b42318; border: 1px solid #f3c2c2; }
+    .form-message.success { background: #effaf3; color: #16723a; border: 1px solid #b9e4c7; }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" id="pageBackBtn" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Cheque Register</h1>
+            <p>Cheque movement, issuance, clearance & printing setup</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="chequeListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="chequeSearch" class="list-search" type="search" placeholder="Search by party, cheque no, bank..." autocomplete="off">
+          <button id="chequeSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="chequeFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="chequeRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportChequeBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importChequeBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+          <button id="addChequeBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+
+        <div id="chequeSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="date">Date (Newest)</button>
+            <button class="sort-option" data-sort="cheque-date">Cheque Date</button>
+            <button class="sort-option" data-sort="id">Doc ID (CHQ-260001)</button>
+            <button class="sort-option" data-sort="party">Party Name</button>
+            <button class="sort-option" data-sort="amount">Amount High–Low</button>
+          </div>
+        </div>
+
+        <div id="chequeFilterPanel" class="filter-panel">
+          <div class="field">
+            <label>Cheque Direction</label>
+            <select id="directionFilter">
+              <option value="">All (Issued & Received)</option>
+              <option value="Issued">Issued to Party</option>
+              <option value="Received">Received from Party</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cheque Status</label>
+            <select id="statusFilter">
+              <option value="">All Statuses</option>
+              <option value="Issued">Issued</option>
+              <option value="Received">Received</option>
+              <option value="Cleared">Cleared</option>
+              <option value="Withdrawn">Party Withdrawn</option>
+              <option value="Bounced">Bounced</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Payment Stopped">Payment Stopped</option>
+            </select>
+          </div>
+          <div class="date-range">
+            <div class="field">
+              <label>From Date</label>
+              <input id="chequeFromDate" type="date">
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input id="chequeToDate" type="date">
+            </div>
+          </div>
+        </div>
+
+        <div id="chequeList" class="data-list"><div class="empty-list">Loading cheque registers...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="chequeForm">
+        <div class="form-view-actions">
+          <button id="printChequeViewBtn" class="form-view-action" type="button" title="View & Print Cheque Template"><i data-lucide="printer"></i></button>
+          <button id="editChequeBtn" class="form-view-action" type="button" title="Edit record"><i data-lucide="pencil"></i></button>
+          <button id="deleteChequeBtn" class="form-view-action delete" type="button" title="Delete record"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <h2 id="chequeFormTitle">Cheque Movement Entry</h2>
+        <div id="formModeLabel" class="form-mode-label">View mode — tap Edit to modify this record.</div>
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <!-- Doc ID -->
+          <div class="field">
+            <label>Doc ID</label>
+            <div class="id-box">
+              <input id="chequeDocId" type="text" readonly placeholder="Generating (CHQ-260001)...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Entry Date <span class="required">*</span></label>
+            <input id="entryDate" type="date" required>
+          </div>
+
+          <!-- Bank Ledger Dropdown (Loaded from Category == 'Bank Accounts') -->
+          <div class="field">
+            <label>Bank Account <span class="required">*</span></label>
+            <select id="bankLedger" required>
+              <option value="">Select Bank Ledger...</option>
+            </select>
+            <div class="ledger-balance-hint" id="bankBalanceHint"></div>
+          </div>
+
+          <!-- Direction -->
+          <div class="field">
+            <label>Cheque Type <span class="required">*</span></label>
+            <select id="chequeDirection" required>
+              <option value="Issued">Issued (Payment / Outward Cheque)</option>
+              <option value="Received">Received (Collection / Inward Cheque)</option>
+            </select>
+          </div>
+
+          <!-- Party Searchable (All Ledgers except Cash and Bank) -->
+          <div class="field">
+            <label>Party / Beneficiary <span class="required">*</span></label>
+            <input id="partySearchInput" type="text" required list="partyLedgersList" placeholder="Search party ledger (Debtor, Creditor, Expense...)" autocomplete="off">
+            <datalist id="partyLedgersList"></datalist>
+            <div class="ledger-balance-hint" id="partyBalanceHint"></div>
+          </div>
+
+          <div class="field">
+            <label>Amount (₹) <span class="required">*</span></label>
+            <input id="amount" type="number" min="0.01" step="0.01" required placeholder="0.00">
+          </div>
+
+          <div class="field">
+            <label>Cheque No. <span class="required">*</span></label>
+            <input id="chequeNo" type="text" maxlength="6" inputmode="numeric" required placeholder="6 digit cheque number">
+          </div>
+
+          <div class="field">
+            <label>Cheque Date <span class="required">*</span></label>
+            <input id="chequeDate" type="date" required>
+          </div>
+
+          <!-- Status Dropdown -->
+          <div class="field">
+            <label>Cheque Status <span class="required">*</span></label>
+            <select id="chequeStatus" required>
+              <option value="Issued">Issued</option>
+              <option value="Received">Received</option>
+              <option value="Cleared">Cleared</option>
+              <option value="Withdrawn">Party Withdrawn</option>
+              <option value="Bounced">Bounced</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Payment Stopped">Payment Stopped</option>
+            </select>
+          </div>
+
+          <!-- Party Withdrawn Date -->
+          <div class="field">
+            <label>Party Withdrawn / Realisation Date</label>
+            <input id="withdrawnDate" type="date">
+          </div>
+
+          <div class="field">
+            <label>Created By</label>
+            <input id="createdBy" type="text" value="Admin" placeholder="Created by">
+          </div>
+
+          <div class="field full">
+            <label>Narration / Remarks</label>
+            <textarea id="narration" rows="2" placeholder="Purpose of cheque issuance / deposit particulars..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Cheque</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item active" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { formatIndianDate, todayISO } from "../../../js/date.js";
+  import { db } from "../../../js/firebase-config.js";
+  import {
+    doc,
+    runTransaction,
+    updateDoc,
+    deleteDoc,
+    collection,
+    getDocs,
+    getDoc,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("chequeForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const idInput = document.getElementById("chequeDocId");
+  const idStatus = document.getElementById("idStatus");
+  const entryDateInput = document.getElementById("entryDate");
+  const chequeDateInput = document.getElementById("chequeDate");
+  const bankLedgerSelect = document.getElementById("bankLedger");
+  const partySearchInput = document.getElementById("partySearchInput");
+  const partyLedgersList = document.getElementById("partyLedgersList");
+  const bankBalanceHint = document.getElementById("bankBalanceHint");
+  const partyBalanceHint = document.getElementById("partyBalanceHint");
+
+  const editChequeBtn = document.getElementById("editChequeBtn");
+  const deleteChequeBtn = document.getElementById("deleteChequeBtn");
+  const printChequeViewBtn = document.getElementById("printChequeViewBtn");
+  const cancelFormBtn = document.getElementById("cancelFormBtn");
+
+  const CACHE_CHEQUE = "bizodit_cheques_cache_v1";
+  const CACHE_LEDGER = "bizodit_ledgers_cache_v1";
+
+  let cheques = [];
+  let ledgersCache = [];
+  let currentId = null;
+  let mode = "new"; // "new", "view", "edit"
+  let chequeSort = "date";
+
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
+  entryDateInput.value = todayISO();
+  chequeDateInput.value = todayISO();
+
+  const clean = value => String(value || "").trim();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  function formatRupees(num) {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+  }
+
+  /* Load Ledgers (Filter Bank & Party Lists) */
+  async function loadLedgers() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_LEDGER) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        ledgersCache = cached;
+        populateLedgerFields();
+      }
+    } catch (e) { console.warn(e); }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "ledgers"), limit(500)));
+      ledgersCache = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE_LEDGER, JSON.stringify(ledgersCache));
+      populateLedgerFields();
+    } catch (e) {
+      console.error("Ledgers load error:", e);
+    }
+  }
+
+  function populateLedgerFields() {
+    const bankOptions = [`<option value="">Select Bank Ledger...</option>`];
+    partyLedgersList.innerHTML = "";
+
+    ledgersCache.forEach(l => {
+      const name = l.ledgerName || l.id;
+      const cat = l.category || "General";
+      const bal = Number(l.openingBalance) || 0;
+      const balType = l.balanceType || "Dr";
+
+      // Bank Ledgers
+      if (cat === "Bank Accounts") {
+        bankOptions.push(
+          `<option value="${escapeHtml(name)}" data-bal="${bal}" data-type="${balType}" data-acc="${escapeHtml(l.accountNo||'')}" data-ifsc="${escapeHtml(l.ifscCode||'')}">${escapeHtml(name)} [${formatRupees(bal)} ${balType}]</option>`
+        );
+      }
+
+      // Party Ledgers: Everything EXCEPT Cash and Bank
+      if (cat !== "Bank Accounts" && cat !== "Cash-in-Hand") {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.setAttribute("data-bal", bal);
+        opt.setAttribute("data-type", balType);
+        opt.setAttribute("data-cat", cat);
+        partyLedgersList.appendChild(opt);
+      }
+    });
+
+    bankLedgerSelect.innerHTML = bankOptions.join("");
+  }
+
+  bankLedgerSelect.addEventListener("change", () => {
+    const opt = bankLedgerSelect.options[bankLedgerSelect.selectedIndex];
+    if (opt && opt.value) {
+      const bal = Number(opt.dataset.bal) || 0;
+      const type = opt.dataset.type || "Dr";
+      bankBalanceHint.textContent = `Current Bank Bal: ${formatRupees(bal)} ${type} ${opt.dataset.acc ? `(A/c: ${opt.dataset.acc})` : ''}`;
+    } else {
+      bankBalanceHint.textContent = "";
+    }
+  });
+
+  partySearchInput.addEventListener("input", () => {
+    const val = clean(partySearchInput.value).toLowerCase();
+    const match = ledgersCache.find(l => clean(l.ledgerName).toLowerCase() === val);
+    if (match) {
+      const bal = Number(match.openingBalance) || 0;
+      const type = match.balanceType || "Dr";
+      partyBalanceHint.textContent = `Party Bal: ${formatRupees(bal)} ${type} • Category: ${match.category || 'General'}`;
+    } else {
+      partyBalanceHint.textContent = "";
+    }
+  });
+
+  /* Auto Doc ID Format: CHQ-260001 */
+  async function getNextChequeId(transaction, dateString) {
+    const yr = String(new Date(dateString || new Date()).getFullYear()).slice(-2);
+    const counterRef = doc(db, "counters", `cheque_${yr}`);
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) nextNumber = lastNumber + 1;
+    }
+
+    while (true) {
+      const candidateId = `CHQ-${yr}${String(nextNumber).padStart(4, "0")}`;
+      const candidateRef = doc(db, "cheque_records", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
+
+      if (!candidateSnap.exists()) {
+        return { id: candidateId, counterRef, nextNumber, yr };
+      }
+      nextNumber++;
+    }
+  }
+
+  function formData() {
+    return {
+      chequeDocId: clean(idInput.value),
+      entryDate: clean(entryDateInput.value),
+      bankLedger: clean(bankLedgerSelect.value),
+      chequeDirection: clean(document.getElementById("chequeDirection").value),
+      partyName: clean(partySearchInput.value),
+      amount: Number(document.getElementById("amount").value) || 0,
+      chequeNo: clean(document.getElementById("chequeNo").value),
+      chequeDate: clean(chequeDateInput.value),
+      chequeStatus: clean(document.getElementById("chequeStatus").value),
+      withdrawnDate: clean(document.getElementById("withdrawnDate").value),
+      createdBy: clean(document.getElementById("createdBy").value) || "Admin",
+      narration: clean(document.getElementById("narration").value)
+    };
+  }
+
+  function fillForm(c) {
+    currentId = c.chequeDocId || c.id;
+    idInput.value = currentId || "";
+    entryDateInput.value = c.entryDate || todayISO();
+    bankLedgerSelect.value = c.bankLedger || "";
+    document.getElementById("chequeDirection").value = c.chequeDirection || "Issued";
+    partySearchInput.value = c.partyName || "";
+    document.getElementById("amount").value = c.amount ?? "";
+    document.getElementById("chequeNo").value = c.chequeNo || "";
+    chequeDateInput.value = c.chequeDate || todayISO();
+    document.getElementById("chequeStatus").value = c.chequeStatus || "Issued";
+    document.getElementById("withdrawnDate").value = c.withdrawnDate || "";
+    document.getElementById("createdBy").value = c.createdBy || "Admin";
+    document.getElementById("narration").value = c.narration || "";
+
+    bankLedgerSelect.dispatchEvent(new Event("change"));
+    partySearchInput.dispatchEvent(new Event("input"));
+  }
+
+  function setInputs(disabled) {
+    form.querySelectorAll("input,select,textarea").forEach(x => x.disabled = disabled);
+    idInput.readOnly = true;
+    saveBtn.disabled = disabled;
+  }
+
+  function viewMode() {
+    mode = "view";
+    form.classList.add("view-mode");
+    document.getElementById("chequeFormTitle").textContent = "Cheque Record Details";
+    editChequeBtn.classList.remove("hidden");
+    deleteChequeBtn.classList.remove("hidden");
+    printChequeViewBtn.classList.remove("hidden");
+    setInputs(true);
+    cancelFormBtn.textContent = "Back";
+    clearMessage();
+  }
+
+  function editMode() {
+    mode = "edit";
+    form.classList.remove("view-mode");
+    document.getElementById("chequeFormTitle").textContent = "Edit Cheque Record";
+    editChequeBtn.classList.add("hidden");
+    deleteChequeBtn.classList.remove("hidden");
+    printChequeViewBtn.classList.remove("hidden");
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  function newMode() {
+    mode = "new";
+    currentId = null;
+    form.classList.remove("view-mode");
+    document.getElementById("chequeFormTitle").textContent = "Cheque Movement Entry";
+    editChequeBtn.classList.add("hidden");
+    deleteChequeBtn.classList.add("hidden");
+    printChequeViewBtn.classList.add("hidden");
+    form.reset();
+    entryDateInput.value = todayISO();
+    chequeDateInput.value = todayISO();
+    document.getElementById("chequeDirection").value = "Issued";
+    document.getElementById("chequeStatus").value = "Issued";
+    document.getElementById("createdBy").value = "Admin";
+    idInput.value = "";
+    idStatus.textContent = "";
+    bankBalanceHint.textContent = "";
+    partyBalanceHint.textContent = "";
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  const chequeListPanel = document.getElementById("chequeListPanel");
+  const addChequeBtn = document.getElementById("addChequeBtn");
+  const chequeSearch = document.getElementById("chequeSearch");
+  const chequeSortBtn = document.getElementById("chequeSortBtn");
+  const chequeFilterBtn = document.getElementById("chequeFilterBtn");
+  const chequeSortMenu = document.getElementById("chequeSortMenu");
+  const chequeFilterPanel = document.getElementById("chequeFilterPanel");
+  const directionFilter = document.getElementById("directionFilter");
+  const statusFilter = document.getElementById("statusFilter");
+  const chequeFromDate = document.getElementById("chequeFromDate");
+  const chequeToDate = document.getElementById("chequeToDate");
+  const chequeRefreshBtn = document.getElementById("chequeRefreshBtn");
+  const chequeList = document.getElementById("chequeList");
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadChequeList() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_CHEQUE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        cheques = cached;
+        renderChequeList();
+      }
+    } catch (error) {
+      console.warn("Cheque cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "cheque_records"), limit(500)));
+      cheques = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE_CHEQUE, JSON.stringify(cheques));
+      renderChequeList();
+    } catch (error) {
+      console.error("Cheque list load failed:", error);
+      if (!cheques.length) {
+        chequeList.innerHTML = '<div class="empty-list">Unable to load cheque records. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function renderChequeList() {
+    const term = clean(chequeSearch.value).toLowerCase();
+    const dirVal = clean(directionFilter.value);
+    const stVal = clean(statusFilter.value);
+
+    let rows = cheques.filter(row => {
+      const idVal = row.chequeDocId || row.id || "";
+      const text = `${idVal} ${row.partyName || ""} ${row.bankLedger || ""} ${row.chequeNo || ""} ${row.chequeStatus || ""}`.toLowerCase();
+      const dDate = String(row.entryDate || "").slice(0, 10);
+      const matchesFrom = !chequeFromDate.value || (dDate && dDate >= chequeFromDate.value);
+      const matchesTo = !chequeToDate.value || (dDate && dDate <= chequeToDate.value);
+
+      return (!term || text.includes(term)) && (!dirVal || row.chequeDirection === dirVal) && (!stVal || row.chequeStatus === stVal) && matchesFrom && matchesTo;
+    });
+
+    rows.sort((a, b) => {
+      if (chequeSort === "date") return String(b.entryDate || "").localeCompare(String(a.entryDate || ""));
+      if (chequeSort === "cheque-date") return String(b.chequeDate || "").localeCompare(String(a.chequeDate || ""));
+      if (chequeSort === "id") return String(b.chequeDocId || b.id || "").localeCompare(String(a.chequeDocId || a.id || ""), undefined, { numeric: true });
+      if (chequeSort === "party") return String(a.partyName || "").localeCompare(String(b.partyName || ""));
+      if (chequeSort === "amount") return (Number(b.amount) || 0) - (Number(a.amount) || 0);
+      return 0;
+    });
+
+    if (!rows.length) {
+      chequeList.innerHTML = '<div class="empty-list">No cheque records found.</div>';
+      return;
+    }
+
+    chequeList.innerHTML = rows.map(row => {
+      const id = String(row.chequeDocId || row.id);
+      const party = row.partyName || "Party";
+      const bank = row.bankLedger || "Bank";
+      const chqNo = row.chequeNo || "000000";
+      const amt = formatRupees(row.amount);
+      const st = row.chequeStatus || "Issued";
+      const stClass = st.toLowerCase().replace(/\s+/g, '-');
+
+      return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${escapeHtml(id)}">
+            <div class="data-row-title">${escapeHtml(party)}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · Chq No: <strong>${escapeHtml(chqNo)}</strong> · ${escapeHtml(bank)} · Date: ${escapeHtml(row.chequeDate || '')}</div>
+          </div>
+          <div class="data-row-meta">
+            <span class="data-row-date">${escapeHtml(row.entryDate || "")}</span>
+            <span class="cheque-amount">${escapeHtml(amt)}</span>
+            <span class="status-badge ${stClass}">${escapeHtml(st)}</span>
+          </div>
+        </div>
+        <div class="cheque-row-actions">
+          <a class="cheque-action-btn print" href="temp-cheque.html?id=${escapeHtml(id)}" title="Print Bank Cheque Format"><i data-lucide="printer"></i></a>
+          <button class="cheque-action-btn open-btn" data-open="${escapeHtml(id)}" type="button" title="View Details"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    chequeList.querySelectorAll("[data-open]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        openView(b.dataset.open);
+      });
+    });
+  }
+
+  function findCheque(id) {
+    return cheques.find(c => String(c.chequeDocId || c.id) === String(id));
+  }
+
+  async function openView(id) {
+    const cached = findCheque(id);
+    if (cached) {
+      fillForm(cached);
+      chequeListPanel.classList.add("hidden");
+      form.classList.remove("hidden");
+      viewMode();
+      window.scrollTo(0, 0);
+    }
+    try {
+      const s = await getDoc(doc(db, "cheque_records", id));
+      if (!s.exists()) throw new Error("Cheque record no longer exists.");
+      fillForm({ id: s.id, ...s.data() });
+      viewMode();
+    } catch (e) {
+      if (!cached) showMessage(e.message || "Unable to open cheque record.");
+    }
+  }
+
+  function openList() {
+    form.classList.add("hidden");
+    chequeListPanel.classList.remove("hidden");
+    newMode();
+    renderChequeList();
+    window.scrollTo(0, 0);
+  }
+
+  function openNew() {
+    newMode();
+    chequeListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  printChequeViewBtn.addEventListener("click", () => {
+    if (currentId) window.location.href = `temp-cheque.html?id=${encodeURIComponent(currentId)}`;
+  });
+
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Entry Date,Bank Ledger,Direction,Party Name,Amount,Cheque No,Cheque Date,Status,Withdrawn Date,Created By,Narration\n" +
+                     "2026-08-23,\"HDFC Current A/c\",Issued,\"Acme Corp\",45000,104928,2026-08-25,Issued,2026-08-26,Admin,\"Vendor advance payment\"";
+    downloadBlob(template, "cheque_register_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportChequeBtn").addEventListener("click", () => {
+    if (!cheques.length) { alert("No cheque records to export."); return; }
+    const headers = ["Doc ID","Entry Date","Bank Ledger","Direction","Party Name","Amount","Cheque No","Cheque Date","Status","Withdrawn Date","Created By","Narration","Created At"];
+    const rows = cheques.map(c => [
+      `"${c.chequeDocId||c.id||""}"`, `"${c.entryDate||""}"`, `"${(c.bankLedger||"").replace(/"/g,'""')}"`,
+      `"${c.chequeDirection||""}"`, `"${(c.partyName||"").replace(/"/g,'""')}"`, `"${c.amount||0}"`,
+      `"${c.chequeNo||""}"`, `"${c.chequeDate||""}"`, `"${c.chequeStatus||""}"`, `"${c.withdrawnDate||""}"`,
+      `"${c.createdBy||"Admin"}"`, `"${(c.narration||"").replace(/"/g,'""')}"`, `"${c.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `cheque_register_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importChequeBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} cheque record(s)?`)) { e.target.value = ""; return; }
+
+    chequeRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const eDate = clean(r[0]) || todayISO();
+        const bLedger = clean(r[1]);
+        const party = clean(r[3]);
+        const amt = Number(r[4]) || 0;
+        const chqNo = clean(r[5]);
+        if (!bLedger || !party || !amt || !chqNo) continue;
+
+        await runTransaction(db, async tx => {
+          const result = await getNextChequeId(tx, eDate);
+          const chqRef = doc(db, "cheque_records", result.id);
+          const record = {
+            chequeDocId: result.id,
+            entryDate: eDate,
+            bankLedger: bLedger,
+            chequeDirection: clean(r[2]) || "Issued",
+            partyName: party,
+            amount: amt,
+            chequeNo: chqNo,
+            chequeDate: clean(r[6]) || eDate,
+            chequeStatus: clean(r[7]) || "Issued",
+            withdrawnDate: clean(r[8]),
+            createdBy: clean(r[9]) || "Admin",
+            narration: clean(r[10]),
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+          tx.set(chqRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem(CACHE_CHEQUE);
+      await loadChequeList();
+      alert(`Successfully imported ${imported} cheque record(s).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during cheque import: " + err.message);
+    } finally {
+      chequeRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addChequeBtn.addEventListener("click", openNew);
+  cancelFormBtn.addEventListener("click", openList);
+  editChequeBtn.addEventListener("click", editMode);
+
+  deleteChequeBtn.addEventListener("click", async () => {
+    if (!currentId) return;
+    if (!confirm(`Delete cheque record (${currentId})?\n\nThis action cannot be undone.`)) return;
+    deleteChequeBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "cheque_records", currentId));
+      cheques = cheques.filter(x => String(x.chequeDocId || x.id) !== String(currentId));
+      localStorage.setItem(CACHE_CHEQUE, JSON.stringify(cheques));
+      showMessage("Cheque record deleted successfully.", "success");
+      setTimeout(openList, 450);
+    } catch (e) {
+      showMessage(e.message || "Unable to delete cheque record.");
+    } finally {
+      deleteChequeBtn.disabled = false;
+    }
+  });
+
+  chequeSearch.addEventListener("input", renderChequeList);
+  directionFilter.addEventListener("change", renderChequeList);
+  statusFilter.addEventListener("change", renderChequeList);
+  chequeFromDate.addEventListener("change", renderChequeList);
+  chequeToDate.addEventListener("change", renderChequeList);
+
+  chequeRefreshBtn.addEventListener("click", async () => {
+    chequeRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE_CHEQUE);
+      await loadChequeList();
+    } finally {
+      chequeRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  chequeSortBtn.addEventListener("click", () => chequeSortMenu.classList.toggle("show"));
+  chequeFilterBtn.addEventListener("click", () => chequeFilterPanel.classList.toggle("show"));
+
+  chequeSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      chequeSort = option.dataset.sort;
+      chequeSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      chequeSortMenu.classList.remove("show");
+      renderChequeList();
+    });
+  });
+
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openList();
+    } else {
+      history.back();
+    }
+  });
+
+  /* Create Cheque Record */
+  async function createCheque() {
+    const d = formData();
+    if (!d.entryDate) { showMessage("Entry Date is required."); entryDateInput.focus(); return; }
+    if (!d.bankLedger) { showMessage("Bank Ledger is required."); bankLedgerSelect.focus(); return; }
+    if (!d.partyName) { showMessage("Party Name is required."); partySearchInput.focus(); return; }
+    if (!d.amount || d.amount <= 0) { showMessage("Enter a valid cheque amount."); document.getElementById("amount").focus(); return; }
+    if (!d.chequeNo || !/^[0-9]{6}$/.test(d.chequeNo)) { showMessage("Enter a valid 6-digit cheque number."); document.getElementById("chequeNo").focus(); return; }
+    if (!d.chequeDate) { showMessage("Cheque Date is required."); chequeDateInput.focus(); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextChequeId(transaction, d.entryDate);
+        generatedId = result.id;
+        const chqRef = doc(db, "cheque_records", generatedId);
+        const data = {
+          ...d,
+          chequeDocId: generatedId,
+          createdAt: now,
+          updatedAt: now
+        };
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+        transaction.set(chqRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Cheque ${generatedId} saved successfully.`, "success");
+      localStorage.removeItem(CACHE_CHEQUE);
+
+      setTimeout(() => {
+        window.location.href = `temp-cheque.html?id=${encodeURIComponent(generatedId)}`;
+      }, 450);
+    } catch (error) {
+      console.error("Cheque save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save cheque record. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Cheque";
+    }
+  }
+
+  /* Update Cheque Record */
+  async function updateCheque() {
+    if (!currentId) return;
+    const d = formData();
+    if (!d.bankLedger || !d.partyName || !d.amount || !d.chequeNo) {
+      showMessage("Bank, Party, Amount, and Cheque No are required.");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Updating...";
+
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "cheque_records", currentId), {
+        entryDate: d.entryDate,
+        bankLedger: d.bankLedger,
+        chequeDirection: d.chequeDirection,
+        partyName: d.partyName,
+        amount: d.amount,
+        chequeNo: d.chequeNo,
+        chequeDate: d.chequeDate,
+        chequeStatus: d.chequeStatus,
+        withdrawnDate: d.withdrawnDate,
+        createdBy: d.createdBy,
+        narration: d.narration,
+        updatedAt: now
+      });
+
+      const idx = cheques.findIndex(c => String(c.chequeDocId || c.id) === String(currentId));
+      if (idx >= 0) {
+        cheques[idx] = { ...cheques[idx], ...d, chequeDocId: currentId, updatedAt: now };
+        localStorage.setItem(CACHE_CHEQUE, JSON.stringify(cheques));
+      }
+
+      showMessage("Cheque record updated successfully.", "success");
+      setTimeout(() => {
+        openList();
+      }, 450);
+    } catch (error) {
+      console.error("Cheque update error:", error);
+      showMessage(error?.message || "Unable to update cheque record.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Cheque";
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    if (mode === "edit") {
+      await updateCheque();
+    } else {
+      await createCheque();
+    }
+  });
+
+  document.getElementById("chequeNo").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6));
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadLedgers().then(loadChequeList);
+</script>
+
+</body>
+</html>
