@@ -1,0 +1,3736 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
+
+  <title>Admin — Repository</title>
+
+  <link
+    rel="stylesheet"
+    href="../../../css/cm.css"
+  >
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+
+    /* =========================================================
+       ADMIN REPOSITORY
+       Standalone PWA-style interface
+       ========================================================= */
+
+    :root {
+      --app-bg: #f5f6f8;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+
+      /* Main CSS colour */
+      --primary: #0b3b66;
+      --primary-soft: #e8f0f7;
+
+      --border: #e1e5ea;
+      --border-light: #edf0f3;
+
+      --green: #15803d;
+      --red: #b42318;
+      --yellow: #b45309;
+
+      --radius: 10px;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+
+      width: 100%;
+      min-height: 100%;
+
+      background: var(--app-bg);
+    }
+
+
+    body {
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: var(--text);
+
+      overflow-x: hidden;
+    }
+
+
+    /* =========================================================
+       APP
+       ========================================================= */
+
+    .admin-app {
+      width: 100%;
+
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      padding:
+        calc(12px + var(--safe-top))
+        12px
+        calc(12px + var(--safe-bottom));
+    }
+
+
+    .admin-shell {
+      width: 100%;
+      max-width: 1200px;
+
+      min-height: calc(100vh - 24px);
+
+      margin: 0 auto;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 10px;
+    }
+
+
+    /* =========================================================
+       TOP BAR
+       ========================================================= */
+
+    .admin-topbar {
+      min-height: 58px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 10px;
+
+      padding: 8px 10px;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      border-radius: var(--radius);
+    }
+
+
+    .admin-brand {
+      min-width: 0;
+
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+    }
+
+
+    .admin-brand-icon {
+      width: 40px;
+      height: 40px;
+
+      flex: 0 0 40px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 9px;
+
+      background: var(--primary-soft);
+
+      color: var(--primary);
+    }
+
+
+    .admin-brand-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+
+    .admin-title {
+      margin: 0;
+
+      font-size: 18px;
+      font-weight: 700;
+
+      white-space: nowrap;
+    }
+
+
+    .admin-subtitle {
+      margin: 2px 0 0;
+
+      font-size: 11px;
+
+      color: var(--muted);
+    }
+
+
+    .admin-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+
+    .btn {
+      min-height: 36px;
+
+      padding: 0 11px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 7px;
+
+      background: #fff;
+
+      color: #475569;
+
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      gap: 6px;
+
+      font-size: 12px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      text-decoration: none;
+    }
+
+
+    .btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+
+    .btn-danger {
+      color: var(--red);
+    }
+
+
+    .btn:hover {
+      background: #f8fafc;
+    }
+
+
+    .btn-primary:hover {
+      background: #082f52;
+    }
+
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 8px;
+
+      background: #fff;
+
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      color: #475569;
+
+      cursor: pointer;
+    }
+
+
+    .icon-btn svg {
+      width: 17px;
+      height: 17px;
+    }
+
+
+    /* =========================================================
+       TOOLBAR
+       ========================================================= */
+
+    .repository-toolbar {
+      display: flex;
+      align-items: center;
+
+      gap: 7px;
+
+      padding: 8px;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      border-radius: var(--radius);
+    }
+
+
+    .repository-search {
+      flex: 1;
+
+      min-width: 0;
+
+      height: 38px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 7px;
+
+      padding: 0 11px;
+
+      outline: none;
+
+      font-size: 13px;
+
+      color: var(--text);
+
+      background: #fff;
+    }
+
+
+    .repository-search:focus {
+      border-color: var(--primary);
+    }
+
+
+    /* =========================================================
+       BREADCRUMB
+       ========================================================= */
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+
+      gap: 4px;
+
+      padding: 2px 2px;
+
+      overflow-x: auto;
+
+      white-space: nowrap;
+    }
+
+
+    .breadcrumb button {
+      border: 0;
+
+      background: transparent;
+
+      color: var(--primary);
+
+      font-size: 12px;
+
+      cursor: pointer;
+
+      padding: 4px;
+    }
+
+
+    .breadcrumb span {
+      color: #94a3b8;
+      font-size: 11px;
+    }
+
+
+    /* =========================================================
+       MAIN AREA
+       ========================================================= */
+
+    .repository-area {
+      flex: 1;
+
+      min-height: 0;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(260px, 340px)
+        minmax(0, 1fr);
+
+      gap: 10px;
+    }
+
+
+    /* =========================================================
+       FILE PANEL
+       ========================================================= */
+
+    .file-panel,
+    .editor-panel {
+      min-height: 0;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      border-radius: var(--radius);
+
+      overflow: hidden;
+    }
+
+
+    .panel-header {
+      height: 44px;
+
+      padding: 0 10px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 8px;
+
+      border-bottom: 1px solid var(--border);
+
+      background: #fafbfc;
+    }
+
+
+    .panel-title {
+      font-size: 12px;
+      font-weight: 700;
+
+      color: #334155;
+    }
+
+
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+
+    /* =========================================================
+       FILE LIST
+       ========================================================= */
+
+    .file-list {
+      height: calc(100% - 44px);
+
+      overflow-y: auto;
+    }
+
+
+    .file-row {
+      width: 100%;
+
+      min-height: 47px;
+
+      display: flex;
+      align-items: center;
+
+      gap: 9px;
+
+      padding: 7px 10px;
+
+      border-bottom: 1px solid var(--border-light);
+
+      background: #fff;
+
+      cursor: pointer;
+    }
+
+
+    .file-row:hover {
+      background: #f8fafc;
+    }
+
+
+    .file-row.active {
+      background: var(--primary-soft);
+    }
+
+
+    .file-icon {
+      width: 30px;
+      height: 30px;
+
+      flex: 0 0 30px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: var(--primary);
+    }
+
+
+    .file-icon svg {
+      width: 17px;
+      height: 17px;
+    }
+
+
+    .file-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+
+    .file-name {
+      font-size: 13px;
+      font-weight: 600;
+
+      white-space: nowrap;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+    }
+
+
+    .file-meta {
+      margin-top: 2px;
+
+      font-size: 10px;
+
+      color: var(--muted);
+    }
+
+
+    .folder .file-icon {
+      color: var(--yellow);
+    }
+
+
+    .file-menu {
+      width: 28px;
+      height: 28px;
+
+      border: 0;
+
+      background: transparent;
+
+      border-radius: 6px;
+
+      color: #64748b;
+
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .file-menu svg {
+      width: 15px;
+      height: 15px;
+    }
+
+
+    /* =========================================================
+       EDITOR
+       ========================================================= */
+
+    .editor-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+
+    .editor-header-info {
+      min-width: 0;
+
+      display: flex;
+      align-items: center;
+
+      gap: 7px;
+    }
+
+
+    .editor-file-icon {
+      width: 28px;
+      height: 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: var(--primary);
+    }
+
+
+    .editor-file-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+
+    .editor-file-name {
+      min-width: 0;
+
+      font-size: 12px;
+      font-weight: 700;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+
+    .editor-status {
+      font-size: 10px;
+
+      color: var(--muted);
+    }
+
+
+    .code-editor {
+      flex: 1;
+
+      min-height: 300px;
+
+      width: 100%;
+
+      border: 0;
+
+      resize: none;
+
+      outline: none;
+
+      padding: 14px;
+
+      background: #111827;
+
+      color: #e5e7eb;
+
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace;
+
+      font-size: 12px;
+
+      line-height: 1.65;
+
+      tab-size: 2;
+
+      white-space: pre;
+
+      overflow: auto;
+    }
+
+
+    .editor-empty {
+      flex: 1;
+
+      min-height: 300px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      padding: 30px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+
+    /* =========================================================
+       STATUS
+       ========================================================= */
+
+    .status-bar {
+      min-height: 32px;
+
+      display: flex;
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      padding: 0 10px;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      border-radius: 8px;
+
+      font-size: 10px;
+
+      color: var(--muted);
+    }
+
+
+    .status-success {
+      color: var(--green);
+    }
+
+
+    .status-error {
+      color: var(--red);
+    }
+
+
+    /* =========================================================
+       MODAL
+       ========================================================= */
+
+    .modal-backdrop {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 1000;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 15px;
+
+      background: rgba(15, 23, 42, .45);
+    }
+
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+
+    .modal {
+      width: 100%;
+
+      max-width: 440px;
+
+      background: #fff;
+
+      border-radius: 12px;
+
+      border: 1px solid var(--border);
+
+      box-shadow:
+        0 20px 60px rgba(15, 23, 42, .2);
+
+      overflow: hidden;
+    }
+
+
+    .modal-header {
+      min-height: 48px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 13px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+
+    .modal-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+
+    .modal-body {
+      padding: 14px;
+    }
+
+
+    .modal-field {
+      margin-bottom: 12px;
+    }
+
+
+    .modal-field:last-child {
+      margin-bottom: 0;
+    }
+
+
+    .modal-field label {
+      display: block;
+
+      margin-bottom: 5px;
+
+      font-size: 11px;
+
+      color: var(--muted);
+    }
+
+
+    .modal-input {
+      width: 100%;
+
+      height: 38px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 7px;
+
+      padding: 0 10px;
+
+      font-size: 13px;
+
+      outline: none;
+    }
+
+
+    .modal-input:focus {
+      border-color: var(--primary);
+    }
+
+
+    .modal-footer {
+      display: flex;
+
+      justify-content: flex-end;
+
+      gap: 6px;
+
+      padding: 10px 13px;
+
+      border-top: 1px solid var(--border);
+    }
+
+
+    /* =========================================================
+       UPLOAD
+       ========================================================= */
+
+    .upload-zone {
+      border: 1px dashed #cbd5e1;
+
+      border-radius: 9px;
+
+      padding: 20px;
+
+      text-align: center;
+
+      background: #f8fafc;
+
+      cursor: pointer;
+    }
+
+
+    .upload-zone svg {
+      width: 25px;
+      height: 25px;
+
+      color: var(--primary);
+
+      margin-bottom: 5px;
+    }
+
+
+    .upload-zone strong {
+      display: block;
+
+      font-size: 12px;
+    }
+
+
+    .upload-zone small {
+      display: block;
+
+      margin-top: 3px;
+
+      font-size: 10px;
+
+      color: var(--muted);
+    }
+
+
+    #fileUpload {
+      display: none;
+    }
+
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 760px) {
+
+      .admin-app {
+        padding:
+          calc(8px + var(--safe-top))
+          8px
+          calc(8px + var(--safe-bottom));
+      }
+
+
+      .admin-shell {
+        min-height: calc(100vh - 16px);
+      }
+
+
+      .admin-title {
+        font-size: 16px;
+      }
+
+
+      .admin-subtitle {
+        display: none;
+      }
+
+
+      .repository-area {
+        grid-template-columns: 1fr;
+      }
+
+
+      .file-panel {
+        height: 42vh;
+        min-height: 260px;
+      }
+
+
+      .editor-panel {
+        min-height: 55vh;
+      }
+
+
+      .repository-toolbar {
+        flex-wrap: wrap;
+      }
+
+
+      .repository-search {
+        flex: 1 1 100%;
+        order: 1;
+      }
+
+
+      .repository-toolbar .btn {
+        flex: 1;
+      }
+
+
+      .code-editor {
+        min-height: 420px;
+        font-size: 11px;
+      }
+
+    }
+
+
+    @media (max-width: 430px) {
+
+      .admin-top-actions .btn span {
+        display: none;
+      }
+
+
+      .admin-top-actions .btn {
+        width: 36px;
+        padding: 0;
+      }
+
+
+      .admin-brand-icon {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+      }
+
+
+      .admin-title {
+        font-size: 15px;
+      }
+
+
+      .file-panel {
+        height: 38vh;
+      }
+
+    }
+
+
+  </style>
+</head>
+
+
+<body>
+
+
+<div class="admin-app">
+
+  <div class="admin-shell">
+
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <header class="admin-topbar">
+
+      <div class="admin-brand">
+
+        <div class="admin-brand-icon">
+          <i data-lucide="folder-cog"></i>
+        </div>
+
+        <div>
+
+          <h1 class="admin-title">
+            Repository
+          </h1>
+
+          <p class="admin-subtitle">
+            Central file management
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="admin-top-actions">
+
+        <button
+          class="btn"
+          id="refreshRepositoryBtn"
+          type="button"
+          title="Refresh"
+        >
+          <i data-lucide="refresh-cw"></i>
+          <span>Refresh</span>
+        </button>
+
+
+        <button
+          class="btn"
+          id="logoutBtn"
+          type="button"
+          title="Sign out"
+        >
+          <i data-lucide="log-out"></i>
+          <span>Logout</span>
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         TOOLBAR
+         ===================================================== -->
+
+    <section class="repository-toolbar">
+
+      <input
+        id="repositorySearch"
+        class="repository-search"
+        type="search"
+        placeholder="Search files and folders..."
+        autocomplete="off"
+      >
+
+
+      <button
+        class="btn btn-primary"
+        id="newFileBtn"
+        type="button"
+      >
+        <i data-lucide="file-plus-2"></i>
+        <span>New File</span>
+      </button>
+
+
+      <button
+        class="btn"
+        id="newFolderBtn"
+        type="button"
+      >
+        <i data-lucide="folder-plus"></i>
+        <span>Folder</span>
+      </button>
+
+
+      <button
+        class="btn"
+        id="uploadBtn"
+        type="button"
+      >
+        <i data-lucide="upload"></i>
+        <span>Upload</span>
+      </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         BREADCRUMB
+         ===================================================== -->
+
+    <div
+      class="breadcrumb"
+      id="breadcrumb"
+    ></div>
+
+
+    <!-- =====================================================
+         REPOSITORY + EDITOR
+         ===================================================== -->
+
+    <main class="repository-area">
+
+
+      <!-- FILE LIST -->
+
+      <section class="file-panel">
+
+        <div class="panel-header">
+
+          <span class="panel-title">
+            Files
+          </span>
+
+
+          <div class="panel-actions">
+
+            <button
+              class="icon-btn"
+              id="upFolderBtn"
+              type="button"
+              title="Parent folder"
+            >
+              <i data-lucide="arrow-up"></i>
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="file-list"
+          id="fileList"
+        >
+
+          <div class="editor-empty">
+            Loading repository...
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- EDITOR -->
+
+      <section class="editor-panel">
+
+        <div class="panel-header">
+
+
+          <div class="editor-header-info">
+
+            <div
+              class="editor-file-icon"
+              id="editorFileIcon"
+            >
+              <i data-lucide="file-code-2"></i>
+            </div>
+
+
+            <div>
+
+              <div
+                class="editor-file-name"
+                id="editorFileName"
+              >
+                No file selected
+              </div>
+
+
+              <div
+                class="editor-status"
+                id="editorStatus"
+              >
+                Select a text/code file
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="panel-actions">
+
+
+            <button
+              class="icon-btn"
+              id="previewBtn"
+              type="button"
+              title="Preview"
+              disabled
+            >
+              <i data-lucide="external-link"></i>
+            </button>
+
+
+            <button
+              class="icon-btn"
+              id="downloadBtn"
+              type="button"
+              title="Download"
+              disabled
+            >
+              <i data-lucide="download"></i>
+            </button>
+
+
+            <button
+              class="btn btn-primary"
+              id="saveBtn"
+              type="button"
+              disabled
+            >
+              <i data-lucide="save"></i>
+              <span>Save</span>
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <textarea
+          id="codeEditor"
+          class="code-editor"
+          spellcheck="false"
+          placeholder="Select a file from the repository..."
+          disabled
+        ></textarea>
+
+
+      </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         STATUS
+         ===================================================== -->
+
+    <div class="status-bar">
+
+      <span id="statusText">
+        Ready
+      </span>
+
+      <span id="userStatus">
+        Not signed in
+      </span>
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     NEW FILE / FOLDER MODAL
+     ========================================================= -->
+
+<div
+  class="modal-backdrop"
+  id="fileModal"
+>
+
+  <div class="modal">
+
+
+    <div class="modal-header">
+
+      <div
+        class="modal-title"
+        id="modalTitle"
+      >
+        New File
+      </div>
+
+
+      <button
+        class="icon-btn"
+        id="closeModalBtn"
+        type="button"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <div class="modal-field">
+
+        <label for="newItemName">
+          Name
+        </label>
+
+        <input
+          id="newItemName"
+          class="modal-input"
+          type="text"
+          placeholder="example.html"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <div
+        class="modal-field"
+        id="newItemContentField"
+      >
+
+        <label for="newItemContent">
+          Initial content
+        </label>
+
+        <textarea
+          id="newItemContent"
+          class="modal-input"
+          style="height:120px;padding:10px;resize:vertical;font-family:monospace;"
+          placeholder=""
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-footer">
+
+      <button
+        class="btn"
+        id="cancelModalBtn"
+        type="button"
+      >
+        Cancel
+      </button>
+
+
+      <button
+        class="btn btn-primary"
+        id="confirmModalBtn"
+        type="button"
+      >
+        Create
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     UPLOAD MODAL
+     ========================================================= -->
+
+<div
+  class="modal-backdrop"
+  id="uploadModal"
+>
+
+  <div class="modal">
+
+
+    <div class="modal-header">
+
+      <div class="modal-title">
+        Upload
+      </div>
+
+
+      <button
+        class="icon-btn"
+        id="closeUploadBtn"
+        type="button"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <label
+        class="upload-zone"
+        for="fileUpload"
+      >
+
+        <i data-lucide="cloud-upload"></i>
+
+        <strong>
+          Select files
+        </strong>
+
+        <small>
+          Code, documents, images, PDF and other files
+        </small>
+
+      </label>
+
+
+      <input
+        id="fileUpload"
+        type="file"
+        multiple
+      >
+
+      <div
+        id="uploadSelection"
+        style="margin-top:10px;font-size:11px;color:#64748b;"
+      ></div>
+
+    </div>
+
+
+    <div class="modal-footer">
+
+      <button
+        class="btn"
+        id="cancelUploadBtn"
+        type="button"
+      >
+        Cancel
+      </button>
+
+
+      <button
+        class="btn btn-primary"
+        id="confirmUploadBtn"
+        type="button"
+      >
+        Upload
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script type="module">
+
+
+  /* =========================================================
+     FIREBASE AUTHENTICATION
+     ========================================================= */
+
+  import {
+    auth
+  }
+  from "../../../js/firebase-config.js";
+
+
+  import {
+    onAuthStateChanged,
+    signOut
+  }
+  from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+  /* =========================================================
+     CONFIGURATION
+     =========================================================
+
+     Your secure backend should implement:
+
+       GET    /api/repository/list?path=
+       GET    /api/repository/file?path=
+       POST   /api/repository/file
+       PUT    /api/repository/file
+       DELETE /api/repository/file
+       POST   /api/repository/folder
+       POST   /api/repository/upload
+       POST   /api/repository/rename
+
+     The browser sends the Firebase ID token:
+
+       Authorization: Bearer <token>
+
+     DO NOT put a GitHub token here.
+     */
+
+
+  const API_BASE =
+    "/api/repository";
+
+
+  /* =========================================================
+     ELEMENTS
+     ========================================================= */
+
+  const fileList =
+    document.getElementById(
+      "fileList"
+    );
+
+
+  const repositorySearch =
+    document.getElementById(
+      "repositorySearch"
+    );
+
+
+  const breadcrumb =
+    document.getElementById(
+      "breadcrumb"
+    );
+
+
+  const codeEditor =
+    document.getElementById(
+      "codeEditor"
+    );
+
+
+  const editorFileName =
+    document.getElementById(
+      "editorFileName"
+    );
+
+
+  const editorStatus =
+    document.getElementById(
+      "editorStatus"
+    );
+
+
+  const editorFileIcon =
+    document.getElementById(
+      "editorFileIcon"
+    );
+
+
+  const saveBtn =
+    document.getElementById(
+      "saveBtn"
+    );
+
+
+  const previewBtn =
+    document.getElementById(
+      "previewBtn"
+    );
+
+
+  const downloadBtn =
+    document.getElementById(
+      "downloadBtn"
+    );
+
+
+  const statusText =
+    document.getElementById(
+      "statusText"
+    );
+
+
+  const userStatus =
+    document.getElementById(
+      "userStatus"
+    );
+
+
+  const fileModal =
+    document.getElementById(
+      "fileModal"
+    );
+
+
+  const uploadModal =
+    document.getElementById(
+      "uploadModal"
+    );
+
+
+  const newItemName =
+    document.getElementById(
+      "newItemName"
+    );
+
+
+  const newItemContent =
+    document.getElementById(
+      "newItemContent"
+    );
+
+
+  const newItemContentField =
+    document.getElementById(
+      "newItemContentField"
+    );
+
+
+  const modalTitle =
+    document.getElementById(
+      "modalTitle"
+    );
+
+
+  const confirmModalBtn =
+    document.getElementById(
+      "confirmModalBtn"
+    );
+
+
+  const fileUpload =
+    document.getElementById(
+      "fileUpload"
+    );
+
+
+  const uploadSelection =
+    document.getElementById(
+      "uploadSelection"
+    );
+
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+
+  let currentPath = "";
+
+  let repositoryItems = [];
+
+  let selectedFile = null;
+
+  let currentUser = null;
+
+  let modalMode = "file";
+
+
+  /* =========================================================
+     TEXT / HTML
+     ========================================================= */
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  /* =========================================================
+     STATUS
+     ========================================================= */
+
+  function setStatus(
+    message,
+    type = ""
+  ) {
+
+    statusText.textContent =
+      message;
+
+    statusText.className = "";
+
+    if (type === "success") {
+
+      statusText.classList.add(
+        "status-success"
+      );
+
+    }
+
+    if (type === "error") {
+
+      statusText.classList.add(
+        "status-error"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     AUTH TOKEN
+     ========================================================= */
+
+  async function getToken() {
+
+    if (!currentUser) {
+
+      throw new Error(
+        "You are not signed in."
+      );
+
+    }
+
+    return currentUser.getIdToken(
+      true
+    );
+
+  }
+
+
+  /* =========================================================
+     API REQUEST
+     ========================================================= */
+
+  async function apiRequest(
+    endpoint,
+    options = {}
+  ) {
+
+    const token =
+      await getToken();
+
+
+    const headers = {
+
+      ...(options.headers || {}),
+
+      Authorization:
+        `Bearer ${token}`
+
+    };
+
+
+    const response =
+      await fetch(
+        `${API_BASE}${endpoint}`,
+        {
+          ...options,
+          headers
+        }
+      );
+
+
+    if (!response.ok) {
+
+      let message =
+        `Request failed (${response.status})`;
+
+
+      try {
+
+        const error =
+          await response.json();
+
+        message =
+          error.message ||
+          message;
+
+      }
+
+      catch {
+
+        /* Ignore JSON parsing failure */
+
+      }
+
+
+      throw new Error(
+        message
+      );
+
+    }
+
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+
+    if (
+      contentType.includes(
+        "application/json"
+      )
+    ) {
+
+      return response.json();
+
+    }
+
+
+    return response;
+
+  }
+
+
+  /* =========================================================
+     FILE ICON
+     ========================================================= */
+
+  function getFileIcon(
+    item
+  ) {
+
+    if (
+      item.type === "folder"
+    ) {
+
+      return "folder";
+
+    }
+
+
+    const name =
+      String(
+        item.name || ""
+      ).toLowerCase();
+
+
+    if (
+      name.endsWith(".html") ||
+      name.endsWith(".htm")
+    ) {
+
+      return "file-code-2";
+
+    }
+
+
+    if (
+      name.endsWith(".css")
+    ) {
+
+      return "palette";
+
+    }
+
+
+    if (
+      name.endsWith(".js") ||
+      name.endsWith(".mjs")
+    ) {
+
+      return "braces";
+
+    }
+
+
+    if (
+      name.endsWith(".json")
+    ) {
+
+      return "braces";
+
+    }
+
+
+    if (
+      name.endsWith(".md") ||
+      name.endsWith(".txt")
+    ) {
+
+      return "file-text";
+
+    }
+
+
+    if (
+      name.endsWith(".pdf")
+    ) {
+
+      return "file-text";
+
+    }
+
+
+    if (
+      name.match(
+        /\.(png|jpg|jpeg|gif|webp|svg)$/
+      )
+    ) {
+
+      return "image";
+
+    }
+
+
+    return "file";
+
+  }
+
+
+  /* =========================================================
+     EDITABLE FILE
+     ========================================================= */
+
+  function isEditable(
+    name
+  ) {
+
+    return /\.(html?|css|js|mjs|json|txt|md|xml|svg|php|ts|tsx|jsx|java|py|sql|csv)$/i
+      .test(name);
+
+  }
+
+
+  /* =========================================================
+     LOAD DIRECTORY
+     ========================================================= */
+
+  async function loadRepository() {
+
+    setStatus(
+      "Loading repository..."
+    );
+
+
+    try {
+
+      const data =
+        await apiRequest(
+          `/list?path=${encodeURIComponent(
+            currentPath
+          )}`
+        );
+
+
+      repositoryItems =
+        Array.isArray(data)
+          ? data
+          : (
+              data.items ||
+              []
+            );
+
+
+      renderBreadcrumb();
+
+      renderFiles();
+
+
+      setStatus(
+        `${repositoryItems.length} items`,
+        "success"
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      setStatus(
+        error.message ||
+        "Unable to load repository",
+        "error"
+      );
+
+
+      fileList.innerHTML = `
+
+        <div class="editor-empty">
+
+          Unable to load repository.
+
+          <br><br>
+
+          <small>
+            ${escapeHtml(
+              error.message
+            )}
+          </small>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     BREADCRUMB
+     ========================================================= */
+
+  function renderBreadcrumb() {
+
+    const parts =
+      currentPath
+        .split("/")
+        .filter(Boolean);
+
+
+    let html = `
+
+      <button
+        type="button"
+        data-path=""
+      >
+        Repository
+      </button>
+
+    `;
+
+
+    let accumulated = "";
+
+
+    parts.forEach(
+      (part, index) => {
+
+        accumulated +=
+          (accumulated
+            ? "/"
+            : "") +
+          part;
+
+
+        html += `
+
+          <span>/</span>
+
+          <button
+            type="button"
+            data-path="${escapeHtml(
+              accumulated
+            )}"
+          >
+            ${escapeHtml(
+              part
+            )}
+          </button>
+
+        `;
+
+      }
+    );
+
+
+    breadcrumb.innerHTML =
+      html;
+
+
+    breadcrumb
+      .querySelectorAll(
+        "button"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            () => {
+
+              currentPath =
+                button.dataset.path ||
+                "";
+
+              loadRepository();
+
+            }
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     RENDER FILES
+     ========================================================= */
+
+  function renderFiles() {
+
+    const term =
+      repositorySearch.value
+        .trim()
+        .toLowerCase();
+
+
+    const items =
+      repositoryItems.filter(
+        item =>
+          !term ||
+          String(
+            item.name || ""
+          )
+            .toLowerCase()
+            .includes(term)
+      );
+
+
+    if (!items.length) {
+
+      fileList.innerHTML = `
+
+        <div class="editor-empty">
+
+          No files found.
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* Folders first */
+
+    items.sort(
+      (a, b) => {
+
+        if (
+          a.type === "folder" &&
+          b.type !== "folder"
+        ) {
+
+          return -1;
+
+        }
+
+        if (
+          a.type !== "folder" &&
+          b.type === "folder"
+        ) {
+
+          return 1;
+
+        }
+
+        return String(
+          a.name || ""
+        ).localeCompare(
+          String(
+            b.name || ""
+          )
+        );
+
+      }
+    );
+
+
+    fileList.innerHTML =
+      items.map(
+        item => {
+
+
+          const folder =
+            item.type === "folder";
+
+
+          const icon =
+            getFileIcon(
+              item
+            );
+
+
+          const size =
+            item.size
+              ? formatSize(
+                  item.size
+                )
+              : (
+                  folder
+                    ? "Folder"
+                    : "File"
+                );
+
+
+          return `
+
+            <div
+              class="
+                file-row
+                ${folder ? "folder" : ""}
+                ${
+                  selectedFile &&
+                  selectedFile.path ===
+                  item.path
+                    ? "active"
+                    : ""
+                }
+              "
+              data-path="${escapeHtml(
+                item.path
+              )}"
+              data-type="${folder ? "folder" : "file"}"
+            >
+
+              <div class="file-icon">
+
+                <i
+                  data-lucide="${icon}"
+                ></i>
+
+              </div>
+
+
+              <div class="file-info">
+
+                <div class="file-name">
+
+                  ${escapeHtml(
+                    item.name
+                  )}
+
+                </div>
+
+                <div class="file-meta">
+
+                  ${escapeHtml(
+                    size
+                  )}
+
+                </div>
+
+              </div>
+
+
+              <button
+                class="file-menu"
+                type="button"
+                title="More"
+                data-menu-path="${escapeHtml(
+                  item.path
+                )}"
+              >
+
+                <i
+                  data-lucide="more-vertical"
+                ></i>
+
+              </button>
+
+            </div>
+
+          `;
+
+        }
+      ).join("");
+
+
+    window.lucide?.createIcons();
+
+
+    /* -------------------------------------------------------
+       CLICK ITEMS
+       ------------------------------------------------------- */
+
+    fileList
+      .querySelectorAll(
+        ".file-row"
+      )
+      .forEach(
+        row => {
+
+
+          row.addEventListener(
+            "click",
+            event => {
+
+              if (
+                event.target.closest(
+                  ".file-menu"
+                )
+              ) {
+
+                return;
+
+              }
+
+
+              const path =
+                row.dataset.path;
+
+
+              if (
+                row.dataset.type ===
+                "folder"
+              ) {
+
+                currentPath =
+                  path;
+
+                selectedFile =
+                  null;
+
+                resetEditor();
+
+                loadRepository();
+
+                return;
+
+              }
+
+
+              openFile(
+                path
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* -------------------------------------------------------
+       CONTEXT ACTION
+       ------------------------------------------------------- */
+
+    fileList
+      .querySelectorAll(
+        "[data-menu-path]"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            event => {
+
+              event.stopPropagation();
+
+              showFileActions(
+                button.dataset
+                  .menuPath
+              );
+
+            }
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     FORMAT FILE SIZE
+     ========================================================= */
+
+  function formatSize(
+    bytes
+  ) {
+
+    const value =
+      Number(bytes);
+
+
+    if (!Number.isFinite(value)) {
+      return "";
+    }
+
+
+    if (
+      value < 1024
+    ) {
+
+      return `${value} B`;
+
+    }
+
+
+    if (
+      value < 1024 * 1024
+    ) {
+
+      return `${(
+        value / 1024
+      ).toFixed(1)} KB`;
+
+    }
+
+
+    return `${(
+      value /
+      (1024 * 1024)
+    ).toFixed(1)} MB`;
+
+  }
+
+
+  /* =========================================================
+     OPEN FILE
+     ========================================================= */
+
+  async function openFile(
+    path
+  ) {
+
+    setStatus(
+      "Opening file..."
+    );
+
+
+    try {
+
+      const data =
+        await apiRequest(
+          `/file?path=${encodeURIComponent(
+            path
+          )}`
+        );
+
+
+      selectedFile = {
+
+        path,
+
+        name:
+          path.split("/")
+            .pop(),
+
+        content:
+          data.content || ""
+
+      };
+
+
+      editorFileName.textContent =
+        selectedFile.name;
+
+
+      editorStatus.textContent =
+        "Editing";
+
+
+      codeEditor.value =
+        selectedFile.content;
+
+
+      codeEditor.disabled =
+        !isEditable(
+          selectedFile.name
+        );
+
+
+      saveBtn.disabled =
+        !codeEditor.disabled;
+
+
+      downloadBtn.disabled =
+        false;
+
+
+      previewBtn.disabled =
+        !(
+          /\.html?$/i.test(
+            selectedFile.name
+          )
+        );
+
+
+      setEditorIcon(
+        selectedFile.name
+      );
+
+
+      renderFiles();
+
+
+      setStatus(
+        `Opened ${selectedFile.name}`,
+        "success"
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      setStatus(
+        error.message ||
+        "Unable to open file",
+        "error"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     EDITOR ICON
+     ========================================================= */
+
+  function setEditorIcon(
+    name
+  ) {
+
+    const icon =
+      getFileIcon({
+        name,
+        type: "file"
+      });
+
+
+    editorFileIcon.innerHTML = `
+
+      <i
+        data-lucide="${icon}"
+      ></i>
+
+    `;
+
+
+    window.lucide?.createIcons();
+
+  }
+
+
+  /* =========================================================
+     RESET EDITOR
+     ========================================================= */
+
+  function resetEditor() {
+
+    editorFileName.textContent =
+      "No file selected";
+
+
+    editorStatus.textContent =
+      "Select a text/code file";
+
+
+    codeEditor.value =
+      "";
+
+
+    codeEditor.disabled =
+      true;
+
+
+    saveBtn.disabled =
+      true;
+
+
+    downloadBtn.disabled =
+      true;
+
+
+    previewBtn.disabled =
+      true;
+
+
+    editorFileIcon.innerHTML = `
+
+      <i data-lucide="file-code-2"></i>
+
+    `;
+
+
+    window.lucide?.createIcons();
+
+  }
+
+
+  /* =========================================================
+     SAVE FILE
+     ========================================================= */
+
+  saveBtn.addEventListener(
+    "click",
+    async () => {
+
+
+      if (
+        !selectedFile
+      ) {
+
+        return;
+
+      }
+
+
+      saveBtn.disabled =
+        true;
+
+
+      setStatus(
+        "Saving..."
+      );
+
+
+      try {
+
+        await apiRequest(
+          "/file",
+          {
+
+            method: "PUT",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body:
+              JSON.stringify({
+
+                path:
+                  selectedFile.path,
+
+                content:
+                  codeEditor.value
+
+              })
+
+          }
+        );
+
+
+        selectedFile.content =
+          codeEditor.value;
+
+
+        setStatus(
+          "Changes saved successfully",
+          "success"
+        );
+
+
+        editorStatus.textContent =
+          "Saved";
+
+      }
+
+      catch (error) {
+
+        console.error(
+          error
+        );
+
+
+        setStatus(
+          error.message ||
+          "Save failed",
+          "error"
+        );
+
+      }
+
+      finally {
+
+        saveBtn.disabled =
+          false;
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     NEW FILE / FOLDER
+     ========================================================= */
+
+  function openCreateModal(
+    mode
+  ) {
+
+    modalMode =
+      mode;
+
+
+    fileModal
+      .classList
+      .add("show");
+
+
+    newItemName.value =
+      "";
+
+
+    newItemContent.value =
+      "";
+
+
+    if (
+      mode === "folder"
+    ) {
+
+      modalTitle.textContent =
+        "New Folder";
+
+
+      confirmModalBtn.textContent =
+        "Create Folder";
+
+
+      newItemContentField.style
+        .display =
+        "none";
+
+    }
+
+    else {
+
+      modalTitle.textContent =
+        "New File";
+
+
+      confirmModalBtn.textContent =
+        "Create File";
+
+
+      newItemContentField.style
+        .display =
+        "block";
+
+    }
+
+
+    setTimeout(
+      () =>
+        newItemName.focus(),
+      100
+    );
+
+  }
+
+
+  document
+    .getElementById(
+      "newFileBtn"
+    )
+    .addEventListener(
+      "click",
+      () =>
+        openCreateModal(
+          "file"
+        )
+    );
+
+
+  document
+    .getElementById(
+      "newFolderBtn"
+    )
+    .addEventListener(
+      "click",
+      () =>
+        openCreateModal(
+          "folder"
+        )
+    );
+
+
+  /* =========================================================
+     CREATE
+     ========================================================= */
+
+  confirmModalBtn.addEventListener(
+    "click",
+    async () => {
+
+
+      const name =
+        newItemName.value
+          .trim();
+
+
+      if (!name) {
+
+        alert(
+          "Enter a name."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        confirmModalBtn.disabled =
+          true;
+
+
+        if (
+          modalMode ===
+          "folder"
+        ) {
+
+          await apiRequest(
+            "/folder",
+            {
+
+              method: "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+              body:
+                JSON.stringify({
+
+                  path:
+                    currentPath
+                      ? `${currentPath}/${name}`
+                      : name
+
+                })
+
+            }
+          );
+
+        }
+
+        else {
+
+          await apiRequest(
+            "/file",
+            {
+
+              method: "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+              body:
+                JSON.stringify({
+
+                  path:
+                    currentPath
+                      ? `${currentPath}/${name}`
+                      : name,
+
+                  content:
+                    newItemContent.value
+
+                })
+
+            }
+          );
+
+        }
+
+
+        closeModal();
+
+
+        await loadRepository();
+
+
+        setStatus(
+          "Created successfully",
+          "success"
+        );
+
+      }
+
+      catch (error) {
+
+        console.error(
+          error
+        );
+
+
+        alert(
+          error.message ||
+          "Unable to create item."
+        );
+
+      }
+
+      finally {
+
+        confirmModalBtn.disabled =
+          false;
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     CLOSE MODAL
+     ========================================================= */
+
+  function closeModal() {
+
+    fileModal
+      .classList
+      .remove("show");
+
+  }
+
+
+  document
+    .getElementById(
+      "closeModalBtn"
+    )
+    .addEventListener(
+      "click",
+      closeModal
+    );
+
+
+  document
+    .getElementById(
+      "cancelModalBtn"
+    )
+    .addEventListener(
+      "click",
+      closeModal
+    );
+
+
+  /* =========================================================
+     UPLOAD
+     ========================================================= */
+
+  document
+    .getElementById(
+      "uploadBtn"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        uploadModal
+          .classList
+          .add("show");
+
+      }
+    );
+
+
+  fileUpload.addEventListener(
+    "change",
+    () => {
+
+      const files =
+        Array.from(
+          fileUpload.files
+        );
+
+
+      uploadSelection.textContent =
+        files.length
+          ? `${files.length} file(s) selected`
+          : "";
+
+    }
+  );
+
+
+  /* =========================================================
+     UPLOAD FILES
+     ========================================================= */
+
+  document
+    .getElementById(
+      "confirmUploadBtn"
+    )
+    .addEventListener(
+      "click",
+      async () => {
+
+
+        const files =
+          Array.from(
+            fileUpload.files
+          );
+
+
+        if (!files.length) {
+
+          alert(
+            "Select at least one file."
+          );
+
+          return;
+
+        }
+
+
+        const button =
+          document.getElementById(
+            "confirmUploadBtn"
+          );
+
+
+        button.disabled =
+          true;
+
+
+        try {
+
+
+          for (
+            const file of files
+          ) {
+
+
+            const formData =
+              new FormData();
+
+
+            formData.append(
+              "path",
+              currentPath
+                ? `${currentPath}/${file.name}`
+                : file.name
+            );
+
+
+            formData.append(
+              "file",
+              file
+            );
+
+
+            await apiRequest(
+              "/upload",
+              {
+
+                method: "POST",
+
+                body:
+                  formData
+
+              }
+            );
+
+          }
+
+
+          closeUploadModal();
+
+
+          await loadRepository();
+
+
+          setStatus(
+            `${files.length} file(s) uploaded`,
+            "success"
+          );
+
+        }
+
+        catch (error) {
+
+          console.error(
+            error
+          );
+
+
+          alert(
+            error.message ||
+            "Upload failed."
+          );
+
+        }
+
+        finally {
+
+          button.disabled =
+            false;
+
+        }
+
+      }
+    );
+
+
+  function closeUploadModal() {
+
+    uploadModal
+      .classList
+      .remove("show");
+
+
+    fileUpload.value =
+      "";
+
+
+    uploadSelection.textContent =
+      "";
+
+  }
+
+
+  document
+    .getElementById(
+      "closeUploadBtn"
+    )
+    .addEventListener(
+      "click",
+      closeUploadModal
+    );
+
+
+  document
+    .getElementById(
+      "cancelUploadBtn"
+    )
+    .addEventListener(
+      "click",
+      closeUploadModal
+    );
+
+
+  /* =========================================================
+     DOWNLOAD
+     ========================================================= */
+
+  downloadBtn.addEventListener(
+    "click",
+    async () => {
+
+
+      if (
+        !selectedFile
+      ) {
+
+        return;
+
+      }
+
+
+      const blob =
+        new Blob(
+          [
+            codeEditor.value
+          ],
+          {
+            type:
+              "text/plain;charset=utf-8"
+          }
+        );
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+
+      link.href =
+        url;
+
+
+      link.download =
+        selectedFile.name;
+
+
+      document.body.appendChild(
+        link
+      );
+
+
+      link.click();
+
+
+      document.body.removeChild(
+        link
+      );
+
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    }
+  );
+
+
+  /* =========================================================
+     PREVIEW
+     ========================================================= */
+
+  previewBtn.addEventListener(
+    "click",
+    () => {
+
+
+      if (
+        !selectedFile ||
+        !/\.html?$/i.test(
+          selectedFile.name
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      const blob =
+        new Blob(
+          [
+            codeEditor.value
+          ],
+          {
+            type:
+              "text/html;charset=utf-8"
+          }
+        );
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      window.open(
+        url,
+        "_blank",
+        "noopener"
+      );
+
+
+      setTimeout(
+        () =>
+          URL.revokeObjectURL(
+            url
+          ),
+        60000
+      );
+
+    }
+  );
+
+
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+
+  repositorySearch.addEventListener(
+    "input",
+    renderFiles
+  );
+
+
+  /* =========================================================
+     PARENT FOLDER
+     ========================================================= */
+
+  document
+    .getElementById(
+      "upFolderBtn"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+
+        if (!currentPath) {
+
+          return;
+
+        }
+
+
+        const parts =
+          currentPath
+            .split("/")
+            .filter(Boolean);
+
+
+        parts.pop();
+
+
+        currentPath =
+          parts.join("/");
+
+
+        selectedFile =
+          null;
+
+
+        resetEditor();
+
+
+        loadRepository();
+
+      }
+    );
+
+
+  /* =========================================================
+     REFRESH
+     ========================================================= */
+
+  document
+    .getElementById(
+      "refreshRepositoryBtn"
+    )
+    .addEventListener(
+      "click",
+      loadRepository
+    );
+
+
+  /* =========================================================
+     FILE ACTIONS
+     ========================================================= */
+
+  async function showFileActions(
+    path
+  ) {
+
+    const action =
+      prompt(
+        "Enter action:\n\n" +
+        "rename\n" +
+        "delete\n\n" +
+        "Cancel to close."
+      );
+
+
+    if (!action) {
+
+      return;
+
+    }
+
+
+    if (
+      action.toLowerCase() ===
+      "rename"
+    ) {
+
+      const newName =
+        prompt(
+          "Enter new name:",
+          path.split("/").pop()
+        );
+
+
+      if (!newName) {
+
+        return;
+
+      }
+
+
+      try {
+
+        await apiRequest(
+          "/rename",
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body:
+              JSON.stringify({
+
+                path,
+
+                newName
+
+              })
+
+          }
+        );
+
+
+        await loadRepository();
+
+
+        setStatus(
+          "Renamed successfully",
+          "success"
+        );
+
+      }
+
+      catch (error) {
+
+        alert(
+          error.message
+        );
+
+      }
+
+
+      return;
+
+    }
+
+
+    if (
+      action.toLowerCase() ===
+      "delete"
+    ) {
+
+
+      if (
+        !confirm(
+          `Delete "${path}"?`
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      try {
+
+        await apiRequest(
+          `/file?path=${encodeURIComponent(
+            path
+          )}`,
+          {
+
+            method:
+              "DELETE"
+
+          }
+        );
+
+
+        if (
+          selectedFile &&
+          selectedFile.path ===
+          path
+        ) {
+
+          selectedFile =
+            null;
+
+          resetEditor();
+
+        }
+
+
+        await loadRepository();
+
+
+        setStatus(
+          "Deleted successfully",
+          "success"
+        );
+
+      }
+
+      catch (error) {
+
+        alert(
+          error.message
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================================================
+     LOGOUT
+     ========================================================= */
+
+  document
+    .getElementById(
+      "logoutBtn"
+    )
+    .addEventListener(
+      "click",
+      async () => {
+
+
+        try {
+
+          await signOut(
+            auth
+          );
+
+          location.reload();
+
+        }
+
+        catch (error) {
+
+          console.error(
+            error
+          );
+
+        }
+
+      }
+    );
+
+
+  /* =========================================================
+     AUTH STATE
+     ========================================================= */
+
+  onAuthStateChanged(
+    auth,
+    user => {
+
+
+      currentUser =
+        user;
+
+
+      if (!user) {
+
+        userStatus.textContent =
+          "Not signed in";
+
+
+        setStatus(
+          "Authentication required",
+          "error"
+        );
+
+
+        return;
+
+      }
+
+
+      userStatus.textContent =
+        user.email ||
+        "Administrator";
+
+
+      setStatus(
+        "Authenticated",
+        "success"
+      );
+
+
+      loadRepository();
+
+    }
+  );
+
+
+  /* =========================================================
+     KEYBOARD SAVE
+     ========================================================= */
+
+  codeEditor.addEventListener(
+    "keydown",
+    event => {
+
+
+      if (
+        (event.ctrlKey ||
+         event.metaKey) &&
+        event.key.toLowerCase() ===
+        "s"
+      ) {
+
+        event.preventDefault();
+
+        if (
+          !saveBtn.disabled
+        ) {
+
+          saveBtn.click();
+
+        }
+
+      }
+
+
+      /* Tab support */
+
+      if (
+        event.key ===
+        "Tab"
+      ) {
+
+        event.preventDefault();
+
+
+        const start =
+          codeEditor.selectionStart;
+
+
+        const end =
+          codeEditor.selectionEnd;
+
+
+        codeEditor.value =
+          codeEditor.value.substring(
+            0,
+            start
+          ) +
+          "  " +
+          codeEditor.value.substring(
+            end
+          );
+
+
+        codeEditor.selectionStart =
+          codeEditor.selectionEnd =
+            start + 2;
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     CLOSE MODALS ON BACKDROP
+     ========================================================= */
+
+  fileModal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        fileModal
+      ) {
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+
+  uploadModal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        uploadModal
+      ) {
+
+        closeUploadModal();
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     INITIAL LUCIDE ICONS
+     ========================================================= */
+
+  window.lucide?.createIcons();
+
+
+</script>
+
+
+</body>
+</html>
