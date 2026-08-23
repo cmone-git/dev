@@ -37,6 +37,42 @@
       flex-wrap:wrap;
     }
 
+
+    .date-range {
+      display:flex;
+      gap:8px;
+      align-items:end;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .date-range .field {
+      flex:1 1 140px;
+      min-width:130px;
+      margin-bottom:0;
+    }
+
+    .date-range .field label {
+      display:block;
+      margin-bottom:5px;
+    }
+
+    .refresh-btn {
+      width:40px;
+      height:40px;
+      border:1px solid #d7dce2;
+      background:#fff;
+      border-radius:8px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+
+    .refresh-btn.spinning svg {
+      animation:spin .8s linear infinite;
+    }
+
     .list-search {
       flex:1 1 180px;
       min-width:150px;
@@ -251,6 +287,7 @@
           <input id="clientSearch" class="list-search" type="search" placeholder="Search clients...">
           <button id="clientSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
           <button id="clientFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="clientRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
           <button id="addClientBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
         </div>
         <div id="clientSortMenu" class="sort-menu">
@@ -265,6 +302,16 @@
           <div class="field">
             <label>Status</label>
             <select id="clientStatusFilter"><option value="">All Status</option><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
+          </div>
+          <div class="date-range">
+            <div class="field">
+              <label>From Date</label>
+              <input id="clientFromDate" type="date">
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input id="clientToDate" type="date">
+            </div>
           </div>
         </div>
         <div id="clientList" class="data-list"><div class="empty-list">Loading clients...</div></div>
@@ -447,7 +494,8 @@
     collection,
     query,
     where,
-    getDocs
+    getDocs,
+    limit
   } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
   const form = document.getElementById("clientForm");
@@ -588,9 +636,107 @@
   const clientSortMenu = document.getElementById("clientSortMenu");
   const clientFilterPanel = document.getElementById("clientFilterPanel");
   const clientStatusFilter = document.getElementById("clientStatusFilter");
+  const clientFromDate = document.getElementById("clientFromDate");
+  const clientToDate = document.getElementById("clientToDate");
+  const clientRefreshBtn = document.getElementById("clientRefreshBtn");
   const clientList = document.getElementById("clientList");
 
+  let clientsCache = [];
+  let clientsLoaded = false;
   let clientSort = "name";
+
+  async function loadClientsList() {
+    const cacheKey = "bizodit_clients_cache_v2";
+
+    /*
+     * Render cached records immediately.
+     * Firebase refresh happens in the background.
+     */
+    try {
+      const cached =
+        JSON.parse(localStorage.getItem(cacheKey) || "[]");
+
+      if (Array.isArray(cached) && cached.length) {
+        clientsCache = cached;
+        clientsLoaded = true;
+        renderClientList();
+        populateClientDatalists();
+      }
+    } catch (error) {
+      console.warn("Client cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(
+        query(
+          collection(db, "clients"),
+          limit(500)
+        )
+      );
+
+      clientsCache = snapshot.docs.map(item => ({
+        id: item.id,
+        ...item.data()
+      })).filter(client =>
+        client.clientId && client.clientName
+      );
+
+      clientsCache.sort((a, b) =>
+        String(a.clientName || "").localeCompare(
+          String(b.clientName || "")
+        )
+      );
+
+      clientsLoaded = true;
+
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify(clientsCache)
+      );
+
+      populateClientDatalists();
+      renderClientList();
+
+    } catch (error) {
+      console.error("Client list load failed:", error);
+
+      if (!clientsCache.length) {
+        clientList.innerHTML =
+          '<div class="empty-list">Unable to load clients. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function populateClientDatalists() {
+    const idList =
+      document.getElementById("clientIdList");
+
+    const nameList =
+      document.getElementById("clientNameList");
+
+    if (!idList || !nameList) return;
+
+    idList.innerHTML = "";
+    nameList.innerHTML = "";
+
+    clientsCache.forEach(client => {
+      const idOption =
+        document.createElement("option");
+
+      idOption.value =
+        client.clientId || client.id;
+
+      idList.appendChild(idOption);
+
+      const nameOption =
+        document.createElement("option");
+
+      nameOption.value =
+        client.clientName;
+
+      nameList.appendChild(nameOption);
+    });
+  }
 
   function renderClientList() {
     const term = clean(clientSearch.value).toLowerCase();
@@ -607,7 +753,21 @@
       const matchesStatus =
         !status || String(client.status || "") === status;
 
-      return matchesSearch && matchesStatus;
+      const createdDate =
+        String(client.createdAt || "").slice(0, 10);
+
+      const matchesFrom =
+        !clientFromDate.value ||
+        (createdDate && createdDate >= clientFromDate.value);
+
+      const matchesTo =
+        !clientToDate.value ||
+        (createdDate && createdDate <= clientToDate.value);
+
+      return matchesSearch &&
+        matchesStatus &&
+        matchesFrom &&
+        matchesTo;
     });
 
     rows.sort((a, b) => {
@@ -679,6 +839,19 @@
   addClientBtn.addEventListener("click", openClientForm);
   clientSearch.addEventListener("input", renderClientList);
   clientStatusFilter.addEventListener("change", renderClientList);
+  clientFromDate.addEventListener("change", renderClientList);
+  clientToDate.addEventListener("change", renderClientList);
+
+  clientRefreshBtn.addEventListener("click", async () => {
+    clientRefreshBtn.classList.add("spinning");
+
+    try {
+      localStorage.removeItem("bizodit_clients_cache_v2");
+      await loadClientsList();
+    } finally {
+      clientRefreshBtn.classList.remove("spinning");
+    }
+  });
 
   clientSortBtn.addEventListener("click", () => {
     clientSortMenu.classList.toggle("show");
@@ -713,6 +886,9 @@
       }
     };
   }
+
+  // First view is the list. Load cached data immediately and refresh in background.
+  loadClientsList();
 
   /*
    * Form submit.
@@ -846,6 +1022,7 @@
        */
       clientIdInput.value = "";
 
+      localStorage.removeItem("bizodit_clients_cache_v2");
       openClientList();
 
     } catch (error) {
