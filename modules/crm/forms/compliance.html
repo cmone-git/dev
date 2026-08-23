@@ -14,239 +14,343 @@
 
   <style>
     .id-box {
-      display:flex;
-      align-items:center;
-      gap:8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .id-box input {
-      flex:1;
+      flex: 1;
     }
 
     .id-status {
-      min-width:24px;
-      text-align:center;
-      font-size:14px;
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
     }
 
+    /* Toolbar matching clients.html */
     .list-toolbar {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-
-
-    .date-range {
-      display:flex;
-      gap:8px;
-      align-items:end;
-      flex-wrap:wrap;
-      margin-top:8px;
-    }
-
-    .date-range .field {
-      flex:1 1 140px;
-      min-width:130px;
-      margin-bottom:0;
-    }
-
-    .date-range .field label {
-      display:block;
-      margin-bottom:5px;
-    }
-
-    .refresh-btn {
-      width:40px;
-      height:40px;
-      border:1px solid #d7dce2;
-      background:#fff;
-      border-radius:8px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-    }
-
-    .refresh-btn.spinning svg {
-      animation:spin .8s linear infinite;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
     }
 
     .list-search {
-      flex:1 1 180px;
-      min-width:150px;
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
     }
 
-    .list-icon-btn {
-      width:40px;
-      height:40px;
-      border:1px solid #d7dce2;
-      background:#fff;
-      border-radius:8px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
     }
 
     .list-icon-btn.active {
-      background:#f1f4f7;
+      background: #f1f4f7;
     }
 
     .add-form-btn {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      min-width:72px;
-      height:40px;
-      padding:0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .date-range {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .date-range .field {
+      flex: 1 1 140px;
+      min-width: 130px;
+      margin-bottom: 0;
+    }
+
+    .date-range .field label {
+      display: block;
+      margin-bottom: 5px;
     }
 
     .list-panel {
-      display:block;
+      display: block;
     }
 
     .list-panel.hidden,
     .entry-panel.hidden {
-      display:none;
+      display: none;
     }
 
     .data-list {
-      display:flex;
-      flex-direction:column;
-      gap:8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
+    /* Card Item */
     .data-row {
-      border:1px solid #e0e3e7;
-      border-radius:10px;
-      padding:12px 14px;
-      background:#fff;
-      cursor:pointer;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
     }
 
     .data-row-main {
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
     }
 
     .data-row-title {
-      font-weight:600;
-      font-size:15px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
     }
 
     .data-row-sub {
-      margin-top:4px;
-      color:#727983;
-      font-size:12px;
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
     }
 
     .data-row-meta {
-      text-align:right;
-      font-size:12px;
-      color:#727983;
-      white-space:nowrap;
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .data-row-date {
+      font-size: 11px;
+      color: #727983;
+    }
+
+    /* Minimalist status and payment badges */
+    .badge-group {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .status-badge.completed,
+    .status-badge.paid {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #dcfce7;
+    }
+
+    .status-badge.pending {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fef3c7;
+    }
+
+    .status-badge.in-progress,
+    .status-badge.partial {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #dbeafe;
+    }
+
+    .status-badge.on-hold,
+    .status-badge.cancelled,
+    .status-badge.not-applicable {
+      background: #f8fafc;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Card Action Toolbar */
+    .compliance-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .compliance-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .compliance-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .compliance-action-btn.call {
+      color: #0b3b66;
+    }
+
+    .compliance-action-btn.whatsapp {
+      color: #15803d;
+    }
+
+    .compliance-action-btn.open-btn {
+      color: #334155;
     }
 
     .empty-list {
-      padding:28px 12px;
-      text-align:center;
-      color:#777;
-      font-size:13px;
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
     }
 
     .filter-panel {
-      display:none;
-      margin-bottom:12px;
-      padding:12px;
-      border:1px solid #e0e3e7;
-      border-radius:10px;
-      background:#fafbfc;
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
     }
 
     .filter-panel.show {
-      display:block;
+      display: block;
     }
 
     .filter-panel .field {
-      margin-bottom:8px;
+      margin-bottom: 8px;
     }
 
     .sort-menu {
-      display:none;
-      position:relative;
+      display: none;
+      position: relative;
     }
 
     .sort-menu.show {
-      display:block;
-      margin-bottom:10px;
+      display: block;
+      margin-bottom: 10px;
     }
 
     .sort-options {
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .sort-option {
-      border:1px solid #d7dce2;
-      background:#fff;
-      border-radius:7px;
-      padding:7px 10px;
-      font-size:12px;
-      cursor:pointer;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
     }
 
     .sort-option.active {
-      background:#eef2f5;
-      font-weight:600;
+      background: #eef2f5;
+      font-weight: 600;
     }
 
     .form-message {
-      display:none;
-      margin:0 0 14px;
-      padding:10px 12px;
-      border-radius:8px;
-      font-size:13px;
-      line-height:1.4;
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
     }
 
     .form-message.show {
-      display:block;
+      display: block;
     }
 
     .form-message.error {
-      background:#fff1f1;
-      color:#b42318;
-      border:1px solid #f3c2c2;
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
     }
 
     .form-message.success {
-      background:#effaf3;
-      color:#16723a;
-      border:1px solid #b9e4c7;
-    }
-
-    .client-search-note {
-      margin-top:5px;
-      font-size:11px;
-      color:#777;
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
     }
 
     .client-loading {
-      opacity:.65;
+      opacity: .65;
     }
 
     .saving .save-icon {
-      animation:spin .8s linear infinite;
+      animation: spin .8s linear infinite;
     }
 
     @keyframes spin {
-      to { transform:rotate(360deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -274,8 +378,7 @@
 
       <section class="module-header">
         <div class="module-header-left">
-
-          <button class="back-btn" onclick="history.back()" type="button">
+          <button class="back-btn" id="pageBackBtn" type="button">
             <i data-lucide="arrow-left"></i>
           </button>
 
@@ -286,18 +389,22 @@
               Date : <strong id="presentDate">--</strong>
             </div>
           </div>
-
         </div>
       </section>
 
       <div id="complianceListPanel" class="form-section list-panel">
         <div class="list-toolbar">
-          <input id="complianceSearch" class="list-search" type="search" placeholder="Search compliance...">
+          <input id="complianceSearch" class="list-search" type="search" placeholder="Search compliance..." autocomplete="off">
           <button id="complianceSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
           <button id="complianceFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
           <button id="complianceRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportComplianceBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importComplianceBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
           <button id="addComplianceBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
         </div>
+
         <div id="complianceSortMenu" class="sort-menu">
           <div class="sort-options">
             <button class="sort-option active" data-sort="due">Due Date</button>
@@ -306,6 +413,7 @@
             <button class="sort-option" data-sort="status">Status</button>
           </div>
         </div>
+
         <div id="complianceFilterPanel" class="filter-panel">
           <div class="field"><label>Status</label><select id="complianceStatusFilter"><option value="">All Status</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option><option value="On Hold">On Hold</option><option value="Cancelled">Cancelled</option></select></div>
           <div class="field"><label>Payment</label><select id="compliancePaymentFilter"><option value="">All Payments</option><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Partial">Partial</option><option value="Not Applicable">Not Applicable</option></select></div>
@@ -320,56 +428,43 @@
             </div>
           </div>
         </div>
+
         <div id="complianceList" class="data-list"><div class="empty-list">Loading compliance...</div></div>
       </div>
 
       <form class="form-section entry-panel hidden" id="complianceForm">
-
         <h2>Compliance Entry</h2>
-
         <div id="formMessage" class="form-message"></div>
 
         <div class="form-grid">
-
-          <!-- Firestore document ID -->
           <div class="field">
             <label>Compliance ID</label>
             <div class="id-box">
-              <input id="complianceId" type="text" readonly
-                     placeholder="Generated on save">
+              <input id="complianceId" type="text" readonly placeholder="Generated on save">
               <span id="idStatus" class="id-status"></span>
             </div>
           </div>
 
           <div class="field">
             <label>Client ID <span class="required">*</span></label>
-            <input id="clientId" type="text" required
-                   list="clientIdList"
-                   placeholder="Search / select Client ID"
-                   autocomplete="off"
-                   style="text-transform:uppercase">
+            <input id="clientId" type="text" required list="clientIdList" placeholder="Search / select Client ID" autocomplete="off" style="text-transform:uppercase">
             <datalist id="clientIdList"></datalist>
           </div>
 
           <div class="field">
             <label>Client Name <span class="required">*</span></label>
-            <input id="clientName" type="text" required
-                   list="clientNameList"
-                   placeholder="Search / select Client Name"
-                   autocomplete="off">
+            <input id="clientName" type="text" required list="clientNameList" placeholder="Search / select Client Name" autocomplete="off">
             <datalist id="clientNameList"></datalist>
           </div>
 
           <div class="field">
             <label>Task Title <span class="required">*</span></label>
-            <input id="taskTitle" type="text" required
-                   placeholder="Example: ITR">
+            <input id="taskTitle" type="text" required placeholder="Example: ITR">
           </div>
 
           <div class="field">
             <label>Amount (₹)</label>
-            <input id="amount" type="number" min="0" step="0.01"
-                   placeholder="0.00">
+            <input id="amount" type="number" min="0" step="0.01" placeholder="0.00">
           </div>
 
           <div class="field">
@@ -400,32 +495,22 @@
 
           <div class="field">
             <label>Created By</label>
-            <input id="createdBy" type="text" value="Admin"
-                   placeholder="Created by">
+            <input id="createdBy" type="text" value="Admin" placeholder="Created by">
           </div>
 
           <div class="field full">
             <label>Narration</label>
-            <textarea id="narration" rows="3"
-                      placeholder="Enter compliance details..."></textarea>
+            <textarea id="narration" rows="3" placeholder="Enter compliance details..."></textarea>
           </div>
-
         </div>
 
         <div class="form-actions">
-
-          <button type="button" class="btn btn-secondary"
-                  onclick="history.back()">
-            Cancel
-          </button>
-
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
           <button id="saveBtn" class="btn btn-primary" type="submit">
             <i class="save-icon" data-lucide="save"></i>
             <span class="save-text">Save Compliance</span>
           </button>
-
         </div>
-
       </form>
 
     </div>
@@ -434,7 +519,6 @@
 
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
-
     <a class="bottom-item" href="../../../index.html">
       <i data-lucide="house"></i>
       <span>HOME</span>
@@ -454,17 +538,12 @@
       <i data-lucide="settings-2"></i>
       <span>SETTINGS</span>
     </a>
-
   </div>
 </nav>
 
 <script type="module">
-
-  import { formatIndianDate, todayISO }
-    from "../../../js/date.js";
-
+  import { formatIndianDate, todayISO } from "../../../js/date.js";
   import { db } from "../../../js/firebase-config.js";
-
   import {
     doc,
     runTransaction,
@@ -474,65 +553,28 @@
     limit
   } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-
-  /*
-   * ============================================================
-   * PAGE SETUP
-   * ============================================================
-   */
-
   const form = document.getElementById("complianceForm");
   const saveBtn = document.getElementById("saveBtn");
   const message = document.getElementById("formMessage");
   const idInput = document.getElementById("complianceId");
   const idStatus = document.getElementById("idStatus");
-
   const dueDate = document.getElementById("dueDate");
 
-  document.getElementById("presentDate").textContent =
-    formatIndianDate(new Date());
-
-  /*
-   * Default due date = today.
-   * User can change it before saving.
-   */
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
   dueDate.value = todayISO();
 
-  // Load existing clients for searchable Client ID / Client Name.
-  loadClients();
+  const clean = value => String(value || "").trim();
+  const upper = value => clean(value).toUpperCase();
 
-
-  function clean(value) {
-    return String(value || "").trim();
-  }
-
-  function upper(value) {
-    return clean(value).toUpperCase();
-  }
-
-  function showMessage(text, type = "error") {
+  const showMessage = (text, type = "error") => {
     message.textContent = text;
     message.className = `form-message show ${type}`;
-  }
+  };
 
-  function clearMessage() {
+  const clearMessage = () => {
     message.textContent = "";
     message.className = "form-message";
-  }
-
-
-  /*
-   * ============================================================
-   * CLIENT SEARCH / AUTO FILL
-   * ============================================================
-   *
-   * Client records are loaded from:
-   *
-   *   clients/{clientId}
-   *
-   * Selecting/searching either Client ID OR Client Name
-   * automatically fills the other field.
-   */
+  };
 
   const clientIdInput = document.getElementById("clientId");
   const clientNameInput = document.getElementById("clientName");
@@ -542,48 +584,30 @@
   let clientsCache = [];
   let clientsLoaded = false;
 
-  function normalize(value) {
-    return String(value || "").trim().toLowerCase();
-  }
+  const normalize = value => String(value || "").trim().toLowerCase();
 
   function fillClient(client) {
     if (!client) return;
-
-    clientIdInput.value =
-      client.clientId || client.id || "";
-
-    clientNameInput.value =
-      client.clientName || "";
-
+    clientIdInput.value = client.clientId || client.id || "";
+    clientNameInput.value = client.clientName || "";
     clientIdInput.classList.remove("client-loading");
     clientNameInput.classList.remove("client-loading");
   }
 
   function findClientById(value) {
     const id = String(value || "").trim().toUpperCase();
-
-    return clientsCache.find(client =>
-      String(client.clientId || client.id || "")
-        .trim()
-        .toUpperCase() === id
-    );
+    return clientsCache.find(client => String(client.clientId || client.id || "").trim().toUpperCase() === id);
   }
 
   function findClientByName(value) {
     const name = normalize(value);
-
-    return clientsCache.find(client =>
-      normalize(client.clientName) === name
-    );
+    return clientsCache.find(client => normalize(client.clientName) === name);
   }
 
   async function loadClients() {
-    const cacheKey = "bizodit_clients_cache_v2";
-
+    const cacheKey = "bizodit_clients_cache_v3";
     try {
-      const cached =
-        JSON.parse(localStorage.getItem(cacheKey) || "[]");
-
+      const cached = JSON.parse(localStorage.getItem(cacheKey) || "[]");
       if (Array.isArray(cached) && cached.length) {
         clientsCache = cached;
         clientsLoaded = true;
@@ -594,38 +618,23 @@
     }
 
     try {
-      const snapshot = await getDocs(
-        query(
-          collection(db, "clients"),
-          limit(500)
-        )
-      );
-
+      const snapshot = await getDocs(query(collection(db, "clients"), limit(500)));
       clientsCache = snapshot.docs.map(item => ({
         id: item.id,
         ...item.data()
-      })).filter(client =>
-        client.clientId && client.clientName
-      );
+      })).filter(client => client.clientId && client.clientName);
 
-      localStorage.setItem(
-        cacheKey,
-        JSON.stringify(clientsCache)
-      );
-
+      localStorage.setItem(cacheKey, JSON.stringify(clientsCache));
       clientsLoaded = true;
       populateClientLists();
-
     } catch (error) {
       console.error("Unable to refresh client lookup:", error);
-      // Cached client data remains usable if available.
     }
   }
 
   function populateClientLists() {
     clientIdList.innerHTML = "";
     clientNameList.innerHTML = "";
-
     clientsCache.forEach(client => {
       const idOption = document.createElement("option");
       idOption.value = client.clientId || client.id;
@@ -639,169 +648,56 @@
 
   clientIdInput.addEventListener("input", () => {
     if (!clientsLoaded) return;
-
-    const client =
-      findClientById(clientIdInput.value);
-
-    if (client) {
-      fillClient(client);
-    }
+    const client = findClientById(clientIdInput.value);
+    if (client) fillClient(client);
   });
 
   clientNameInput.addEventListener("input", () => {
     if (!clientsLoaded) return;
-
-    const client =
-      findClientByName(clientNameInput.value);
-
-    if (client) {
-      fillClient(client);
-    }
+    const client = findClientByName(clientNameInput.value);
+    if (client) fillClient(client);
   });
 
-  /*
-   * If the user types a partial Client ID/name and then
-   * leaves the field, try one final exact match.
-   */
   clientIdInput.addEventListener("change", () => {
-    const client =
-      findClientById(clientIdInput.value);
-
+    const client = findClientById(clientIdInput.value);
     if (client) fillClient(client);
   });
 
   clientNameInput.addEventListener("change", () => {
-    const client =
-      findClientByName(clientNameInput.value);
-
+    const client = findClientByName(clientNameInput.value);
     if (client) fillClient(client);
   });
 
-
-  /*
-   * ============================================================
-   * COMPLIANCE ID
-   * ============================================================
-   *
-   * FORMAT:
-   *
-   *     SYYMM0001
-   *
-   * Examples:
-   *
-   *     August 2026  -> S26080001
-   *     August 2026  -> S26080002
-   *     August 2026  -> S26080003
-   *
-   *     September 2026 -> S26090001
-   *
-   * The count restarts at 0001 for every month.
-   *
-   * Firestore counter:
-   *
-   * counters/compliance_2608
-   *
-   * counters/compliance_2609
-   *
-   * etc.
-   *
-   * The counter is incremented inside a Firestore transaction,
-   * preventing duplicate IDs when multiple users save at once.
-   */
-
-
   function getPeriodFromDate(dateString) {
-
     const date = new Date(`${dateString}T00:00:00`);
-
-    if (Number.isNaN(date.getTime())) {
-      throw new Error("Invalid compliance date.");
-    }
-
+    if (Number.isNaN(date.getTime())) throw new Error("Invalid compliance date.");
     const year = String(date.getFullYear()).slice(-2);
-
-    const month = String(
-      date.getMonth() + 1
-    ).padStart(2, "0");
-
-    return {
-      year,
-      month,
-      period: `${year}${month}`
-    };
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return { year, month, period: `${year}${month}` };
   }
 
-
   async function getNextComplianceId(transaction, dateString) {
-
-    const { year, month, period } =
-      getPeriodFromDate(dateString);
-
-    const counterRef = doc(
-      db,
-      "counters",
-      `compliance_${period}`
-    );
-
-    const counterSnap =
-      await transaction.get(counterRef);
-
+    const { year, month, period } = getPeriodFromDate(dateString);
+    const counterRef = doc(db, "counters", `compliance_${period}`);
+    const counterSnap = await transaction.get(counterRef);
     let nextNumber = 1;
 
     if (counterSnap.exists()) {
-      const lastNumber =
-        Number(counterSnap.data().lastNumber);
-
-      if (
-        Number.isFinite(lastNumber) &&
-        lastNumber >= 0
-      ) {
-        nextNumber =
-          lastNumber + 1;
-      }
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) nextNumber = lastNumber + 1;
     }
 
-    /*
-     * IMPORTANT:
-     * All transaction READS happen before any WRITE.
-     * Only return the unused ID here. The counter write is
-     * performed by the caller after all reads are complete.
-     */
     while (true) {
-
-      const candidateId =
-        `S${year}${month}${String(nextNumber).padStart(4, "0")}`;
-
-      const candidateRef =
-        doc(
-          db,
-          "compliances",
-          candidateId
-        );
-
-      const candidateSnap =
-        await transaction.get(candidateRef);
+      const candidateId = `S${year}${month}${String(nextNumber).padStart(4, "0")}`;
+      const candidateRef = doc(db, "compliances", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
 
       if (!candidateSnap.exists()) {
-
-        return {
-          id: candidateId,
-          counterRef,
-          nextNumber,
-          period
-        };
+        return { id: candidateId, counterRef, nextNumber, period };
       }
-
       nextNumber++;
     }
   }
-
-
-  /*
-   * ============================================================
-   * COMPLIANCE LIST VIEW
-   * ============================================================
-   */
 
   const complianceListPanel = document.getElementById("complianceListPanel");
   const addComplianceBtn = document.getElementById("addComplianceBtn");
@@ -829,17 +725,17 @@
       .replace(/'/g, "&#039;");
   }
 
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
   async function loadComplianceList() {
     const cacheKey = "bizodit_compliance_cache_v2";
-
-    /*
-     * Cached records are shown immediately.
-     * Firebase refreshes them in the background.
-     */
     try {
-      const cached =
-        JSON.parse(localStorage.getItem(cacheKey) || "[]");
-
+      const cached = JSON.parse(localStorage.getItem(cacheKey) || "[]");
       if (Array.isArray(cached) && cached.length) {
         complianceRows = cached;
         renderComplianceList();
@@ -849,33 +745,20 @@
     }
 
     try {
-      const snapshot = await getDocs(
-        query(
-          collection(db, "compliances"),
-          limit(500)
-        )
-      );
-
-      complianceRows = snapshot.docs.map(item => ({
-        id: item.id,
-        ...item.data()
-      }));
-
-      localStorage.setItem(
-        cacheKey,
-        JSON.stringify(complianceRows)
-      );
-
+      const snapshot = await getDocs(query(collection(db, "compliances"), limit(500)));
+      complianceRows = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(cacheKey, JSON.stringify(complianceRows));
       renderComplianceList();
-
     } catch (error) {
       console.error("Compliance list load failed:", error);
-
       if (!complianceRows.length) {
-        complianceList.innerHTML =
-          '<div class="empty-list">Unable to load compliance. Tap Refresh to try again.</div>';
+        complianceList.innerHTML = '<div class="empty-list">Unable to load compliance. Tap Refresh to try again.</div>';
       }
     }
+  }
+
+  function getBadgeClass(val) {
+    return String(val || "").toLowerCase().replace(/\s+/g, "-");
   }
 
   function renderComplianceList() {
@@ -884,19 +767,10 @@
     const payment = clean(compliancePaymentFilter.value);
 
     let rows = complianceRows.filter(row => {
-      const text =
-        `${row.complianceID || row.id} ${row.clientId || ""} ${row.clientName || ""} ${row.taskTitle || ""}`.toLowerCase();
-
-      const dueDate =
-        String(row.dueDate || "").slice(0, 10);
-
-      const matchesFrom =
-        !complianceFromDate.value ||
-        (dueDate && dueDate >= complianceFromDate.value);
-
-      const matchesTo =
-        !complianceToDate.value ||
-        (dueDate && dueDate <= complianceToDate.value);
+      const text = `${row.complianceID || row.id} ${row.clientId || ""} ${row.clientName || ""} ${row.taskTitle || ""}`.toLowerCase();
+      const dDate = String(row.dueDate || "").slice(0, 10);
+      const matchesFrom = !complianceFromDate.value || (dDate && dDate >= complianceFromDate.value);
+      const matchesTo = !complianceToDate.value || (dDate && dDate <= complianceToDate.value);
 
       return (!term || text.includes(term)) &&
         (!status || row.status === status) &&
@@ -906,14 +780,10 @@
     });
 
     rows.sort((a, b) => {
-      if (complianceSort === "due")
-        return String(a.dueDate || "").localeCompare(String(b.dueDate || ""));
-      if (complianceSort === "due-desc")
-        return String(b.dueDate || "").localeCompare(String(a.dueDate || ""));
-      if (complianceSort === "client")
-        return String(a.clientName || "").localeCompare(String(b.clientName || ""));
-      if (complianceSort === "status")
-        return String(a.status || "").localeCompare(String(b.status || ""));
+      if (complianceSort === "due") return String(a.dueDate || "").localeCompare(String(b.dueDate || ""));
+      if (complianceSort === "due-desc") return String(b.dueDate || "").localeCompare(String(a.dueDate || ""));
+      if (complianceSort === "client") return String(a.clientName || "").localeCompare(String(b.clientName || ""));
+      if (complianceSort === "status") return String(a.status || "").localeCompare(String(b.status || ""));
       return 0;
     });
 
@@ -922,40 +792,185 @@
       return;
     }
 
-    complianceList.innerHTML = rows.map(row => `
-      <div class="data-row" data-compliance-id="${escapeHtml(row.id)}">
+    complianceList.innerHTML = rows.map(row => {
+      const id = row.complianceID || row.id;
+      const client = findClientById(row.clientId);
+      const phone = clean(client?.mobile || row.mobile || "");
+      const wa = whatsappClean(phone);
+      const statusText = row.status || "Pending";
+      const payText = row.paymentStatus || "Pending";
+
+      return `
+      <div class="data-row">
         <div class="data-row-main">
-          <div>
+          <div class="data-row-content" data-compliance-id="${escapeHtml(id)}">
             <div class="data-row-title">${escapeHtml(row.taskTitle || "Compliance")}</div>
-            <div class="data-row-sub">${escapeHtml(row.complianceID || row.id)} · ${escapeHtml(row.clientName || row.clientId || "")}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · ${escapeHtml(row.clientName || row.clientId || "")}</div>
           </div>
-          <div class="data-row-meta">${escapeHtml(row.dueDate || "")}<br>${escapeHtml(row.status || "Pending")}</div>
+          <div class="data-row-meta">
+            <span class="data-row-date">${escapeHtml(row.dueDate || "")}</span>
+            <div class="badge-group">
+              <span class="status-badge ${getBadgeClass(statusText)}">${escapeHtml(statusText)}</span>
+              ${payText && payText !== 'Not Applicable' ? `<span class="status-badge ${getBadgeClass(payText)}">${escapeHtml(payText)}</span>` : ''}
+            </div>
+          </div>
         </div>
-      </div>
-    `).join("");
+        <div class="compliance-row-actions">
+          ${phone ? `<a class="compliance-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Client"><i data-lucide="phone"></i></a>` : ""}
+          ${phone ? `<a class="compliance-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
+          <button class="compliance-action-btn open-btn" data-compliance-id="${escapeHtml(id)}" type="button" title="View Details"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    complianceList.querySelectorAll("[data-compliance-id]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        const cid = b.dataset.complianceId;
+        const record = complianceRows.find(x => (x.complianceID || x.id) === cid);
+        if (record) openComplianceForm(record);
+      });
+    });
   }
 
-  function openComplianceForm() {
+  function openComplianceForm(record = null) {
     form.reset();
-    document.getElementById("paymentStatus").value = "Pending";
-    document.getElementById("status").value = "Pending";
-    document.getElementById("createdBy").value = "Admin";
-    dueDate.value = todayISO();
-    idInput.value = "";
+    clearMessage();
+
+    if (record) {
+      idInput.value = record.complianceID || record.id || "";
+      clientIdInput.value = record.clientId || "";
+      clientNameInput.value = record.clientName || "";
+      document.getElementById("taskTitle").value = record.taskTitle || "";
+      document.getElementById("amount").value = record.amount ?? "";
+      document.getElementById("dueDate").value = record.dueDate || todayISO();
+      document.getElementById("paymentStatus").value = record.paymentStatus || "Pending";
+      document.getElementById("status").value = record.status || "Pending";
+      document.getElementById("createdBy").value = record.createdBy || "Admin";
+      document.getElementById("narration").value = record.narration || "";
+    } else {
+      document.getElementById("paymentStatus").value = "Pending";
+      document.getElementById("status").value = "Pending";
+      document.getElementById("createdBy").value = "Admin";
+      dueDate.value = todayISO();
+      idInput.value = "";
+    }
+
     complianceListPanel.classList.add("hidden");
     form.classList.remove("hidden");
-    clearMessage();
-    window.scrollTo({top:0, behavior:"smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function openComplianceList() {
     form.classList.add("hidden");
     complianceListPanel.classList.remove("hidden");
     loadComplianceList();
-    window.scrollTo({top:0, behavior:"smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  addComplianceBtn.addEventListener("click", openComplianceForm);
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Client ID,Client Name,Task Title,Amount,Due Date,Payment Status,Status,Created By,Narration\n" +
+                     "C40001,Acme Corp,ITR Filing,2500,2026-08-31,Pending,Pending,Admin,Annual compliance filing";
+    downloadBlob(template, "compliance_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportComplianceBtn").addEventListener("click", () => {
+    if (!complianceRows.length) { alert("No compliance records to export."); return; }
+    const headers = ["Compliance ID","Client ID","Client Name","Task Title","Amount","Due Date","Payment Status","Status","Created By","Narration","Created At"];
+    const rows = complianceRows.map(c => [
+      `"${c.complianceID||c.id||""}"`, `"${c.clientId||""}"`, `"${(c.clientName||"").replace(/"/g,'""')}"`,
+      `"${(c.taskTitle||"").replace(/"/g,'""')}"`, `"${c.amount||0}"`, `"${c.dueDate||""}"`,
+      `"${c.paymentStatus||"Pending"}"`, `"${c.status||"Pending"}"`, `"${c.createdBy||"Admin"}"`,
+      `"${(c.narration||"").replace(/"/g,'""')}"`, `"${c.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `compliance_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importComplianceBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} compliance record(s)?`)) { e.target.value = ""; return; }
+
+    complianceRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const cId = upper(r[0]), cName = clean(r[1]), task = clean(r[2]);
+        if (!cId || !task) continue;
+        const dueVal = clean(r[4]) || todayISO();
+
+        await runTransaction(db, async tx => {
+          const result = await getNextComplianceId(tx, dueVal);
+          const compRef = doc(db, "compliances", result.id);
+          const record = {
+            complianceID: result.id,
+            clientId: cId,
+            clientName: cName,
+            taskTitle: task,
+            amount: Number(r[3]) || 0,
+            dueDate: dueVal,
+            paymentStatus: clean(r[5]) || "Pending",
+            status: clean(r[6]) || "Pending",
+            createdBy: clean(r[7]) || "Admin",
+            narration: clean(r[8]) || "",
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+          tx.set(compRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem("bizodit_compliance_cache_v2");
+      await loadComplianceList();
+      alert(`Successfully imported ${imported} compliance record(s).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during compliance import: " + err.message);
+    } finally {
+      complianceRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addComplianceBtn.addEventListener("click", () => openComplianceForm());
+  document.getElementById("cancelFormBtn").addEventListener("click", openComplianceList);
   complianceSearch.addEventListener("input", renderComplianceList);
   complianceStatusFilter.addEventListener("change", renderComplianceList);
   compliancePaymentFilter.addEventListener("change", renderComplianceList);
@@ -964,7 +979,6 @@
 
   complianceRefreshBtn.addEventListener("click", async () => {
     complianceRefreshBtn.classList.add("spinning");
-
     try {
       localStorage.removeItem("bizodit_compliance_cache_v2");
       await loadComplianceList();
@@ -973,13 +987,8 @@
     }
   });
 
-  complianceSortBtn.addEventListener("click", () => {
-    complianceSortMenu.classList.toggle("show");
-  });
-
-  complianceFilterBtn.addEventListener("click", () => {
-    complianceFilterPanel.classList.toggle("show");
-  });
+  complianceSortBtn.addEventListener("click", () => complianceSortMenu.classList.toggle("show"));
+  complianceFilterBtn.addEventListener("click", () => complianceFilterPanel.classList.toggle("show"));
 
   complianceSortMenu.querySelectorAll(".sort-option").forEach(option => {
     option.addEventListener("click", () => {
@@ -991,320 +1000,95 @@
     });
   });
 
-  const complianceBackButton = document.querySelector(".back-btn");
-  if (complianceBackButton) {
-    complianceBackButton.onclick = (event) => {
-      event.preventDefault();
-      if (!form.classList.contains("hidden")) {
-        openComplianceList();
-      } else {
-        history.back();
-      }
-    };
-  }
-
-  /*
-   * ============================================================
-   * SAVE
-   * ============================================================
-   *
-   * Document path:
-   *
-   *     compliances/{complianceId}
-   *
-   * Therefore:
-   *
-   *     compliances/S26080001
-   *
-   * The Compliance ID is BOTH:
-   *
-   * 1. Firestore document ID
-   * 2. complianceID field
-   */
-
-
-  form.addEventListener("submit", async (event) => {
-
-    event.preventDefault();
-
-    clearMessage();
-
-    if (saveBtn.disabled) {
-      return;
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openComplianceList();
+    } else {
+      history.back();
     }
-
-
-    const clientId =
-      upper(document.getElementById("clientId").value);
-
-    const clientName =
-      clean(document.getElementById("clientName").value);
-
-    const taskTitle =
-      clean(document.getElementById("taskTitle").value);
-
-    const dueDateValue =
-      clean(document.getElementById("dueDate").value);
-
-
-    if (!clientId) {
-      showMessage("Client ID is required.");
-
-      document.getElementById("clientId").focus();
-
-      return;
-    }
-
-
-    if (!clientName) {
-      showMessage("Client Name is required.");
-
-      document.getElementById("clientName").focus();
-
-      return;
-    }
-
-    // Client ID and Client Name must belong to the same existing client.
-    const selectedClient = findClientById(clientId);
-
-    if (
-      !selectedClient ||
-      normalize(selectedClient.clientName) !== normalize(clientName)
-    ) {
-      showMessage(
-        "Please select a valid Client ID or Client Name from the client list."
-      );
-
-      document.getElementById("clientId").focus();
-
-      return;
-    }
-
-
-    if (!taskTitle) {
-      showMessage("Task Title is required.");
-
-      document.getElementById("taskTitle").focus();
-
-      return;
-    }
-
-
-    if (!dueDateValue) {
-      showMessage("Due Date is required.");
-
-      document.getElementById("dueDate").focus();
-
-      return;
-    }
-
-
-    const amountValue =
-      clean(document.getElementById("amount").value);
-
-    const amount =
-      amountValue === ""
-        ? 0
-        : Number(amountValue);
-
-
-    if (!Number.isFinite(amount) || amount < 0) {
-
-      showMessage("Enter a valid amount.");
-
-      document.getElementById("amount").focus();
-
-      return;
-    }
-
-
-    saveBtn.disabled = true;
-
-    form.classList.add("saving");
-
-    saveBtn.querySelector(".save-text").textContent =
-      "Saving...";
-
-    idStatus.textContent = "…";
-
-
-    try {
-
-      const now =
-        new Date().toISOString();
-
-
-      let generatedId = "";
-
-
-      await runTransaction(
-        db,
-        async (transaction) => {
-
-          /*
-           * ALL transaction READS happen first.
-           */
-          const result =
-            await getNextComplianceId(
-              transaction,
-              dueDateValue
-            );
-
-          generatedId =
-            result.id;
-
-          const complianceRef =
-            doc(
-              db,
-              "compliances",
-              generatedId
-            );
-
-          const data = {
-
-            complianceID:
-              generatedId,
-
-            clientId,
-
-            clientName,
-
-            taskTitle,
-
-            amount,
-
-            createdAt:
-              now,
-
-            createdBy:
-              clean(
-                document.getElementById("createdBy").value
-              ) || "Admin",
-
-            dueDate:
-              dueDateValue,
-
-            narration:
-              clean(
-                document.getElementById("narration").value
-              ),
-
-            paymentStatus:
-              clean(
-                document.getElementById("paymentStatus").value
-              ) || "Pending",
-
-            status:
-              clean(
-                document.getElementById("status").value
-              ) || "Pending",
-
-            updatedAt:
-              now
-          };
-
-          /*
-           * ALL writes happen after all reads.
-           */
-          transaction.set(
-            result.counterRef,
-            {
-              lastNumber:
-                result.nextNumber,
-
-              period:
-                result.period,
-
-              updatedAt:
-                now
-            },
-            {
-              merge: true
-            }
-          );
-
-          transaction.set(
-            complianceRef,
-            data
-          );
-
-        }
-      );
-
-
-      idInput.value =
-        generatedId;
-
-      idStatus.textContent =
-        "✓";
-
-
-      showMessage(
-        `Compliance ${generatedId} saved successfully.`,
-        "success"
-      );
-
-
-      /*
-       * Reset the form after successful save.
-       * The counter is NOT reset.
-       */
-      form.reset();
-
-      document.getElementById("paymentStatus").value =
-        "Pending";
-
-      document.getElementById("status").value =
-        "Pending";
-
-      document.getElementById("createdBy").value =
-        "Admin";
-
-      dueDate.value =
-        todayISO();
-
-      /*
-       * ID is cleared after showing success.
-       * The next save gets the next monthly number.
-       */
-      idInput.value =
-        "";
-
-
-    } catch (error) {
-
-      console.error(
-        "Compliance save error:",
-        error
-      );
-
-      idStatus.textContent =
-        "";
-
-      showMessage(
-        error?.message ||
-        "Unable to save compliance. Please try again."
-      );
-
-    } finally {
-
-      saveBtn.disabled =
-        false;
-
-      form.classList.remove(
-        "saving"
-      );
-
-      saveBtn.querySelector(".save-text").textContent =
-        "Save Compliance";
-
-    }
-
   });
 
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    const clientId = upper(document.getElementById("clientId").value);
+    const clientName = clean(document.getElementById("clientName").value);
+    const taskTitle = clean(document.getElementById("taskTitle").value);
+    const dueDateValue = clean(document.getElementById("dueDate").value);
+
+    if (!clientId) { showMessage("Client ID is required."); document.getElementById("clientId").focus(); return; }
+    if (!clientName) { showMessage("Client Name is required."); document.getElementById("clientName").focus(); return; }
+
+    const selectedClient = findClientById(clientId);
+    if (!selectedClient || normalize(selectedClient.clientName) !== normalize(clientName)) {
+      showMessage("Please select a valid Client ID or Client Name from the client list.");
+      document.getElementById("clientId").focus();
+      return;
+    }
+
+    if (!taskTitle) { showMessage("Task Title is required."); document.getElementById("taskTitle").focus(); return; }
+    if (!dueDateValue) { showMessage("Due Date is required."); document.getElementById("dueDate").focus(); return; }
+
+    const amountValue = clean(document.getElementById("amount").value);
+    const amount = amountValue === "" ? 0 : Number(amountValue);
+    if (!Number.isFinite(amount) || amount < 0) { showMessage("Enter a valid amount."); document.getElementById("amount").focus(); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextComplianceId(transaction, dueDateValue);
+        generatedId = result.id;
+        const complianceRef = doc(db, "compliances", generatedId);
+        const data = {
+          complianceID: generatedId,
+          clientId,
+          clientName,
+          taskTitle,
+          amount,
+          createdAt: now,
+          createdBy: clean(document.getElementById("createdBy").value) || "Admin",
+          dueDate: dueDateValue,
+          narration: clean(document.getElementById("narration").value),
+          paymentStatus: clean(document.getElementById("paymentStatus").value) || "Pending",
+          status: clean(document.getElementById("status").value) || "Pending",
+          updatedAt: now
+        };
+
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+        transaction.set(complianceRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Compliance ${generatedId} saved successfully.`, "success");
+
+      setTimeout(() => {
+        openComplianceList();
+      }, 450);
+    } catch (error) {
+      console.error("Compliance save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save compliance. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Compliance";
+    }
+  });
+
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
 
   window.lucide.createIcons();
-
+  loadClients().then(loadComplianceList);
 </script>
 
 </body>
