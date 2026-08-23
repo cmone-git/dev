@@ -37,6 +37,42 @@
       flex-wrap:wrap;
     }
 
+
+    .date-range {
+      display:flex;
+      gap:8px;
+      align-items:end;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .date-range .field {
+      flex:1 1 140px;
+      min-width:130px;
+      margin-bottom:0;
+    }
+
+    .date-range .field label {
+      display:block;
+      margin-bottom:5px;
+    }
+
+    .refresh-btn {
+      width:40px;
+      height:40px;
+      border:1px solid #d7dce2;
+      background:#fff;
+      border-radius:8px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+
+    .refresh-btn.spinning svg {
+      animation:spin .8s linear infinite;
+    }
+
     .list-search {
       flex:1 1 180px;
       min-width:150px;
@@ -259,6 +295,7 @@
           <input id="complianceSearch" class="list-search" type="search" placeholder="Search compliance...">
           <button id="complianceSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
           <button id="complianceFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="complianceRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
           <button id="addComplianceBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
         </div>
         <div id="complianceSortMenu" class="sort-menu">
@@ -272,6 +309,16 @@
         <div id="complianceFilterPanel" class="filter-panel">
           <div class="field"><label>Status</label><select id="complianceStatusFilter"><option value="">All Status</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Completed">Completed</option><option value="On Hold">On Hold</option><option value="Cancelled">Cancelled</option></select></div>
           <div class="field"><label>Payment</label><select id="compliancePaymentFilter"><option value="">All Payments</option><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Partial">Partial</option><option value="Not Applicable">Not Applicable</option></select></div>
+          <div class="date-range">
+            <div class="field">
+              <label>From Date</label>
+              <input id="complianceFromDate" type="date">
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input id="complianceToDate" type="date">
+            </div>
+          </div>
         </div>
         <div id="complianceList" class="data-list"><div class="empty-list">Loading compliance...</div></div>
       </div>
@@ -422,7 +469,9 @@
     doc,
     runTransaction,
     collection,
-    getDocs
+    getDocs,
+    query,
+    limit
   } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
@@ -529,65 +578,63 @@
   }
 
   async function loadClients() {
+    const cacheKey = "bizodit_clients_cache_v2";
+
     try {
-      clientIdInput.classList.add("client-loading");
-      clientNameInput.classList.add("client-loading");
+      const cached =
+        JSON.parse(localStorage.getItem(cacheKey) || "[]");
 
-      const snapshot =
-        await getDocs(collection(db, "clients"));
+      if (Array.isArray(cached) && cached.length) {
+        clientsCache = cached;
+        clientsLoaded = true;
+        populateClientLists();
+      }
+    } catch (error) {
+      console.warn("Client cache read failed:", error);
+    }
 
-      clientsCache = snapshot.docs.map(item => {
-        const data = item.data();
-
-        return {
-          id: item.id,
-          ...data
-        };
-      }).filter(client =>
-        client.clientId &&
-        client.clientName
-      );
-
-      clientsCache.sort((a, b) =>
-        String(a.clientName).localeCompare(
-          String(b.clientName)
+    try {
+      const snapshot = await getDocs(
+        query(
+          collection(db, "clients"),
+          limit(500)
         )
       );
 
-      clientIdList.innerHTML = "";
-      clientNameList.innerHTML = "";
+      clientsCache = snapshot.docs.map(item => ({
+        id: item.id,
+        ...item.data()
+      })).filter(client =>
+        client.clientId && client.clientName
+      );
 
-      clientsCache.forEach(client => {
-        const idOption = document.createElement("option");
-        idOption.value =
-          client.clientId || client.id;
-        clientIdList.appendChild(idOption);
-
-        const nameOption = document.createElement("option");
-        nameOption.value =
-          client.clientName;
-        clientNameList.appendChild(nameOption);
-      });
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify(clientsCache)
+      );
 
       clientsLoaded = true;
-
-      clientIdInput.classList.remove("client-loading");
-      clientNameInput.classList.remove("client-loading");
+      populateClientLists();
 
     } catch (error) {
-
-      console.error(
-        "Unable to load clients:",
-        error
-      );
-
-      clientIdInput.classList.remove("client-loading");
-      clientNameInput.classList.remove("client-loading");
-
-      showMessage(
-        "Unable to load clients. Please check Firebase access."
-      );
+      console.error("Unable to refresh client lookup:", error);
+      // Cached client data remains usable if available.
     }
+  }
+
+  function populateClientLists() {
+    clientIdList.innerHTML = "";
+    clientNameList.innerHTML = "";
+
+    clientsCache.forEach(client => {
+      const idOption = document.createElement("option");
+      idOption.value = client.clientId || client.id;
+      clientIdList.appendChild(idOption);
+
+      const nameOption = document.createElement("option");
+      nameOption.value = client.clientName;
+      clientNameList.appendChild(nameOption);
+    });
   }
 
   clientIdInput.addEventListener("input", () => {
@@ -765,6 +812,9 @@
   const complianceFilterPanel = document.getElementById("complianceFilterPanel");
   const complianceStatusFilter = document.getElementById("complianceStatusFilter");
   const compliancePaymentFilter = document.getElementById("compliancePaymentFilter");
+  const complianceFromDate = document.getElementById("complianceFromDate");
+  const complianceToDate = document.getElementById("complianceToDate");
+  const complianceRefreshBtn = document.getElementById("complianceRefreshBtn");
   const complianceList = document.getElementById("complianceList");
 
   let complianceRows = [];
@@ -780,17 +830,51 @@
   }
 
   async function loadComplianceList() {
+    const cacheKey = "bizodit_compliance_cache_v2";
+
+    /*
+     * Cached records are shown immediately.
+     * Firebase refreshes them in the background.
+     */
     try {
-      const snapshot = await getDocs(collection(db, "compliances"));
+      const cached =
+        JSON.parse(localStorage.getItem(cacheKey) || "[]");
+
+      if (Array.isArray(cached) && cached.length) {
+        complianceRows = cached;
+        renderComplianceList();
+      }
+    } catch (error) {
+      console.warn("Compliance cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(
+        query(
+          collection(db, "compliances"),
+          limit(500)
+        )
+      );
+
       complianceRows = snapshot.docs.map(item => ({
         id: item.id,
         ...item.data()
       }));
+
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify(complianceRows)
+      );
+
       renderComplianceList();
+
     } catch (error) {
-      console.error("Unable to load compliance:", error);
-      complianceList.innerHTML =
-        '<div class="empty-list">Unable to load compliance records.</div>';
+      console.error("Compliance list load failed:", error);
+
+      if (!complianceRows.length) {
+        complianceList.innerHTML =
+          '<div class="empty-list">Unable to load compliance. Tap Refresh to try again.</div>';
+      }
     }
   }
 
@@ -803,9 +887,22 @@
       const text =
         `${row.complianceID || row.id} ${row.clientId || ""} ${row.clientName || ""} ${row.taskTitle || ""}`.toLowerCase();
 
+      const dueDate =
+        String(row.dueDate || "").slice(0, 10);
+
+      const matchesFrom =
+        !complianceFromDate.value ||
+        (dueDate && dueDate >= complianceFromDate.value);
+
+      const matchesTo =
+        !complianceToDate.value ||
+        (dueDate && dueDate <= complianceToDate.value);
+
       return (!term || text.includes(term)) &&
         (!status || row.status === status) &&
-        (!payment || row.paymentStatus === payment);
+        (!payment || row.paymentStatus === payment) &&
+        matchesFrom &&
+        matchesTo;
     });
 
     rows.sort((a, b) => {
@@ -862,6 +959,19 @@
   complianceSearch.addEventListener("input", renderComplianceList);
   complianceStatusFilter.addEventListener("change", renderComplianceList);
   compliancePaymentFilter.addEventListener("change", renderComplianceList);
+  complianceFromDate.addEventListener("change", renderComplianceList);
+  complianceToDate.addEventListener("change", renderComplianceList);
+
+  complianceRefreshBtn.addEventListener("click", async () => {
+    complianceRefreshBtn.classList.add("spinning");
+
+    try {
+      localStorage.removeItem("bizodit_compliance_cache_v2");
+      await loadComplianceList();
+    } finally {
+      complianceRefreshBtn.classList.remove("spinning");
+    }
+  });
 
   complianceSortBtn.addEventListener("click", () => {
     complianceSortMenu.classList.toggle("show");
