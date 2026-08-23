@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Contacts — CM | BIZODIT</title>
+
+  <style>
+    /* Google Contacts Mobile Style */
+    .contact-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* Single Row Contact Card */
+    .contact-card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background .15s ease;
+    }
+
+    .contact-card-row:last-child {
+      border-bottom: none;
+    }
+
+    .contact-card-row:hover {
+      background: #f8fafc;
+    }
+
+    .contact-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .contact-main {
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .contact-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-meta {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .contact-tag {
+      display: inline-block;
+      padding: 1px 5px;
+      font-size: 10px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    /* Compact All-in-One Row Action Buttons */
+    .contact-action-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .contact-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+
+    .contact-action-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .contact-action-btn.call {
+      color: #0b3b66;
+    }
+
+    .contact-action-btn.whatsapp {
+      color: #15803d;
+    }
+
+    .contact-action-btn.email {
+      color: #b45309;
+    }
+
+    .contact-action-btn.open-btn {
+      color: #334155;
+    }
+
+    .contact-action-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .alphabet-divider {
+      background: #f8fafc;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .alphabet-divider:first-child {
+      border-top: none;
+    }
+
+    .empty-list {
+      padding: 32px 14px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page contact-container">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" onclick="history.back()" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Contacts</h1>
+            <p>Google contacts view of all client records</p>
+            <div class="report-as-on">
+              Total Contacts : <strong id="contactCount">0</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="list-toolbar">
+        <input id="contactSearch" class="list-search" type="search" placeholder="Search contacts by name, phone, ID..." autocomplete="off">
+        <button id="exportVCardBtn" class="list-icon-btn" type="button" title="Export Contacts (VCF)"><i data-lucide="download"></i></button>
+        <button id="contactRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+      </div>
+
+      <div id="contactList" class="contact-list">
+        <div class="empty-list">Loading contacts...</div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item active" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { db } from "../../../js/firebase-config.js";
+  import {
+    collection,
+    getDocs,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const contactList = document.getElementById("contactList");
+  const contactSearch = document.getElementById("contactSearch");
+  const contactRefreshBtn = document.getElementById("contactRefreshBtn");
+  const contactCount = document.getElementById("contactCount");
+
+  const CACHE = "bizodit_clients_cache_v3";
+  let clients = [];
+
+  const clean = v => String(v || "").trim();
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
+  function getInitials(name) {
+    const parts = clean(name).split(" ").filter(Boolean);
+    if (!parts.length) return "C";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  // Pre-selected clean avatar background tones
+  const AVATAR_COLORS = [
+    { bg: "#e0f2fe", text: "#0369a1" },
+    { bg: "#fef3c7", text: "#b45309" },
+    { bg: "#dcfce7", text: "#15803d" },
+    { bg: "#f3e8ff", text: "#7e22ce" },
+    { bg: "#fee2e2", text: "#b91c1c" },
+    { bg: "#ffedd5", text: "#c2410c" }
+  ];
+
+  function getColorForName(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  }
+
+  async function loadContacts() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        clients = cached;
+        renderContacts();
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "clients"), limit(500)));
+      clients = snapshot.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(c => c.clientId && c.clientName);
+
+      clients.sort((a, b) => String(a.clientName).localeCompare(String(b.clientName)));
+      localStorage.setItem(CACHE, JSON.stringify(clients));
+      renderContacts();
+    } catch (err) {
+      console.error("Failed to load contacts:", err);
+      if (!clients.length) {
+        contactList.innerHTML = `<div class="empty-list">Unable to load contacts. Tap Refresh to retry.</div>`;
+      }
+    }
+  }
+
+  function renderContacts() {
+    const term = clean(contactSearch.value).toLowerCase();
+
+    const filtered = clients.filter(c => {
+      const searchStr = `${c.clientName || ""} ${c.clientId || ""} ${c.mobile || ""} ${c.email || ""}`.toLowerCase();
+      return !term || searchStr.includes(term);
+    });
+
+    contactCount.textContent = filtered.length;
+
+    if (!filtered.length) {
+      contactList.innerHTML = `<div class="empty-list">No contacts found matching "${escapeHtml(contactSearch.value)}".</div>`;
+      return;
+    }
+
+    // Alphabetical Grouping
+    let currentLetter = "";
+    let html = "";
+
+    filtered.forEach(c => {
+      const name = c.clientName || "Unnamed Client";
+      const firstChar = name.charAt(0).toUpperCase();
+      const groupLetter = /^[A-Z]/.test(firstChar) ? firstChar : "#";
+
+      if (groupLetter !== currentLetter) {
+        currentLetter = groupLetter;
+        html += `<div class="alphabet-divider">${escapeHtml(currentLetter)}</div>`;
+      }
+
+      const id = String(c.clientId || c.id);
+      const phone = clean(c.mobile);
+      const email = clean(c.email);
+      const wa = whatsappClean(phone);
+      const colors = getColorForName(name);
+      const initials = getInitials(name);
+
+      html += `
+        <div class="contact-card-row">
+          <div class="contact-avatar" style="background:${colors.bg}; color:${colors.text};">
+            ${escapeHtml(initials)}
+          </div>
+          
+          <div class="contact-main" onclick="location.href='clients.html'">
+            <div class="contact-name">${escapeHtml(name)}</div>
+            <div class="contact-meta">
+              <span>${phone ? escapeHtml(phone) : 'No phone'}</span>
+              <span class="contact-tag">${escapeHtml(id)}</span>
+              ${c.constitution ? `<span class="contact-tag">${escapeHtml(c.constitution)}</span>` : ''}
+            </div>
+          </div>
+
+          <div class="contact-action-group">
+            ${phone ? `<a class="contact-action-btn call" href="tel:${escapeHtml(phone)}" title="Call"><i data-lucide="phone"></i></a>` : ""}
+            ${phone ? `<a class="contact-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
+            ${email ? `<a class="contact-action-btn email" href="mailto:${escapeHtml(email)}" title="Email"><i data-lucide="mail"></i></a>` : ""}
+            <a class="contact-action-btn open-btn" href="clients.html" title="Open Full Client"><i data-lucide="arrow-up-right"></i></a>
+          </div>
+        </div>
+      `;
+    });
+
+    contactList.innerHTML = html;
+    window.lucide?.createIcons();
+  }
+
+  // Export Contacts to .VCF (vCard Format for mobile import)
+  document.getElementById("exportVCardBtn").addEventListener("click", () => {
+    if (!clients.length) {
+      alert("No contacts available to export.");
+      return;
+    }
+
+    let vcardData = "";
+    clients.forEach(c => {
+      vcardData += "BEGIN:VCARD\n";
+      vcardData += "VERSION:3.0\n";
+      vcardData += `FN:${c.clientName || 'Client'}\n`;
+      if (c.mobile) vcardData += `TEL;TYPE=CELL:${c.mobile}\n`;
+      if (c.email) vcardData += `EMAIL;TYPE=WORK:${c.email}\n`;
+      if (c.address) vcardData += `ADR;TYPE=WORK:;;${c.address.replace(/\n/g, ' ')};;;;\n`;
+      if (c.clientId) vcardData += `NOTE:Client ID: ${c.clientId}\n`;
+      vcardData += "END:VCARD\n";
+    });
+
+    const blob = new Blob([vcardData], { type: "text/vcard;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `contacts_${new Date().toISOString().slice(0, 10)}.vcf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  contactSearch.addEventListener("input", renderContacts);
+
+  contactRefreshBtn.addEventListener("click", async () => {
+    contactRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE);
+      await loadContacts();
+    } finally {
+      contactRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadContacts();
+</script>
+
+</body>
+</html>
