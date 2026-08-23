@@ -10,25 +10,48 @@
 <title>Clients — CM | BIZODIT</title>
 <style>
 .client-id-box{display:flex;align-items:center;gap:8px}.client-id-box input{flex:1}.id-status{min-width:24px;text-align:center}
-.list-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.list-search{flex:1 1 180px;min-width:150px}
-.refresh-btn,.list-icon-btn,.client-action-btn,.form-view-action{width:40px;height:40px;border:1px solid #d7dce2;background:#fff;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+
+/* Toolbar adjustments */
+.list-toolbar{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.list-search{flex:1 1 160px;min-width:140px;height:38px;border:1px solid #d7dce2;border-radius:8px;padding:0 12px;font-size:13px;outline:none;background:#fff;box-sizing:border-box;transition:border-color .15s}
+.list-search:focus{border-color:#0b3b66}
+.refresh-btn,.list-icon-btn,.form-view-action{width:38px;height:38px;border:1px solid #d7dce2;background:#fff;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;color:#4b5563;box-sizing:border-box}
 .refresh-btn.spinning svg{animation:spin .8s linear infinite}.list-icon-btn.active{background:#f1f4f7}
-.add-form-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:72px;height:40px;padding:0 12px}
+.add-form-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:68px;height:38px;padding:0 12px;border-radius:8px;font-size:13px;font-weight:500;box-sizing:border-box}
+
+/* Panels */
 .list-panel{display:block}.list-panel.hidden,.entry-panel.hidden{display:none}
-.data-list{display:flex;flex-direction:column;gap:8px}.data-row{border:1px solid #e0e3e7;border-radius:10px;padding:12px 14px;background:#fff}
-.data-row-main{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.data-row-content{min-width:0;flex:1;cursor:pointer}
-.data-row-title{font-weight:600;font-size:15px;color:#25313d}.data-row-sub{margin-top:4px;color:#727983;font-size:12px;line-height:1.45}
-.data-row-meta{text-align:right;font-size:12px;color:#727983;white-space:nowrap}
-.client-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid #edf0f2}
-.client-action-btn{width:34px;height:34px;color:#5c6975;text-decoration:none}.client-action-btn.whatsapp{color:#238b55}.client-action-btn.contact{color:#0b3b66}.client-action-btn.delete{color:#b42318}
+.data-list{display:flex;flex-direction:column;gap:8px}
+
+/* Client Card & Actions */
+.data-row{border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;background:#fff}
+.data-row-main{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.data-row-content{min-width:0;flex:1;cursor:pointer}
+.data-row-title{font-weight:600;font-size:14px;color:#1e293b}
+.data-row-sub{margin-top:3px;color:#64748b;font-size:12px;line-height:1.4}
+.data-row-meta{text-align:right;white-space:nowrap}
+
+/* Status Badges - Minimal Subtle Palette */
+.status-badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:500}
+.status-badge.active{background:#f0fdf4;color:#166534;border:1px solid #dcfce7}
+.status-badge.inactive{background:#f8fafc;color:#64748b;border:1px solid #e2e8f0}
+
+/* Reduced height action bar inside card */
+.client-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:7px;padding-top:7px;border-top:1px solid #f1f5f9}
+.client-action-btn{width:30px;height:30px;border:1px solid #e2e8f0;background:#fafafa;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#475569;text-decoration:none;cursor:pointer}
+.client-action-btn svg{width:15px;height:15px}
+.client-action-btn.call{color:#0b3b66}
+.client-action-btn.whatsapp{color:#15803d}
+.client-action-btn.contact{color:#6b7280}
+.client-action-btn.open-btn{color:#334155}
+
 .empty-list{padding:28px 12px;text-align:center;color:#777;font-size:13px}
 .filter-panel{display:none;margin-bottom:12px;padding:12px;border:1px solid #e0e3e7;border-radius:10px;background:#fafbfc}.filter-panel.show{display:block}
 .filter-panel .field{margin-bottom:8px}.date-range{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-top:8px}.date-range .field{flex:1 1 140px;min-width:130px;margin-bottom:0}.date-range .field label{display:block;margin-bottom:5px}
 .sort-menu{display:none}.sort-menu.show{display:block;margin-bottom:10px}.sort-options{display:flex;gap:6px;flex-wrap:wrap}
-.sort-option{border:1px solid #d7dce2;background:#fff;border-radius:7px;padding:7px 10px;font-size:12px;cursor:pointer}.sort-option.active{background:#eef2f5;font-weight:600}
+.sort-option{border:1px solid #d7dce2;background:#fff;border-radius:7px;padding:6px 10px;font-size:12px;cursor:pointer}.sort-option.active{background:#eef2f5;font-weight:600}
 .form-message{display:none;margin:0 0 14px;padding:10px 12px;border-radius:8px;font-size:13px;line-height:1.4}.form-message.show{display:block}.form-message.error{background:#fff1f1;color:#b42318;border:1px solid #f3c2c2}.form-message.success{background:#effaf3;color:#16723a;border:1px solid #b9e4c7}
-.form-view-actions{display:flex;justify-content:flex-end;gap:6px;width:auto;height:auto;border:0;background:transparent;margin:-4px 0 10px}.form-view-action{width:38px;height:38px}.form-view-action.delete{color:#b42318}.form-view-action.hidden{display:none}
+.form-view-actions{display:flex;justify-content:flex-end;gap:6px;width:auto;height:auto;border:0;background:transparent;margin:-4px 0 10px}.form-view-action.delete{color:#b42318}.form-view-action.hidden{display:none}
 .view-mode input:not([readonly]),.view-mode select,.view-mode textarea{background:#f7f8f9;color:#33404c;pointer-events:none}.view-mode .form-actions{display:none}
 .form-mode-label{display:none;margin:-7px 0 14px;font-size:11px;color:#7b8791}.view-mode .form-mode-label{display:block}
 .contact-picker-hidden{display:none!important}.contact-help{font-size:11px;color:#7b8791;margin-top:5px}
@@ -51,11 +74,15 @@
 
 <div id="clientListPanel" class="form-section list-panel">
 <div class="list-toolbar">
-<input id="clientSearch" class="list-search" type="search" placeholder="Search clients..." autocomplete="off">
-<button id="clientSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
-<button id="clientFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
-<button id="clientRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
-<button id="addClientBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+  <input id="clientSearch" class="list-search" type="search" placeholder="Search clients..." autocomplete="off">
+  <button id="clientSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+  <button id="clientFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+  <button id="clientRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+  <button id="exportClientsBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+  <button id="importClientsBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+  <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Import Template"><i data-lucide="file-spreadsheet"></i></button>
+  <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+  <button id="addClientBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
 </div>
 
 <div id="clientSortMenu" class="sort-menu"><div class="sort-options">
@@ -120,7 +147,7 @@
 
 <script type="module">
 import { db } from "../../../js/firebase-config.js";
-import { doc,getDoc,getDocs,updateDoc,deleteDoc,collection,query,where,limit,runTransaction } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { doc,getDoc,getDocs,updateDoc,deleteDoc,collection,query,where,limit,runTransaction,writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $=id=>document.getElementById(id);
 const form=$("clientForm"), listPanel=$("clientListPanel"), list=$("clientList"), msg=$("formMessage"), save=$("saveBtn");
@@ -205,15 +232,20 @@ return String(b.createdAt||"").localeCompare(String(a.createdAt||""));
 });
 if(!rows.length){list.innerHTML='<div class="empty-list">No clients found.</div>';return}
 list.innerHTML=rows.map(c=>{
-const id=String(c.clientId||c.id||""),phone=clean(c.mobile),wa=whatsapp(phone);
+const id=String(c.clientId||c.id||""),phone=clean(c.mobile),wa=whatsapp(phone),st=(c.status||"Active");
 return `<div class="data-row">
 <div class="data-row-main">
-<div class="data-row-content" data-open="${esc(id)}"><div class="data-row-title">${esc(c.clientName||"Unnamed Client")}</div><div class="data-row-sub">${esc(id)} · ${phone?`<span class="client-phone">${esc(phone)}</span>`:"No mobile number"}</div></div>
-<div class="data-row-meta">${esc(c.status||"Active")}</div>
+  <div class="data-row-content" data-open="${esc(id)}">
+    <div class="data-row-title">${esc(c.clientName||"Unnamed Client")}</div>
+    <div class="data-row-sub">${esc(id)} · ${phone?`<span class="client-phone">${esc(phone)}</span>`:"No mobile number"}</div>
+  </div>
+  <div class="data-row-meta"><span class="status-badge ${st.toLowerCase()}">${esc(st)}</span></div>
 </div>
 <div class="client-row-actions">
-${phone?`<a class="client-action-btn whatsapp" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>`:`<button class="client-action-btn contact" data-contact="${esc(id)}" type="button" title="Add from phone contacts"><i data-lucide="contact-round"></i></button>`}
-<button class="client-action-btn" data-open="${esc(id)}" type="button" title="Open full client"><i data-lucide="arrow-up-right"></i></button>
+  ${phone?`<a class="client-action-btn call" href="tel:${esc(phone)}" title="Call"><i data-lucide="phone"></i></a>`:""}
+  ${phone?`<a class="client-action-btn whatsapp" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>`:""}
+  <button class="client-action-btn contact" data-contact="${esc(id)}" type="button" title="Phone Contacts"><i data-lucide="contact-round"></i></button>
+  <button class="client-action-btn open-btn" data-open="${esc(id)}" type="button" title="Open Client"><i data-lucide="arrow-up-right"></i></button>
 </div></div>`;
 }).join("");
 window.lucide?.createIcons();
@@ -238,7 +270,7 @@ $("contactHelp").textContent=contactSupported()&&mode!=="view"?"Tap the contact 
 }
 
 async function pickContact(){
-if(!contactSupported()){show("Phone contact selection is not supported by this browser. Please enter the mobile number manually.");return}
+if(!contactSupported()){show("Phone contact selection is not supported by this browser. Please enter manually.");return}
 try{
 const a=await navigator.contacts.select(["name","tel"],{multiple:false});if(!a?.length)return;
 const phone=(a[0].tel||[])[0];if(!phone){show("The selected contact has no phone number.");return}
@@ -246,7 +278,7 @@ let n=String(phone).replace(/\D/g,"");if(n.startsWith("91")&&n.length===12)n=n.s
 if(n.length!==10){show("The selected contact does not have a valid 10 digit Indian mobile number.");return}
 $("mobile").value=n;if(mode==="new"&&!clean($("clientName").value)&&a[0].name?.[0])$("clientName").value=a[0].name[0];
 show("Mobile number added from phone contact.","success");
-}catch(e){if(e?.name!=="AbortError")show("Unable to access phone contacts. Please enter the mobile number manually.")}
+}catch(e){if(e?.name!=="AbortError")show("Unable to access phone contacts.")}
 }
 
 async function contactForClient(id){
@@ -287,7 +319,7 @@ tx.set(doc(db,"clients",made),{...d,clientId:made,createdAt:now,updatedAt:now});
 });
 $("idStatus").textContent="✓";show(`Client ${made} saved successfully.`,"success");localStorage.removeItem(CACHE);
 setTimeout(()=>{openList();load()},450);
-}catch(e){console.error(e);show(e.message||"Unable to save client. Please try again.");$("idStatus").textContent=""}
+}catch(e){console.error(e);show(e.message||"Unable to save client.");$("idStatus").textContent=""}
 finally{save.disabled=false;form.classList.remove("saving");$("saveBtn").querySelector(".save-text").textContent="Save Client"}
 }
 
@@ -302,6 +334,94 @@ localStorage.setItem(CACHE,JSON.stringify(clients));if(!silent)show("Client upda
 }catch(e){console.error(e);if(!silent)show(e.message||"Unable to update client.");return false}
 finally{save.disabled=false;form.classList.remove("saving")}
 }
+
+/* CSV Export, Import & Template Download */
+function downloadBlob(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+$("downloadTemplateBtn").addEventListener("click", () => {
+  const template = "Client Name,Legal Name,Constitution,Mobile,Email,PAN,Aadhaar,GSTIN,Branch ID,Address,Status,Notes\n" +
+                   "Acme Corp,Acme Private Limited,Private Limited,9876543210,info@acme.com,ABCDE1234F,,27ABCDE1234F1Z5,BR01,\"123 Industrial Area\",Active,Sample notes";
+  downloadBlob(template, "clients_template.csv", "text/csv;charset=utf-8;");
+});
+
+$("exportClientsBtn").addEventListener("click", () => {
+  if (!clients.length) { alert("No clients to export."); return; }
+  const headers = ["Client ID","Client Name","Legal Name","Constitution","Mobile","Email","PAN","Aadhaar","GSTIN","Branch ID","Address","Status","Notes","Created At"];
+  const rows = clients.map(c => [
+    `"${c.clientId||c.id||""}"`, `"${(c.clientName||"").replace(/"/g,'""')}"`, `"${(c.legalName||"").replace(/"/g,'""')}"`,
+    `"${c.constitution||""}"`, `"${c.mobile||""}"`, `"${c.email||""}"`, `"${c.pan||""}"`, `"${c.adhar||""}"`,
+    `"${c.gstin||""}"`, `"${c.branchId||""}"`, `"${(c.address||"").replace(/"/g,'""')}"`, `"${c.status||"Active"}"`,
+    `"${(c.notes||"").replace(/"/g,'""')}"`, `"${c.createdAt||""}"`
+  ]);
+  const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  downloadBlob(csv, `clients_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+});
+
+$("importClientsBtn").addEventListener("click", () => $("csvFileInput").click());
+
+$("csvFileInput").addEventListener("change", async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const text = await file.text();
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) { alert("CSV is empty or missing data rows."); return; }
+
+  const parseRow = row => {
+    const res = []; let inQ = false, val = "";
+    for (let i = 0; i < row.length; i++) {
+      const c = row[i];
+      if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+      else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+      else val += c;
+    }
+    res.push(val.trim());
+    return res;
+  };
+
+  const rows = lines.slice(1).map(parseRow);
+  if (!confirm(`Import ${rows.length} client(s)?`)) { e.target.value = ""; return; }
+
+  $("clientRefreshBtn").classList.add("spinning");
+  try {
+    let imported = 0;
+    const now = new Date().toISOString();
+    for (const r of rows) {
+      const name = r[0]; if (!name) continue;
+      await runTransaction(db, async tx => {
+        const next = await nextId(tx);
+        const record = {
+          clientId: next.id, clientName: name, legalName: r[1]||"", constitution: r[2]||"",
+          mobile: clean(r[3]), email: clean(r[4]).toLowerCase(), pan: upper(r[5]),
+          adhar: clean(r[6]), gstin: upper(r[7]), branchId: clean(r[8]),
+          address: r[9]||"", status: clean(r[10])||"Active", notes: r[11]||"",
+          createdAt: now, updatedAt: now
+        };
+        tx.set(next.counter, { lastNumber: next.n, updatedAt: now }, { merge: true });
+        tx.set(doc(db, "clients", next.id), record);
+      });
+      imported++;
+    }
+    localStorage.removeItem(CACHE);
+    await load();
+    alert(`Successfully imported ${imported} client(s).`);
+  } catch (err) {
+    console.error(err);
+    alert("Error during import: " + err.message);
+  } finally {
+    $("clientRefreshBtn").classList.remove("spinning");
+    e.target.value = "";
+  }
+});
 
 $("editClientBtn").addEventListener("click",editMode);
 
