@@ -1,8 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
 
   <link rel="stylesheet" href="../../../css/cm.css">
   <link rel="stylesheet" href="../../../css/forms.css">
@@ -13,450 +18,1149 @@
   <title>Contacts — CM | BIZODIT</title>
 
   <style>
-    .contact-container {
-      max-width: 800px;
-      margin: 0 auto;
+
+    /* =========================================================
+       CONTACTS — STANDALONE PWA STYLE
+       No header / no footer / no bottom navigation
+       ========================================================= */
+
+    :root {
+      --app-bg: #f6f7f9;
+      --card-bg: #ffffff;
+
+      --border: #e1e5ea;
+      --border-light: #edf0f3;
+
+      --text: #172033;
+      --muted: #64748b;
+
+      /* Main application colour */
+      --primary: #0b3b66;
+
+      --primary-soft: #e8f0f7;
+
+      --green: #15803d;
+      --yellow: #b45309;
+      --indigo: #4f46e5;
+      --danger: #b42318;
+
+      --radius: 10px;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    /* Standard Toolbar */
-    .list-toolbar {
+
+    /* =========================================================
+       RESET
+       ========================================================= */
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: var(--app-bg);
+    }
+
+    body {
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+
+    /* =========================================================
+       APP
+       ========================================================= */
+
+    .contacts-app {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      background: var(--app-bg);
+
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
+
+
+    .contacts-app-inner {
+      width: 100%;
+      max-width: 850px;
+
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      margin: 0 auto;
+
+      padding: 14px;
+    }
+
+
+    /* =========================================================
+       APP TITLE
+       ========================================================= */
+
+    .contacts-topbar {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      margin-bottom: 14px;
     }
 
-    .list-search {
-      flex: 1 1 160px;
-      min-width: 140px;
-      height: 38px;
-      border: 1px solid #d7dce2;
-      border-radius: 8px;
-      padding: 0 12px;
+
+    .contacts-title-area {
+      min-width: 0;
+    }
+
+
+    .contacts-title {
+      margin: 0;
+
+      font-size: 27px;
+      line-height: 1.15;
+
+      font-weight: 700;
+
+      letter-spacing: -0.5px;
+
+      color: var(--text);
+    }
+
+
+    .contacts-subtitle {
+      margin: 4px 0 0;
+
       font-size: 13px;
-      outline: none;
-      background: #fff;
-      box-sizing: border-box;
-      transition: border-color .15s;
+
+      color: var(--muted);
+
+      white-space: nowrap;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
     }
 
-    .list-search:focus {
-      border-color: #0b3b66;
-    }
 
-    .refresh-btn,
-    .list-icon-btn {
-      width: 38px;
-      height: 38px;
-      border: 1px solid #d7dce2;
+    .contacts-count {
+      flex: 0 0 auto;
+
+      min-width: 44px;
+      height: 40px;
+
+      padding: 0 10px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 10px;
+
       background: #fff;
-      border-radius: 8px;
+
       display: inline-flex;
+
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      flex: 0 0 auto;
-      color: #4b5563;
-      box-sizing: border-box;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      color: var(--primary);
+
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, .03);
     }
+
+
+    /* =========================================================
+       TOOLBAR
+       ========================================================= */
+
+    .list-toolbar {
+      display: flex;
+
+      align-items: center;
+
+      gap: 7px;
+
+      margin-bottom: 10px;
+    }
+
+
+    .list-search {
+      flex: 1 1 auto;
+
+      min-width: 0;
+
+      height: 42px;
+
+      border: 1px solid #d7dce2;
+
+      border-radius: 9px;
+
+      padding: 0 13px;
+
+      font-size: 14px;
+
+      outline: none;
+
+      background: #fff;
+
+      color: var(--text);
+
+      transition:
+        border-color .15s,
+        box-shadow .15s;
+    }
+
+
+    .list-search::placeholder {
+      color: #94a3b8;
+    }
+
+
+    .list-search:focus {
+      border-color: var(--primary);
+
+      box-shadow:
+        0 0 0 2px rgba(11, 59, 102, .07);
+    }
+
+
+    .list-icon-btn,
+    .refresh-btn {
+      width: 42px;
+      height: 42px;
+
+      flex: 0 0 42px;
+
+      border: 1px solid #d7dce2;
+
+      background: #fff;
+
+      border-radius: 9px;
+
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      cursor: pointer;
+
+      color: #475569;
+    }
+
+
+    .list-icon-btn svg,
+    .refresh-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+
+    .list-icon-btn.active {
+      background: var(--primary-soft);
+
+      border-color: #cbd5e1;
+
+      color: var(--primary);
+    }
+
 
     .refresh-btn.spinning svg {
       animation: spin .8s linear infinite;
     }
 
-    .list-icon-btn.active {
-      background: #f1f4f7;
-    }
 
-    /* Sort Menu & Filter Panel */
+    /* =========================================================
+       SORT
+       ========================================================= */
+
     .sort-menu {
       display: none;
-      position: relative;
-    }
 
-    .sort-menu.show {
-      display: block;
       margin-bottom: 10px;
     }
 
+
+    .sort-menu.show {
+      display: block;
+    }
+
+
     .sort-options {
       display: flex;
+
       gap: 6px;
+
       flex-wrap: wrap;
     }
 
+
     .sort-option {
-      border: 1px solid #d7dce2;
+      height: 34px;
+
+      border: 1px solid var(--border);
+
       background: #fff;
+
       border-radius: 7px;
-      padding: 6px 10px;
+
+      padding: 0 11px;
+
       font-size: 12px;
+
+      color: #475569;
+
       cursor: pointer;
     }
 
+
     .sort-option.active {
-      background: #eef2f5;
+      background: var(--primary-soft);
+
+      color: var(--primary);
+
       font-weight: 600;
+
+      border-color: #cbd5e1;
     }
+
+
+    /* =========================================================
+       FILTER
+       ========================================================= */
 
     .filter-panel {
       display: none;
-      margin-bottom: 12px;
-      padding: 12px;
-      border: 1px solid #e0e3e7;
+
+      margin-bottom: 10px;
+
+      padding: 11px;
+
+      border: 1px solid var(--border);
+
       border-radius: 10px;
+
       background: #fafbfc;
     }
+
 
     .filter-panel.show {
       display: block;
     }
 
+
     .filter-grid {
       display: flex;
+
       gap: 8px;
+
       flex-wrap: wrap;
     }
 
+
     .filter-grid .field {
-      flex: 1 1 160px;
+      flex: 1 1 180px;
+
       min-width: 140px;
-      margin-bottom: 0;
+
+      margin: 0;
     }
+
 
     .filter-grid label {
       display: block;
-      font-size: 11px;
-      color: #64748b;
+
       margin-bottom: 4px;
+
+      font-size: 11px;
+
+      color: var(--muted);
+
       font-weight: 500;
     }
 
+
     .filter-grid select {
       width: 100%;
-      height: 34px;
+
+      height: 36px;
+
       border: 1px solid #d7dce2;
-      border-radius: 6px;
+
+      border-radius: 7px;
+
       background: #fff;
+
+      color: var(--text);
+
       font-size: 12px;
+
       padding: 0 8px;
+
+      outline: none;
     }
 
-    /* Status / Toast Notification */
+
+    /* =========================================================
+       TOAST
+       ========================================================= */
+
     .toast-msg {
       display: none;
+
       margin-bottom: 10px;
-      padding: 8px 12px;
-      border-radius: 6px;
+
+      padding: 9px 12px;
+
+      border-radius: 7px;
+
       font-size: 12px;
     }
+
 
     .toast-msg.show {
       display: block;
     }
 
+
     .toast-msg.success {
       background: #effaf3;
+
       color: #16723a;
+
       border: 1px solid #b9e4c7;
     }
 
+
     .toast-msg.error {
       background: #fff1f1;
-      color: #b42318;
+
+      color: var(--danger);
+
       border: 1px solid #f3c2c2;
     }
 
-    /* Google Contacts Mobile Style List */
+
+    /* =========================================================
+       CONTACT LIST
+       ========================================================= */
+
     .contact-list {
+      width: 100%;
+
       display: flex;
+
       flex-direction: column;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+
+      background: var(--card-bg);
+
+      border: 1px solid var(--border);
+
+      border-radius: 11px;
+
       overflow: hidden;
+
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, .02);
     }
 
+
+    /* =========================================================
+       CONTACT ROW
+       ========================================================= */
+
     .contact-card-row {
+      width: 100%;
+
+      min-height: 64px;
+
       display: flex;
+
       align-items: center;
-      justify-content: space-between;
+
       gap: 10px;
-      padding: 10px 12px;
-      border-bottom: 1px solid #f1f5f9;
+
+      padding: 10px 11px;
+
+      border-bottom: 1px solid var(--border-light);
+
+      background: #fff;
+
       transition: background .15s ease;
     }
+
 
     .contact-card-row:last-child {
       border-bottom: none;
     }
 
-    .contact-card-row:hover {
+
+    .contact-card-row:active {
       background: #f8fafc;
     }
 
+
+    /* =========================================================
+       STANDARD PROFILE AVATAR
+       Same CSS main colour for every contact
+       ========================================================= */
+
     .contact-avatar {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
+
+      flex: 0 0 40px;
+
       border-radius: 50%;
-      font-size: 13px;
-      font-weight: 700;
+
       display: inline-flex;
+
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      text-transform: uppercase;
+
+      background: var(--primary-soft);
+
+      color: var(--primary);
+
       user-select: none;
     }
 
+
+    .contact-avatar svg {
+      width: 20px;
+      height: 20px;
+
+      stroke-width: 2;
+    }
+
+
+    /* =========================================================
+       CONTACT DETAILS
+       ========================================================= */
+
     .contact-main {
       flex: 1;
+
       min-width: 0;
+
       cursor: pointer;
     }
 
+
     .contact-name {
-      font-size: 14px;
+      font-size: 15px;
+
+      line-height: 1.25;
+
       font-weight: 600;
-      color: #1e293b;
+
+      color: var(--text);
+
       white-space: nowrap;
+
       overflow: hidden;
+
       text-overflow: ellipsis;
     }
+
 
     .contact-meta {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      min-width: 0;
+
       display: flex;
+
       align-items: center;
+
       gap: 5px;
+
+      margin-top: 3px;
+
+      font-size: 12px;
+
+      line-height: 1.2;
+
+      color: var(--muted);
+
+      white-space: nowrap;
+
+      overflow: hidden;
     }
 
-    .contact-tag {
-      display: inline-block;
-      padding: 1px 5px;
-      font-size: 10px;
-      border-radius: 4px;
-      background: #f1f5f9;
-      color: #475569;
+
+    .contact-meta > span:first-child {
+      overflow: hidden;
+
+      text-overflow: ellipsis;
     }
+
+
+    .contact-tag {
+      flex-shrink: 0;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      height: 19px;
+
+      padding: 0 5px;
+
+      border-radius: 4px;
+
+      background: #f1f5f9;
+
+      color: #475569;
+
+      font-size: 9px;
+
+      font-weight: 500;
+    }
+
 
     .contact-tag.missing {
       background: #fff1f1;
-      color: #b42318;
+
+      color: var(--danger);
+
       border: 1px solid #fed7d7;
+
+      font-size: 10px;
     }
 
-    /* Single-Row Action Buttons */
+
+    /* =========================================================
+       ACTION BUTTONS
+       ========================================================= */
+
     .contact-action-group {
       display: inline-flex;
+
       align-items: center;
+
       gap: 4px;
+
       flex-shrink: 0;
     }
 
+
     .contact-action-btn {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
+
       border: 1px solid #e2e8f0;
+
       background: #fafafa;
-      border-radius: 6px;
+
+      border-radius: 7px;
+
       display: inline-flex;
+
       align-items: center;
       justify-content: center;
+
       color: #475569;
+
       text-decoration: none;
+
       cursor: pointer;
-      transition: all .15s ease;
+
+      transition:
+        background .15s ease,
+        border-color .15s ease;
     }
+
 
     .contact-action-btn svg {
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
     }
+
 
     .contact-action-btn.call {
-      color: #0b3b66;
+      color: var(--primary);
     }
+
 
     .contact-action-btn.whatsapp {
-      color: #15803d;
+      color: var(--green);
     }
 
+
     .contact-action-btn.attach-contact {
-      color: #b45309;
-      background: #fefce8;
+      color: var(--yellow);
+
+      background: #fffef0;
+
       border-color: #fef08a;
     }
 
+
     .contact-action-btn.email {
-      color: #4f46e5;
+      color: var(--indigo);
     }
+
 
     .contact-action-btn.open-btn {
       color: #334155;
     }
 
-    .contact-action-btn:hover {
+
+    .contact-action-btn:active {
       background: #f1f5f9;
     }
 
+
+    /* =========================================================
+       ALPHABET
+       ========================================================= */
+
     .alphabet-divider {
+      min-height: 27px;
+
+      display: flex;
+
+      align-items: center;
+
+      padding: 4px 13px;
+
       background: #f8fafc;
-      padding: 4px 14px;
+
+      border-top: 1px solid var(--border);
+
+      border-bottom: 1px solid var(--border-light);
+
       font-size: 11px;
+
       font-weight: 700;
+
       color: #64748b;
-      border-bottom: 1px solid #e2e8f0;
-      border-top: 1px solid #e2e8f0;
+
+      letter-spacing: .4px;
     }
+
 
     .alphabet-divider:first-child {
       border-top: none;
     }
 
+
+    /* =========================================================
+       EMPTY
+       ========================================================= */
+
     .empty-list {
-      padding: 32px 14px;
+      padding: 42px 14px;
+
       text-align: center;
+
       color: #777;
+
       font-size: 13px;
+
+      background: #fff;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 560px) {
+
+      .contacts-app-inner {
+        padding: 12px 10px;
+      }
+
+
+      .contacts-title {
+        font-size: 27px;
+      }
+
+
+      .contacts-subtitle {
+        font-size: 12px;
+      }
+
+
+      .contacts-count {
+        height: 40px;
+
+        min-width: 44px;
+      }
+
+
+      .contact-card-row {
+        min-height: 64px;
+
+        padding: 10px 8px;
+      }
+
+
+      .contact-avatar {
+        width: 39px;
+        height: 39px;
+
+        flex-basis: 39px;
+      }
+
+
+      .contact-action-group {
+        gap: 3px;
+      }
+
+
+      .contact-action-btn {
+        width: 31px;
+        height: 31px;
+      }
     }
+
+
+    @media (max-width: 390px) {
+
+      .contact-action-btn.email,
+      .contact-action-btn.open-btn {
+        display: none;
+      }
+
+
+      .contact-meta .contact-tag:last-child {
+        display: none;
+      }
+    }
+
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
-<header class="cm-header">
-  <div class="cm-header-inner">
-    <div class="cm-header-left">
-      <button class="menu-toggle" id="menuToggle" type="button">
-        <i data-lucide="menu"></i>
+
+<!-- =========================================================
+     STANDALONE CONTACTS APP
+     ========================================================= -->
+
+<div class="contacts-app">
+
+  <div class="contacts-app-inner">
+
+
+    <!-- =====================================================
+         TITLE
+         ===================================================== -->
+
+    <section class="contacts-topbar">
+
+      <div class="contacts-title-area">
+
+        <h1 class="contacts-title">
+          Contacts
+        </h1>
+
+        <p class="contacts-subtitle">
+          Client contact directory
+        </p>
+
+      </div>
+
+
+      <div
+        class="contacts-count"
+        id="contactCount"
+      >
+        0
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TOAST
+         ===================================================== -->
+
+    <div
+      id="toastMessage"
+      class="toast-msg"
+    ></div>
+
+
+    <!-- =====================================================
+         TOOLBAR
+         ===================================================== -->
+
+    <div class="list-toolbar">
+
+
+      <input
+        id="contactSearch"
+        class="list-search"
+        type="search"
+        placeholder="Search contacts..."
+        autocomplete="off"
+      >
+
+
+      <button
+        id="contactSortBtn"
+        class="list-icon-btn"
+        type="button"
+        title="Sort Contacts"
+      >
+        <i data-lucide="arrow-up-down"></i>
       </button>
 
-      <div class="cm-brand">
-        <div class="cm-logo">CM</div>
-        <div class="cm-brand-title">CM | BIZODIT</div>
-      </div>
-    </div>
-  </div>
-</header>
 
-<main class="main">
-  <div class="page">
-    <div class="form-page contact-container">
+      <button
+        id="contactFilterBtn"
+        class="list-icon-btn"
+        type="button"
+        title="Filter Contacts"
+      >
+        <i data-lucide="list-filter"></i>
+      </button>
 
-      <section class="module-header">
-        <div class="module-header-left">
-          <button class="back-btn" onclick="history.back()" type="button">
-            <i data-lucide="arrow-left"></i>
-          </button>
 
-          <div class="module-title">
-            <h1>Contacts</h1>
-            <p>Google contacts view of all client records</p>
-            <div class="report-as-on">
-              Total Contacts : <strong id="contactCount">0</strong>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- CSV EXPORT -->
 
-      <div id="toastMessage" class="toast-msg"></div>
+      <button
+        id="exportCsvBtn"
+        class="list-icon-btn"
+        type="button"
+        title="Export Contacts CSV"
+      >
+        <i data-lucide="file-spreadsheet"></i>
+      </button>
 
-      <!-- Toolbar -->
-      <div class="list-toolbar">
-        <input id="contactSearch" class="list-search" type="search" placeholder="Search by name, ID, mobile, email..." autocomplete="off">
-        <button id="contactSortBtn" class="list-icon-btn" type="button" title="Sort Contacts"><i data-lucide="arrow-up-down"></i></button>
-        <button id="contactFilterBtn" class="list-icon-btn" type="button" title="Filter Contacts"><i data-lucide="list-filter"></i></button>
-        <button id="exportVCardBtn" class="list-icon-btn" type="button" title="Export Contacts (VCF)"><i data-lucide="download"></i></button>
-        <button id="contactRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
-      </div>
 
-      <!-- Sort Menu -->
-      <div id="contactSortMenu" class="sort-menu">
-        <div class="sort-options">
-          <button class="sort-option active" data-sort="name">Name A–Z</button>
-          <button class="sort-option" data-sort="name-desc">Name Z–A</button>
-          <button class="sort-option" data-sort="id">Client ID (Asc)</button>
-          <button class="sort-option" data-sort="id-desc">Client ID (Desc)</button>
-        </div>
-      </div>
+      <button
+        id="contactRefreshBtn"
+        class="refresh-btn"
+        type="button"
+        title="Refresh"
+      >
+        <i data-lucide="refresh-cw"></i>
+      </button>
 
-      <!-- Filter Panel -->
-      <div id="contactFilterPanel" class="filter-panel">
-        <div class="filter-grid">
-          <div class="field">
-            <label>Constitution</label>
-            <select id="constitutionFilter">
-              <option value="">All Constitutions</option>
-              <option value="Proprietorship">Proprietorship</option>
-              <option value="Partnership">Partnership</option>
-              <option value="LLP">LLP</option>
-              <option value="Private Limited">Private Limited</option>
-              <option value="Public Limited">Public Limited</option>
-              <option value="OPC">OPC</option>
-              <option value="HUF">HUF</option>
-              <option value="Individual">Individual</option>
-              <option value="Trust">Trust</option>
-              <option value="Society">Society</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Mobile Number Availability</label>
-            <select id="phoneStatusFilter">
-              <option value="">All (With & Without Phone)</option>
-              <option value="has-phone">Has Mobile Number</option>
-              <option value="no-phone">Missing Mobile Number</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contact List -->
-      <div id="contactList" class="contact-list">
-        <div class="empty-list">Loading contacts...</div>
-      </div>
 
     </div>
+
+
+    <!-- =====================================================
+         SORT MENU
+         ===================================================== -->
+
+    <div
+      id="contactSortMenu"
+      class="sort-menu"
+    >
+
+      <div class="sort-options">
+
+
+        <button
+          class="sort-option active"
+          data-sort="name"
+          type="button"
+        >
+          Name A–Z
+        </button>
+
+
+        <button
+          class="sort-option"
+          data-sort="name-desc"
+          type="button"
+        >
+          Name Z–A
+        </button>
+
+
+        <button
+          class="sort-option"
+          data-sort="id"
+          type="button"
+        >
+          Client ID ↑
+        </button>
+
+
+        <button
+          class="sort-option"
+          data-sort="id-desc"
+          type="button"
+        >
+          Client ID ↓
+        </button>
+
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FILTER PANEL
+         ===================================================== -->
+
+    <div
+      id="contactFilterPanel"
+      class="filter-panel"
+    >
+
+      <div class="filter-grid">
+
+
+        <div class="field">
+
+          <label for="constitutionFilter">
+            Constitution
+          </label>
+
+          <select id="constitutionFilter">
+
+            <option value="">
+              All Constitutions
+            </option>
+
+            <option value="Proprietorship">
+              Proprietorship
+            </option>
+
+            <option value="Partnership">
+              Partnership
+            </option>
+
+            <option value="LLP">
+              LLP
+            </option>
+
+            <option value="Private Limited">
+              Private Limited
+            </option>
+
+            <option value="Public Limited">
+              Public Limited
+            </option>
+
+            <option value="OPC">
+              OPC
+            </option>
+
+            <option value="HUF">
+              HUF
+            </option>
+
+            <option value="Individual">
+              Individual
+            </option>
+
+            <option value="Trust">
+              Trust
+            </option>
+
+            <option value="Society">
+              Society
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="phoneStatusFilter">
+            Mobile Number
+          </label>
+
+          <select id="phoneStatusFilter">
+
+            <option value="">
+              All Contacts
+            </option>
+
+            <option value="has-phone">
+              Has Mobile Number
+            </option>
+
+            <option value="no-phone">
+              Missing Mobile Number
+            </option>
+
+          </select>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONTACT LIST
+         ===================================================== -->
+
+    <div
+      id="contactList"
+      class="contact-list"
+    >
+
+      <div class="empty-list">
+        Loading contacts...
+      </div>
+
+    </div>
+
+
   </div>
-</main>
 
-<nav class="bottom-nav">
-  <div class="bottom-nav-inner">
-    <a class="bottom-item" href="../../../index.html">
-      <i data-lucide="house"></i>
-      <span>HOME</span>
-    </a>
+</div>
 
-    <a class="bottom-item active" href="../../crm/crm.html">
-      <i data-lucide="users-round"></i>
-      <span>CRM</span>
-    </a>
 
-    <a class="bottom-item" href="../../accounts/accounts.html">
-      <i data-lucide="wallet"></i>
-      <span>ACCOUNTS</span>
-    </a>
-
-    <a class="bottom-item" href="../../settings/settings.html">
-      <i data-lucide="settings-2"></i>
-      <span>SETTINGS</span>
-    </a>
-  </div>
-</nav>
+<!-- =========================================================
+     FIREBASE + CONTACT ENGINE
+     ========================================================= -->
 
 <script type="module">
-  import { db } from "../../../js/firebase-config.js";
+
+
+  /* =========================================================
+     FIREBASE
+     ========================================================= */
+
+  import { db }
+    from "../../../js/firebase-config.js";
+
+
   import {
     doc,
     updateDoc,
@@ -464,304 +1168,1500 @@
     getDocs,
     query,
     limit
-  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-  const contactList = document.getElementById("contactList");
-  const contactSearch = document.getElementById("contactSearch");
-  const contactRefreshBtn = document.getElementById("contactRefreshBtn");
-  const contactCount = document.getElementById("contactCount");
-  const toastMsg = document.getElementById("toastMessage");
-
-  const contactSortBtn = document.getElementById("contactSortBtn");
-  const contactFilterBtn = document.getElementById("contactFilterBtn");
-  const contactSortMenu = document.getElementById("contactSortMenu");
-  const contactFilterPanel = document.getElementById("contactFilterPanel");
-  const constitutionFilter = document.getElementById("constitutionFilter");
-  const phoneStatusFilter = document.getElementById("phoneStatusFilter");
-
-  const CACHE = "bizodit_clients_cache_v3";
-  let clients = [];
-  let sortMode = "name";
-
-  const clean = v => String(v || "").trim();
-
-  function showToast(text, type = "success") {
-    toastMsg.textContent = text;
-    toastMsg.className = `toast-msg show ${type}`;
-    setTimeout(() => {
-      toastMsg.className = "toast-msg";
-    }, 3500);
   }
+  from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+  /* =========================================================
+     ELEMENTS
+     ========================================================= */
+
+  const contactList =
+    document.getElementById(
+      "contactList"
+    );
+
+
+  const contactSearch =
+    document.getElementById(
+      "contactSearch"
+    );
+
+
+  const contactRefreshBtn =
+    document.getElementById(
+      "contactRefreshBtn"
+    );
+
+
+  const contactCount =
+    document.getElementById(
+      "contactCount"
+    );
+
+
+  const toastMsg =
+    document.getElementById(
+      "toastMessage"
+    );
+
+
+  const contactSortBtn =
+    document.getElementById(
+      "contactSortBtn"
+    );
+
+
+  const contactFilterBtn =
+    document.getElementById(
+      "contactFilterBtn"
+    );
+
+
+  const contactSortMenu =
+    document.getElementById(
+      "contactSortMenu"
+    );
+
+
+  const contactFilterPanel =
+    document.getElementById(
+      "contactFilterPanel"
+    );
+
+
+  const constitutionFilter =
+    document.getElementById(
+      "constitutionFilter"
+    );
+
+
+  const phoneStatusFilter =
+    document.getElementById(
+      "phoneStatusFilter"
+    );
+
+
+  const exportCsvBtn =
+    document.getElementById(
+      "exportCsvBtn"
+    );
+
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+
+  const CACHE =
+    "bizodit_clients_cache_v3";
+
+
+  let clients = [];
+
+
+  let sortMode =
+    "name";
+
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+
+  const clean = value =>
+    String(value || "").trim();
+
+
+  function showToast(
+    text,
+    type = "success"
+  ) {
+
+    toastMsg.textContent =
+      text;
+
+
+    toastMsg.className =
+      `toast-msg show ${type}`;
+
+
+    setTimeout(() => {
+
+      toastMsg.className =
+        "toast-msg";
+
+    }, 3500);
+
+  }
+
 
   function escapeHtml(value) {
+
     return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
   }
 
-  function whatsappClean(n) {
-    let x = String(n || "").replace(/\D/g, "");
-    if (x.length === 10) x = "91" + x;
-    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
-    return x;
+
+  /* =========================================================
+     WHATSAPP NUMBER
+     ========================================================= */
+
+  function whatsappClean(number) {
+
+    let value =
+      String(number || "")
+        .replace(
+          /\D/g,
+          ""
+        );
+
+
+    if (
+      value.length === 10
+    ) {
+
+      value =
+        "91" + value;
+
+    }
+
+
+    if (
+      value.length === 11 &&
+      value.startsWith("0")
+    ) {
+
+      value =
+        "91" +
+        value.slice(1);
+
+    }
+
+
+    return value;
+
   }
 
-  function getInitials(name) {
-    const parts = clean(name).split(" ").filter(Boolean);
-    if (!parts.length) return "C";
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
 
-  const AVATAR_COLORS = [
-    { bg: "#e0f2fe", text: "#0369a1" },
-    { bg: "#fef3c7", text: "#b45309" },
-    { bg: "#dcfce7", text: "#15803d" },
-    { bg: "#f3e8ff", text: "#7e22ce" },
-    { bg: "#fee2e2", text: "#b91c1c" },
-    { bg: "#ffedd5", text: "#c2410c" }
-  ];
-
-  function getColorForName(name) {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-  }
+  /* =========================================================
+     PHONEBOOK SUPPORT
+     ========================================================= */
 
   function contactPickerSupported() {
-    return "contacts" in navigator && "ContactsManager" in window;
+
+    return (
+      "contacts" in navigator &&
+      "ContactsManager" in window
+    );
+
   }
 
-  /* Attach mobile number directly from device phonebook */
-  async function attachContactFromPhone(clientId) {
-    if (!contactPickerSupported()) {
-      showToast("Phonebook picker not supported by this browser. Please edit in Clients module.", "error");
+
+  async function attachContactFromPhone(
+    clientId
+  ) {
+
+    if (
+      !contactPickerSupported()
+    ) {
+
+      showToast(
+        "Phonebook picker is not supported by this browser.",
+        "error"
+      );
+
       return;
+
     }
+
 
     try {
-      const selected = await navigator.contacts.select(["name", "tel"], { multiple: false });
-      if (!selected || !selected.length) return;
 
-      const phone = (selected[0].tel || [])[0];
+      const selected =
+        await navigator.contacts.select(
+          ["name", "tel"],
+          {
+            multiple: false
+          }
+        );
+
+
+      if (
+        !selected ||
+        !selected.length
+      ) {
+
+        return;
+
+      }
+
+
+      const phone =
+        (
+          selected[0].tel ||
+          []
+        )[0];
+
+
       if (!phone) {
-        showToast("The selected contact does not contain a phone number.", "error");
+
+        showToast(
+          "The selected contact has no phone number.",
+          "error"
+        );
+
         return;
+
       }
 
-      let n = String(phone).replace(/\D/g, "");
-      if (n.startsWith("91") && n.length === 12) n = n.slice(2);
-      if (n.startsWith("0") && n.length === 11) n = n.slice(1);
 
-      if (n.length !== 10) {
-        showToast("Please select a contact with a valid 10-digit mobile number.", "error");
+      let number =
+        String(phone)
+          .replace(
+            /\D/g,
+            ""
+          );
+
+
+      if (
+        number.startsWith("91") &&
+        number.length === 12
+      ) {
+
+        number =
+          number.slice(2);
+
+      }
+
+
+      if (
+        number.startsWith("0") &&
+        number.length === 11
+      ) {
+
+        number =
+          number.slice(1);
+
+      }
+
+
+      if (
+        number.length !== 10
+      ) {
+
+        showToast(
+          "Please select a valid 10-digit mobile number.",
+          "error"
+        );
+
         return;
+
       }
 
-      const clientRef = doc(db, "clients", clientId);
-      const now = new Date().toISOString();
-      await updateDoc(clientRef, { mobile: n, updatedAt: now });
 
-      const idx = clients.findIndex(c => String(c.clientId || c.id) === String(clientId));
-      if (idx >= 0) {
-        clients[idx].mobile = n;
-        clients[idx].updatedAt = now;
-        localStorage.setItem(CACHE, JSON.stringify(clients));
+      /* Firebase update */
+
+      const clientRef =
+        doc(
+          db,
+          "clients",
+          clientId
+        );
+
+
+      const now =
+        new Date()
+          .toISOString();
+
+
+      await updateDoc(
+        clientRef,
+        {
+          mobile: number,
+          updatedAt: now
+        }
+      );
+
+
+      /* Update local state */
+
+      const index =
+        clients.findIndex(
+          client =>
+            String(
+              client.clientId ||
+              client.id
+            ) ===
+            String(clientId)
+        );
+
+
+      if (index >= 0) {
+
+        clients[index].mobile =
+          number;
+
+
+        clients[index].updatedAt =
+          now;
+
+
+        localStorage.setItem(
+          CACHE,
+          JSON.stringify(
+            clients
+          )
+        );
+
       }
 
-      showToast(`Attached mobile ${n} to ${clients[idx]?.clientName || clientId}.`, "success");
+
+      showToast(
+        `Mobile ${number} attached successfully.`,
+        "success"
+      );
+
+
       renderContacts();
-    } catch (err) {
-      if (err?.name !== "AbortError") {
-        console.error(err);
-        showToast("Unable to access phone contacts.", "error");
-      }
+
     }
+
+    catch (error) {
+
+      if (
+        error?.name !==
+        "AbortError"
+      ) {
+
+        console.error(
+          error
+        );
+
+
+        showToast(
+          "Unable to access phone contacts.",
+          "error"
+        );
+
+      }
+
+    }
+
   }
+
+
+  /* =========================================================
+     LOAD FIREBASE CONTACTS
+     ========================================================= */
 
   async function loadContacts() {
+
+
+    /* -------------------------------------------------------
+       CACHE FIRST
+       ------------------------------------------------------- */
+
     try {
-      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
-      if (Array.isArray(cached) && cached.length) {
-        clients = cached;
+
+      const cached =
+        JSON.parse(
+          localStorage.getItem(
+            CACHE
+          ) || "[]"
+        );
+
+
+      if (
+        Array.isArray(cached) &&
+        cached.length
+      ) {
+
+        clients =
+          cached;
+
+
         renderContacts();
+
       }
-    } catch (e) {
-      console.warn(e);
+
     }
+
+    catch (error) {
+
+      console.warn(
+        "Cache error:",
+        error
+      );
+
+    }
+
+
+    /* -------------------------------------------------------
+       FIREBASE
+       ------------------------------------------------------- */
 
     try {
-      const snapshot = await getDocs(query(collection(db, "clients"), limit(500)));
-      clients = snapshot.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(c => c.clientId && c.clientName);
 
-      localStorage.setItem(CACHE, JSON.stringify(clients));
+      const snapshot =
+        await getDocs(
+          query(
+            collection(
+              db,
+              "clients"
+            ),
+            limit(500)
+          )
+        );
+
+
+      clients =
+        snapshot.docs
+
+          .map(docSnap => ({
+
+            id:
+              docSnap.id,
+
+            ...docSnap.data()
+
+          }))
+
+          .filter(
+            client =>
+              client.clientId &&
+              client.clientName
+          );
+
+
+      localStorage.setItem(
+        CACHE,
+        JSON.stringify(
+          clients
+        )
+      );
+
+
       renderContacts();
-    } catch (err) {
-      console.error("Failed to load contacts:", err);
-      if (!clients.length) {
-        contactList.innerHTML = `<div class="empty-list">Unable to load contacts. Tap Refresh to retry.</div>`;
-      }
+
     }
+
+    catch (error) {
+
+      console.error(
+        "Failed to load contacts:",
+        error
+      );
+
+
+      if (
+        !clients.length
+      ) {
+
+        contactList.innerHTML = `
+
+          <div class="empty-list">
+
+            Unable to load contacts.<br>
+
+            Tap Refresh to retry.
+
+          </div>
+
+        `;
+
+      }
+
+    }
+
   }
+
+
+  /* =========================================================
+     RENDER CONTACTS
+     ========================================================= */
 
   function renderContacts() {
-    const term = clean(contactSearch.value).toLowerCase();
-    const constFilter = clean(constitutionFilter.value);
-    const phFilter = clean(phoneStatusFilter.value);
 
-    let filtered = clients.filter(c => {
-      const id = String(c.clientId || c.id || "").toLowerCase();
-      const name = String(c.clientName || "").toLowerCase();
-      const mobile = clean(c.mobile);
-      const email = String(c.email || "").toLowerCase();
 
-      const matchesSearch = !term || id.includes(term) || name.includes(term) || mobile.includes(term) || email.includes(term);
-      const matchesConst = !constFilter || String(c.constitution || "") === constFilter;
-      const matchesPhone = !phFilter || (phFilter === "has-phone" ? !!mobile : !mobile);
+    const term =
+      clean(
+        contactSearch.value
+      ).toLowerCase();
 
-      return matchesSearch && matchesConst && matchesPhone;
-    });
 
-    // Sorting Engine
-    filtered.sort((a, b) => {
-      if (sortMode === "name") return String(a.clientName || "").localeCompare(String(b.clientName || ""));
-      if (sortMode === "name-desc") return String(b.clientName || "").localeCompare(String(a.clientName || ""));
-      if (sortMode === "id") return String(a.clientId || a.id || "").localeCompare(String(b.clientId || b.id || ""), undefined, { numeric: true });
-      if (sortMode === "id-desc") return String(b.clientId || b.id || "").localeCompare(String(a.clientId || a.id || ""), undefined, { numeric: true });
-      return 0;
-    });
+    const constFilter =
+      clean(
+        constitutionFilter.value
+      );
 
-    contactCount.textContent = filtered.length;
 
-    if (!filtered.length) {
-      contactList.innerHTML = `<div class="empty-list">No contacts found matching criteria.</div>`;
+    const phoneFilter =
+      clean(
+        phoneStatusFilter.value
+      );
+
+
+    /* -------------------------------------------------------
+       FILTER
+       ------------------------------------------------------- */
+
+    let filtered =
+      clients.filter(
+        client => {
+
+
+          const id =
+            String(
+              client.clientId ||
+              client.id ||
+              ""
+            ).toLowerCase();
+
+
+          const name =
+            String(
+              client.clientName ||
+              ""
+            ).toLowerCase();
+
+
+          const mobile =
+            clean(
+              client.mobile
+            );
+
+
+          const email =
+            String(
+              client.email ||
+              ""
+            ).toLowerCase();
+
+
+          const matchesSearch =
+            !term ||
+            id.includes(term) ||
+            name.includes(term) ||
+            mobile.includes(term) ||
+            email.includes(term);
+
+
+          const matchesConst =
+            !constFilter ||
+            String(
+              client.constitution ||
+              ""
+            ) ===
+            constFilter;
+
+
+          const matchesPhone =
+            !phoneFilter ||
+            (
+              phoneFilter ===
+              "has-phone"
+
+                ? !!mobile
+
+                : !mobile
+            );
+
+
+          return (
+            matchesSearch &&
+            matchesConst &&
+            matchesPhone
+          );
+
+        }
+      );
+
+
+    /* -------------------------------------------------------
+       SORT
+       ------------------------------------------------------- */
+
+    filtered.sort(
+      (a, b) => {
+
+
+        if (
+          sortMode ===
+          "name"
+        ) {
+
+          return String(
+            a.clientName ||
+            ""
+          ).localeCompare(
+            String(
+              b.clientName ||
+              ""
+            )
+          );
+
+        }
+
+
+        if (
+          sortMode ===
+          "name-desc"
+        ) {
+
+          return String(
+            b.clientName ||
+            ""
+          ).localeCompare(
+            String(
+              a.clientName ||
+              ""
+            )
+          );
+
+        }
+
+
+        if (
+          sortMode ===
+          "id"
+        ) {
+
+          return String(
+            a.clientId ||
+            a.id ||
+            ""
+          ).localeCompare(
+            String(
+              b.clientId ||
+              b.id ||
+              ""
+            ),
+            undefined,
+            {
+              numeric: true
+            }
+          );
+
+        }
+
+
+        if (
+          sortMode ===
+          "id-desc"
+        ) {
+
+          return String(
+            b.clientId ||
+            b.id ||
+            ""
+          ).localeCompare(
+            String(
+              a.clientId ||
+              a.id ||
+              ""
+            ),
+            undefined,
+            {
+              numeric: true
+            }
+          );
+
+        }
+
+
+        return 0;
+
+      }
+    );
+
+
+    /* -------------------------------------------------------
+       COUNT
+       ------------------------------------------------------- */
+
+    contactCount.textContent =
+      filtered.length;
+
+
+    /* -------------------------------------------------------
+       EMPTY
+       ------------------------------------------------------- */
+
+    if (
+      !filtered.length
+    ) {
+
+      contactList.innerHTML = `
+
+        <div class="empty-list">
+
+          No contacts found
+          matching criteria.
+
+        </div>
+
+      `;
+
       return;
+
     }
 
-    let currentLetter = "";
-    let html = "";
 
-    filtered.forEach(c => {
-      const name = c.clientName || "Unnamed Client";
-      const firstChar = name.charAt(0).toUpperCase();
-      const groupLetter = /^[A-Z]/.test(firstChar) ? firstChar : "#";
+    /* -------------------------------------------------------
+       BUILD LIST
+       ------------------------------------------------------- */
 
-      if (sortMode.startsWith("name") && groupLetter !== currentLetter) {
-        currentLetter = groupLetter;
-        html += `<div class="alphabet-divider">${escapeHtml(currentLetter)}</div>`;
-      }
+    let currentLetter =
+      "";
 
-      const id = String(c.clientId || c.id);
-      const phone = clean(c.mobile);
-      const email = clean(c.email);
-      const wa = whatsappClean(phone);
-      const colors = getColorForName(name);
-      const initials = getInitials(name);
 
-      html += `
-        <div class="contact-card-row">
-          <div class="contact-avatar" style="background:${colors.bg}; color:${colors.text};">
-            ${escapeHtml(initials)}
-          </div>
-          
-          <div class="contact-main" onclick="location.href='clients.html'">
-            <div class="contact-name">${escapeHtml(name)}</div>
-            <div class="contact-meta">
-              ${phone ? `<span>${escapeHtml(phone)}</span>` : `<span class="contact-tag missing">No Mobile</span>`}
-              <span class="contact-tag">${escapeHtml(id)}</span>
-              ${c.constitution ? `<span class="contact-tag">${escapeHtml(c.constitution)}</span>` : ''}
+    let html =
+      "";
+
+
+    filtered.forEach(
+      client => {
+
+
+        const name =
+          client.clientName ||
+          "Unnamed Client";
+
+
+        const firstChar =
+          name
+            .charAt(0)
+            .toUpperCase();
+
+
+        const groupLetter =
+          /^[A-Z]$/.test(
+            firstChar
+          )
+            ? firstChar
+            : "#";
+
+
+        /* Alphabet */
+
+        if (
+          sortMode.startsWith(
+            "name"
+          ) &&
+          groupLetter !==
+          currentLetter
+        ) {
+
+          currentLetter =
+            groupLetter;
+
+
+          html += `
+
+            <div
+              class="alphabet-divider"
+            >
+              ${escapeHtml(
+                currentLetter
+              )}
             </div>
+
+          `;
+
+        }
+
+
+        const id =
+          String(
+            client.clientId ||
+            client.id ||
+            ""
+          );
+
+
+        const phone =
+          clean(
+            client.mobile
+          );
+
+
+        const email =
+          clean(
+            client.email
+          );
+
+
+        const wa =
+          whatsappClean(
+            phone
+          );
+
+
+        /* ---------------------------------------------------
+           CONTACT ROW
+           --------------------------------------------------- */
+
+        html += `
+
+          <div
+            class="contact-card-row"
+          >
+
+
+            <!-- PROFILE -->
+
+            <div
+              class="contact-avatar"
+              aria-hidden="true"
+            >
+
+              <i
+                data-lucide="user-round"
+              ></i>
+
+            </div>
+
+
+            <!-- DETAILS -->
+
+            <div
+              class="contact-main"
+              onclick="location.href='clients.html'"
+            >
+
+              <div
+                class="contact-name"
+              >
+
+                ${escapeHtml(
+                  name
+                )}
+
+              </div>
+
+
+              <div
+                class="contact-meta"
+              >
+
+
+                ${
+                  phone
+
+                    ? `
+                      <span>
+                        ${escapeHtml(
+                          phone
+                        )}
+                      </span>
+                    `
+
+                    : `
+                      <span
+                        class="contact-tag missing"
+                      >
+                        No Mobile
+                      </span>
+                    `
+                }
+
+
+                <span
+                  class="contact-tag"
+                >
+
+                  ${escapeHtml(
+                    id
+                  )}
+
+                </span>
+
+
+                ${
+                  client.constitution
+
+                    ? `
+                      <span
+                        class="contact-tag"
+                      >
+                        ${escapeHtml(
+                          client.constitution
+                        )}
+                      </span>
+                    `
+
+                    : ""
+                }
+
+
+              </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div
+              class="contact-action-group"
+            >
+
+
+              ${
+                phone
+
+                  ? `
+
+                    <a
+                      class="contact-action-btn call"
+                      href="tel:${escapeHtml(
+                        phone
+                      )}"
+                      title="Call Client"
+                    >
+
+                      <i
+                        data-lucide="phone"
+                      ></i>
+
+                    </a>
+
+
+                    <a
+                      class="contact-action-btn whatsapp"
+                      href="https://wa.me/${escapeHtml(
+                        wa
+                      )}"
+                      target="_blank"
+                      rel="noopener"
+                      title="WhatsApp"
+                    >
+
+                      <i
+                        data-lucide="message-circle"
+                      ></i>
+
+                    </a>
+
+                  `
+
+                  : `
+
+                    <button
+                      class="contact-action-btn attach-contact"
+                      data-attach-id="${escapeHtml(
+                        id
+                      )}"
+                      type="button"
+                      title="Attach Mobile"
+                    >
+
+                      <i
+                        data-lucide="user-plus"
+                      ></i>
+
+                    </button>
+
+                  `
+              }
+
+
+              ${
+                email
+
+                  ? `
+
+                    <a
+                      class="contact-action-btn email"
+                      href="mailto:${escapeHtml(
+                        email
+                      )}"
+                      title="Send Email"
+                    >
+
+                      <i
+                        data-lucide="mail"
+                      ></i>
+
+                    </a>
+
+                  `
+
+                  : ""
+              }
+
+
+              <a
+                class="contact-action-btn open-btn"
+                href="clients.html"
+                title="Open Client"
+              >
+
+                <i
+                  data-lucide="arrow-up-right"
+                ></i>
+
+              </a>
+
+
+            </div>
+
+
           </div>
 
-          <div class="contact-action-group">
-            ${phone ? `<a class="contact-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Client"><i data-lucide="phone"></i></a>` : ""}
-            ${phone ? `<a class="contact-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
-            ${!phone ? `<button class="contact-action-btn attach-contact" data-attach-id="${escapeHtml(id)}" type="button" title="Attach Mobile from Phonebook"><i data-lucide="user-plus"></i></button>` : ""}
-            ${email ? `<a class="contact-action-btn email" href="mailto:${escapeHtml(email)}" title="Send Email"><i data-lucide="mail"></i></a>` : ""}
-            <a class="contact-action-btn open-btn" href="clients.html" title="Open Full Client"><i data-lucide="arrow-up-right"></i></a>
-          </div>
-        </div>
-      `;
-    });
+        `;
 
-    contactList.innerHTML = html;
+      }
+    );
+
+
+    contactList.innerHTML =
+      html;
+
+
     window.lucide?.createIcons();
 
-    contactList.querySelectorAll("[data-attach-id]").forEach(btn => {
-      btn.addEventListener("click", e => {
-        e.stopPropagation();
-        attachContactFromPhone(btn.dataset.attachId);
-      });
-    });
+
+    /* -------------------------------------------------------
+       PHONEBOOK BUTTONS
+       ------------------------------------------------------- */
+
+    contactList
+      .querySelectorAll(
+        "[data-attach-id]"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            event => {
+
+              event.stopPropagation();
+
+
+              attachContactFromPhone(
+                button.dataset
+                  .attachId
+              );
+
+            }
+          );
+
+        }
+      );
+
   }
 
-  // Export Contacts to .VCF
-  document.getElementById("exportVCardBtn").addEventListener("click", () => {
-    if (!clients.length) {
-      alert("No contacts available to export.");
-      return;
+
+  /* =========================================================
+     CSV ESCAPE
+     ========================================================= */
+
+  function csvEscape(value) {
+
+    const text =
+      String(
+        value ?? ""
+      );
+
+
+    if (
+      text.includes(",") ||
+      text.includes('"') ||
+      text.includes("\n") ||
+      text.includes("\r")
+    ) {
+
+      return `"${text.replace(
+        /"/g,
+        '""'
+      )}"`;
+
     }
 
-    let vcardData = "";
-    clients.forEach(c => {
-      vcardData += "BEGIN:VCARD\n";
-      vcardData += "VERSION:3.0\n";
-      vcardData += `FN:${c.clientName || 'Client'}\n`;
-      if (c.mobile) vcardData += `TEL;TYPE=CELL:${c.mobile}\n`;
-      if (c.email) vcardData += `EMAIL;TYPE=WORK:${c.email}\n`;
-      if (c.address) vcardData += `ADR;TYPE=WORK:;;${c.address.replace(/\n/g, ' ')};;;;\n`;
-      if (c.clientId) vcardData += `NOTE:Client ID: ${c.clientId}\n`;
-      vcardData += "END:VCARD\n";
-    });
 
-    const blob = new Blob([vcardData], { type: "text/vcard;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `contacts_${new Date().toISOString().slice(0, 10)}.vcf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
+    return text;
 
-  contactSortBtn.addEventListener("click", () => contactSortMenu.classList.toggle("show"));
-  contactFilterBtn.addEventListener("click", () => contactFilterPanel.classList.toggle("show"));
+  }
 
-  contactSortMenu.querySelectorAll(".sort-option").forEach(btn => {
-    btn.addEventListener("click", () => {
-      sortMode = btn.dataset.sort;
-      contactSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
-      btn.classList.add("active");
-      contactSortMenu.classList.remove("show");
-      renderContacts();
-    });
-  });
 
-  contactSearch.addEventListener("input", renderContacts);
-  constitutionFilter.addEventListener("change", renderContacts);
-  phoneStatusFilter.addEventListener("change", renderContacts);
+  /* =========================================================
+     EXPORT CONTACTS AS CSV
+     
+     Format:
+     ID, Name, Mobile, Email
+     ========================================================= */
 
-  contactRefreshBtn.addEventListener("click", async () => {
-    contactRefreshBtn.classList.add("spinning");
-    try {
-      localStorage.removeItem(CACHE);
-      await loadContacts();
-    } finally {
-      contactRefreshBtn.classList.remove("spinning");
+  exportCsvBtn.addEventListener(
+    "click",
+    () => {
+
+
+      if (
+        !clients.length
+      ) {
+
+        alert(
+          "No contacts available to export."
+        );
+
+        return;
+
+      }
+
+
+      const rows = [];
+
+
+      /* Header */
+
+      rows.push([
+        "ID",
+        "Name",
+        "Mobile",
+        "Email"
+      ]);
+
+
+      /* Data */
+
+      clients.forEach(
+        client => {
+
+          rows.push([
+
+            client.clientId ||
+              client.id ||
+              "",
+
+            client.clientName ||
+              "",
+
+            client.mobile ||
+              "",
+
+            client.email ||
+              ""
+
+          ]);
+
+        }
+      );
+
+
+      /* CSV */
+
+      const csv =
+        rows
+          .map(
+            row =>
+              row
+                .map(
+                  csvEscape
+                )
+                .join(",")
+          )
+          .join("\r\n");
+
+
+      /* UTF-8 BOM
+         Improves Excel compatibility */
+
+      const blob =
+        new Blob(
+          [
+            "\uFEFF" +
+            csv
+          ],
+          {
+            type:
+              "text/csv;charset=utf-8;"
+          }
+        );
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+
+      link.href =
+        url;
+
+
+      link.download =
+        `contacts_${new Date()
+          .toISOString()
+          .slice(0, 10)}.csv`;
+
+
+      document.body.appendChild(
+        link
+      );
+
+
+      link.click();
+
+
+      document.body.removeChild(
+        link
+      );
+
+
+      URL.revokeObjectURL(
+        url
+      );
+
+
+      showToast(
+        `${clients.length} contacts exported to CSV.`,
+        "success"
+      );
+
     }
-  });
+  );
 
-  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  /* =========================================================
+     SORT BUTTON
+     ========================================================= */
+
+  contactSortBtn.addEventListener(
+    "click",
+    () => {
+
+
+      contactSortMenu
+        .classList
+        .toggle(
+          "show"
+        );
+
+
+      contactSortBtn
+        .classList
+        .toggle(
+          "active",
+          contactSortMenu
+            .classList
+            .contains(
+              "show"
+            )
+        );
+
+    }
+  );
+
+
+  /* =========================================================
+     FILTER BUTTON
+     ========================================================= */
+
+  contactFilterBtn.addEventListener(
+    "click",
+    () => {
+
+
+      contactFilterPanel
+        .classList
+        .toggle(
+          "show"
+        );
+
+
+      contactFilterBtn
+        .classList
+        .toggle(
+          "active",
+          contactFilterPanel
+            .classList
+            .contains(
+              "show"
+            )
+        );
+
+    }
+  );
+
+
+  /* =========================================================
+     SORT OPTIONS
+     ========================================================= */
+
+  contactSortMenu
+    .querySelectorAll(
+      ".sort-option"
+    )
+    .forEach(
+      button => {
+
+
+        button.addEventListener(
+          "click",
+          () => {
+
+
+            sortMode =
+              button.dataset
+                .sort;
+
+
+            contactSortMenu
+              .querySelectorAll(
+                ".sort-option"
+              )
+              .forEach(
+                item =>
+                  item.classList
+                    .remove(
+                      "active"
+                    )
+              );
+
+
+            button.classList.add(
+              "active"
+            );
+
+
+            contactSortMenu
+              .classList
+              .remove(
+                "show"
+              );
+
+
+            contactSortBtn
+              .classList
+              .remove(
+                "active"
+              );
+
+
+            renderContacts();
+
+          }
+        );
+
+      }
+    );
+
+
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+
+  contactSearch.addEventListener(
+    "input",
+    renderContacts
+  );
+
+
+  /* =========================================================
+     FILTERS
+     ========================================================= */
+
+  constitutionFilter.addEventListener(
+    "change",
+    renderContacts
+  );
+
+
+  phoneStatusFilter.addEventListener(
+    "change",
+    renderContacts
+  );
+
+
+  /* =========================================================
+     REFRESH
+     ========================================================= */
+
+  contactRefreshBtn.addEventListener(
+    "click",
+    async () => {
+
+
+      contactRefreshBtn
+        .classList
+        .add(
+          "spinning"
+        );
+
+
+      try {
+
+
+        localStorage.removeItem(
+          CACHE
+        );
+
+
+        await loadContacts();
+
+
+      }
+
+      finally {
+
+
+        contactRefreshBtn
+          .classList
+          .remove(
+            "spinning"
+          );
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     INITIALIZE
+     ========================================================= */
 
   window.lucide?.createIcons();
+
+
   loadContacts();
+
+
 </script>
 
+
 </body>
+
 </html>
