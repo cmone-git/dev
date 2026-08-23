@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="theme-color"
+    content="#0b3b66">
+
+  <link
+    rel="stylesheet"
+    href="../css/cm.css">
+
+  <link
+    rel="stylesheet"
+    href="../css/auth.css">
+
+  <title>
+    Sign In — CM | BIZODIT
+  </title>
+
+</head>
+
+
+<body>
+
+
+<main class="auth-page">
+
+  <section class="auth-card">
+
+
+    <!-- LOGO -->
+
+    <div class="auth-logo">
+      CM
+    </div>
+
+
+    <div class="auth-title">
+      Welcome back
+    </div>
+
+    <div class="auth-subtitle">
+      Sign in to CM | BIZODIT
+    </div>
+
+
+    <!-- LOGIN -->
+
+    <form id="signInForm">
+
+
+      <div class="auth-field">
+
+        <label for="email">
+          Email
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          autocomplete="username"
+          placeholder="Enter your email"
+          required>
+
+      </div>
+
+
+      <div class="auth-field">
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Enter your password"
+          required>
+
+      </div>
+
+
+      <button
+        class="auth-submit"
+        id="signInButton"
+        type="submit">
+
+        Sign In
+
+      </button>
+
+
+      <div
+        class="auth-message"
+        id="message">
+      </div>
+
+
+    </form>
+
+
+    <div class="auth-footer">
+
+      Authorized users only
+
+      <br>
+
+      CM | BIZODIT
+
+    </div>
+
+
+  </section>
+
+</main>
+
+
+<!-- FIREBASE -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+
+<script type="module">
+
+import {
+  firebaseConfig
+} from "../js/firebase-config.js";
+
+
+const message =
+  document.getElementById("message");
+
+const form =
+  document.getElementById("signInForm");
+
+const button =
+  document.getElementById("signInButton");
+
+
+// --------------------------------------------------
+// FIREBASE CONFIG CHECK
+// --------------------------------------------------
+
+const configMissing =
+  Object.values(firebaseConfig)
+    .some(value =>
+      String(value).includes("YOUR_")
+    );
+
+
+if (configMissing) {
+
+  message.textContent =
+    "Firebase configuration is missing.";
+
+  message.style.color =
+    "#b42318";
+
+}
+
+else {
+
+
+  // --------------------------------------------------
+  // FIREBASE INIT
+  // --------------------------------------------------
+
+  if (!firebase.apps.length) {
+
+    firebase.initializeApp(
+      firebaseConfig
+    );
+
+  }
+
+
+  const auth =
+    firebase.auth();
+
+  const db =
+    firebase.firestore();
+
+
+  // --------------------------------------------------
+  // IF ALREADY SIGNED IN
+  // --------------------------------------------------
+
+  auth.onAuthStateChanged(
+    user => {
+
+      if (user) {
+
+        window.location.replace(
+          "../index.html"
+        );
+
+      }
+
+    }
+  );
+
+
+  // --------------------------------------------------
+  // LOGIN
+  // --------------------------------------------------
+
+  form.addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("password")
+          .value;
+
+
+      message.textContent =
+        "Signing in...";
+
+      message.style.color =
+        "#687583";
+
+      button.disabled = true;
+
+      button.textContent =
+        "Signing in...";
+
+
+      try {
+
+
+        // Firebase Authentication
+
+        const credential =
+          await auth.signInWithEmailAndPassword(
+            email,
+            password
+          );
+
+
+        const firebaseUser =
+          credential.user;
+
+
+        // --------------------------------------------------
+        // USER PROFILE
+        // --------------------------------------------------
+
+        const userRef =
+          db
+            .collection("users")
+            .doc(firebaseUser.uid);
+
+
+        const userSnap =
+          await userRef.get();
+
+
+        if (!userSnap.exists) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "User profile was not found."
+          );
+
+        }
+
+
+        const user =
+          userSnap.data();
+
+
+        // --------------------------------------------------
+        // STATUS
+        // --------------------------------------------------
+
+        if (user.status !== "active") {
+
+          await auth.signOut();
+
+          throw new Error(
+            "Your account is inactive."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // ROLE
+        // --------------------------------------------------
+
+        if (
+          user.role !== "admin" &&
+          user.role !== "user"
+        ) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "Invalid user role."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // STAFF BRANCH
+        // --------------------------------------------------
+
+        if (
+          user.role === "user" &&
+          !user.branchId
+        ) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "No branch has been assigned to this account."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // ADMIN
+        // --------------------------------------------------
+
+        if (
+          user.role === "admin" &&
+          !user.companyId
+        ) {
+
+          await auth.signOut();
+
+          throw new Error(
+            "No company has been assigned to this administrator."
+          );
+
+        }
+
+
+        // --------------------------------------------------
+        // SAVE SESSION INFO
+        // --------------------------------------------------
+
+        sessionStorage.setItem(
+
+          "cmBizoditUser",
+
+          JSON.stringify({
+
+            uid:
+              firebaseUser.uid,
+
+            email:
+              firebaseUser.email,
+
+            name:
+              user.name || "",
+
+            role:
+              user.role,
+
+            companyId:
+              user.companyId || "",
+
+            branchId:
+              user.branchId || "",
+
+            branchName:
+              user.branchName || "",
+
+            status:
+              user.status
+
+          })
+
+        );
+
+
+        // --------------------------------------------------
+        // SUCCESS
+        // --------------------------------------------------
+
+        message.textContent =
+          "Login successful.";
+
+        message.style.color =
+          "#147a4b";
+
+
+        window.location.replace(
+          "../index.html"
+        );
+
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "Login error:",
+          error
+        );
+
+
+        let text =
+          "Unable to sign in.";
+
+
+        switch (error.code) {
+
+          case "auth/invalid-email":
+
+            text =
+              "Please enter a valid email.";
+
+            break;
+
+
+          case "auth/user-not-found":
+
+            text =
+              "No account found with this email.";
+
+            break;
+
+
+          case "auth/wrong-password":
+
+            text =
+              "Incorrect password.";
+
+            break;
+
+
+          case "auth/invalid-credential":
+
+            text =
+              "Invalid email or password.";
+
+            break;
+
+
+          case "auth/too-many-requests":
+
+            text =
+              "Too many attempts. Please try again later.";
+
+            break;
+
+
+          case "auth/network-request-failed":
+
+            text =
+              "Network connection failed.";
+
+            break;
+
+
+          default:
+
+            if (error.message) {
+
+              text =
+                error.message;
+
+            }
+
+        }
+
+
+        message.textContent =
+          text;
+
+        message.style.color =
+          "#b42318";
+
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          "Sign In";
+
+      }
+
+    }
+  );
+
+}
+
+</script>
+
+</body>
+</html>
