@@ -13,17 +13,17 @@
   <title>Contacts — CM | BIZODIT</title>
 
   <style>
-    /* Google Contacts Mobile Style */
     .contact-container {
       max-width: 800px;
       margin: 0 auto;
     }
 
+    /* Standard Toolbar */
     .list-toolbar {
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       flex-wrap: wrap;
     }
 
@@ -69,6 +69,106 @@
       background: #f1f4f7;
     }
 
+    /* Sort Menu & Filter Panel */
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show {
+      display: block;
+    }
+
+    .filter-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-grid .field {
+      flex: 1 1 160px;
+      min-width: 140px;
+      margin-bottom: 0;
+    }
+
+    .filter-grid label {
+      display: block;
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .filter-grid select {
+      width: 100%;
+      height: 34px;
+      border: 1px solid #d7dce2;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      padding: 0 8px;
+    }
+
+    /* Status / Toast Notification */
+    .toast-msg {
+      display: none;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .toast-msg.show {
+      display: block;
+    }
+
+    .toast-msg.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .toast-msg.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    /* Google Contacts Mobile Style List */
     .contact-list {
       display: flex;
       flex-direction: column;
@@ -78,13 +178,12 @@
       overflow: hidden;
     }
 
-    /* Single Row Contact Card */
     .contact-card-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 10px 14px;
+      gap: 10px;
+      padding: 10px 12px;
       border-bottom: 1px solid #f1f5f9;
       transition: background .15s ease;
     }
@@ -98,12 +197,10 @@
     }
 
     .contact-avatar {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: #e0f2fe;
-      color: #0369a1;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
@@ -137,7 +234,7 @@
       text-overflow: ellipsis;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .contact-tag {
@@ -149,11 +246,17 @@
       color: #475569;
     }
 
-    /* Compact All-in-One Row Action Buttons */
+    .contact-tag.missing {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #fed7d7;
+    }
+
+    /* Single-Row Action Buttons */
     .contact-action-group {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       flex-shrink: 0;
     }
 
@@ -169,7 +272,7 @@
       color: #475569;
       text-decoration: none;
       cursor: pointer;
-      transition: background .15s ease;
+      transition: all .15s ease;
     }
 
     .contact-action-btn svg {
@@ -185,8 +288,14 @@
       color: #15803d;
     }
 
-    .contact-action-btn.email {
+    .contact-action-btn.attach-contact {
       color: #b45309;
+      background: #fefce8;
+      border-color: #fef08a;
+    }
+
+    .contact-action-btn.email {
+      color: #4f46e5;
     }
 
     .contact-action-btn.open-btn {
@@ -261,12 +370,59 @@
         </div>
       </section>
 
+      <div id="toastMessage" class="toast-msg"></div>
+
+      <!-- Toolbar -->
       <div class="list-toolbar">
-        <input id="contactSearch" class="list-search" type="search" placeholder="Search contacts by name, phone, ID..." autocomplete="off">
+        <input id="contactSearch" class="list-search" type="search" placeholder="Search by name, ID, mobile, email..." autocomplete="off">
+        <button id="contactSortBtn" class="list-icon-btn" type="button" title="Sort Contacts"><i data-lucide="arrow-up-down"></i></button>
+        <button id="contactFilterBtn" class="list-icon-btn" type="button" title="Filter Contacts"><i data-lucide="list-filter"></i></button>
         <button id="exportVCardBtn" class="list-icon-btn" type="button" title="Export Contacts (VCF)"><i data-lucide="download"></i></button>
         <button id="contactRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
       </div>
 
+      <!-- Sort Menu -->
+      <div id="contactSortMenu" class="sort-menu">
+        <div class="sort-options">
+          <button class="sort-option active" data-sort="name">Name A–Z</button>
+          <button class="sort-option" data-sort="name-desc">Name Z–A</button>
+          <button class="sort-option" data-sort="id">Client ID (Asc)</button>
+          <button class="sort-option" data-sort="id-desc">Client ID (Desc)</button>
+        </div>
+      </div>
+
+      <!-- Filter Panel -->
+      <div id="contactFilterPanel" class="filter-panel">
+        <div class="filter-grid">
+          <div class="field">
+            <label>Constitution</label>
+            <select id="constitutionFilter">
+              <option value="">All Constitutions</option>
+              <option value="Proprietorship">Proprietorship</option>
+              <option value="Partnership">Partnership</option>
+              <option value="LLP">LLP</option>
+              <option value="Private Limited">Private Limited</option>
+              <option value="Public Limited">Public Limited</option>
+              <option value="OPC">OPC</option>
+              <option value="HUF">HUF</option>
+              <option value="Individual">Individual</option>
+              <option value="Trust">Trust</option>
+              <option value="Society">Society</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Mobile Number Availability</label>
+            <select id="phoneStatusFilter">
+              <option value="">All (With & Without Phone)</option>
+              <option value="has-phone">Has Mobile Number</option>
+              <option value="no-phone">Missing Mobile Number</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact List -->
       <div id="contactList" class="contact-list">
         <div class="empty-list">Loading contacts...</div>
       </div>
@@ -302,6 +458,8 @@
 <script type="module">
   import { db } from "../../../js/firebase-config.js";
   import {
+    doc,
+    updateDoc,
     collection,
     getDocs,
     query,
@@ -312,11 +470,28 @@
   const contactSearch = document.getElementById("contactSearch");
   const contactRefreshBtn = document.getElementById("contactRefreshBtn");
   const contactCount = document.getElementById("contactCount");
+  const toastMsg = document.getElementById("toastMessage");
+
+  const contactSortBtn = document.getElementById("contactSortBtn");
+  const contactFilterBtn = document.getElementById("contactFilterBtn");
+  const contactSortMenu = document.getElementById("contactSortMenu");
+  const contactFilterPanel = document.getElementById("contactFilterPanel");
+  const constitutionFilter = document.getElementById("constitutionFilter");
+  const phoneStatusFilter = document.getElementById("phoneStatusFilter");
 
   const CACHE = "bizodit_clients_cache_v3";
   let clients = [];
+  let sortMode = "name";
 
   const clean = v => String(v || "").trim();
+
+  function showToast(text, type = "success") {
+    toastMsg.textContent = text;
+    toastMsg.className = `toast-msg show ${type}`;
+    setTimeout(() => {
+      toastMsg.className = "toast-msg";
+    }, 3500);
+  }
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -341,7 +516,6 @@
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-  // Pre-selected clean avatar background tones
   const AVATAR_COLORS = [
     { bg: "#e0f2fe", text: "#0369a1" },
     { bg: "#fef3c7", text: "#b45309" },
@@ -355,6 +529,57 @@
     let hash = 0;
     for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  }
+
+  function contactPickerSupported() {
+    return "contacts" in navigator && "ContactsManager" in window;
+  }
+
+  /* Attach mobile number directly from device phonebook */
+  async function attachContactFromPhone(clientId) {
+    if (!contactPickerSupported()) {
+      showToast("Phonebook picker not supported by this browser. Please edit in Clients module.", "error");
+      return;
+    }
+
+    try {
+      const selected = await navigator.contacts.select(["name", "tel"], { multiple: false });
+      if (!selected || !selected.length) return;
+
+      const phone = (selected[0].tel || [])[0];
+      if (!phone) {
+        showToast("The selected contact does not contain a phone number.", "error");
+        return;
+      }
+
+      let n = String(phone).replace(/\D/g, "");
+      if (n.startsWith("91") && n.length === 12) n = n.slice(2);
+      if (n.startsWith("0") && n.length === 11) n = n.slice(1);
+
+      if (n.length !== 10) {
+        showToast("Please select a contact with a valid 10-digit mobile number.", "error");
+        return;
+      }
+
+      const clientRef = doc(db, "clients", clientId);
+      const now = new Date().toISOString();
+      await updateDoc(clientRef, { mobile: n, updatedAt: now });
+
+      const idx = clients.findIndex(c => String(c.clientId || c.id) === String(clientId));
+      if (idx >= 0) {
+        clients[idx].mobile = n;
+        clients[idx].updatedAt = now;
+        localStorage.setItem(CACHE, JSON.stringify(clients));
+      }
+
+      showToast(`Attached mobile ${n} to ${clients[idx]?.clientName || clientId}.`, "success");
+      renderContacts();
+    } catch (err) {
+      if (err?.name !== "AbortError") {
+        console.error(err);
+        showToast("Unable to access phone contacts.", "error");
+      }
+    }
   }
 
   async function loadContacts() {
@@ -374,7 +599,6 @@
         .map(d => ({ id: d.id, ...d.data() }))
         .filter(c => c.clientId && c.clientName);
 
-      clients.sort((a, b) => String(a.clientName).localeCompare(String(b.clientName)));
       localStorage.setItem(CACHE, JSON.stringify(clients));
       renderContacts();
     } catch (err) {
@@ -387,20 +611,38 @@
 
   function renderContacts() {
     const term = clean(contactSearch.value).toLowerCase();
+    const constFilter = clean(constitutionFilter.value);
+    const phFilter = clean(phoneStatusFilter.value);
 
-    const filtered = clients.filter(c => {
-      const searchStr = `${c.clientName || ""} ${c.clientId || ""} ${c.mobile || ""} ${c.email || ""}`.toLowerCase();
-      return !term || searchStr.includes(term);
+    let filtered = clients.filter(c => {
+      const id = String(c.clientId || c.id || "").toLowerCase();
+      const name = String(c.clientName || "").toLowerCase();
+      const mobile = clean(c.mobile);
+      const email = String(c.email || "").toLowerCase();
+
+      const matchesSearch = !term || id.includes(term) || name.includes(term) || mobile.includes(term) || email.includes(term);
+      const matchesConst = !constFilter || String(c.constitution || "") === constFilter;
+      const matchesPhone = !phFilter || (phFilter === "has-phone" ? !!mobile : !mobile);
+
+      return matchesSearch && matchesConst && matchesPhone;
+    });
+
+    // Sorting Engine
+    filtered.sort((a, b) => {
+      if (sortMode === "name") return String(a.clientName || "").localeCompare(String(b.clientName || ""));
+      if (sortMode === "name-desc") return String(b.clientName || "").localeCompare(String(a.clientName || ""));
+      if (sortMode === "id") return String(a.clientId || a.id || "").localeCompare(String(b.clientId || b.id || ""), undefined, { numeric: true });
+      if (sortMode === "id-desc") return String(b.clientId || b.id || "").localeCompare(String(a.clientId || a.id || ""), undefined, { numeric: true });
+      return 0;
     });
 
     contactCount.textContent = filtered.length;
 
     if (!filtered.length) {
-      contactList.innerHTML = `<div class="empty-list">No contacts found matching "${escapeHtml(contactSearch.value)}".</div>`;
+      contactList.innerHTML = `<div class="empty-list">No contacts found matching criteria.</div>`;
       return;
     }
 
-    // Alphabetical Grouping
     let currentLetter = "";
     let html = "";
 
@@ -409,7 +651,7 @@
       const firstChar = name.charAt(0).toUpperCase();
       const groupLetter = /^[A-Z]/.test(firstChar) ? firstChar : "#";
 
-      if (groupLetter !== currentLetter) {
+      if (sortMode.startsWith("name") && groupLetter !== currentLetter) {
         currentLetter = groupLetter;
         html += `<div class="alphabet-divider">${escapeHtml(currentLetter)}</div>`;
       }
@@ -430,16 +672,17 @@
           <div class="contact-main" onclick="location.href='clients.html'">
             <div class="contact-name">${escapeHtml(name)}</div>
             <div class="contact-meta">
-              <span>${phone ? escapeHtml(phone) : 'No phone'}</span>
+              ${phone ? `<span>${escapeHtml(phone)}</span>` : `<span class="contact-tag missing">No Mobile</span>`}
               <span class="contact-tag">${escapeHtml(id)}</span>
               ${c.constitution ? `<span class="contact-tag">${escapeHtml(c.constitution)}</span>` : ''}
             </div>
           </div>
 
           <div class="contact-action-group">
-            ${phone ? `<a class="contact-action-btn call" href="tel:${escapeHtml(phone)}" title="Call"><i data-lucide="phone"></i></a>` : ""}
+            ${phone ? `<a class="contact-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Client"><i data-lucide="phone"></i></a>` : ""}
             ${phone ? `<a class="contact-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
-            ${email ? `<a class="contact-action-btn email" href="mailto:${escapeHtml(email)}" title="Email"><i data-lucide="mail"></i></a>` : ""}
+            ${!phone ? `<button class="contact-action-btn attach-contact" data-attach-id="${escapeHtml(id)}" type="button" title="Attach Mobile from Phonebook"><i data-lucide="user-plus"></i></button>` : ""}
+            ${email ? `<a class="contact-action-btn email" href="mailto:${escapeHtml(email)}" title="Send Email"><i data-lucide="mail"></i></a>` : ""}
             <a class="contact-action-btn open-btn" href="clients.html" title="Open Full Client"><i data-lucide="arrow-up-right"></i></a>
           </div>
         </div>
@@ -448,9 +691,16 @@
 
     contactList.innerHTML = html;
     window.lucide?.createIcons();
+
+    contactList.querySelectorAll("[data-attach-id]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        attachContactFromPhone(btn.dataset.attachId);
+      });
+    });
   }
 
-  // Export Contacts to .VCF (vCard Format for mobile import)
+  // Export Contacts to .VCF
   document.getElementById("exportVCardBtn").addEventListener("click", () => {
     if (!clients.length) {
       alert("No contacts available to export.");
@@ -480,7 +730,22 @@
     URL.revokeObjectURL(url);
   });
 
+  contactSortBtn.addEventListener("click", () => contactSortMenu.classList.toggle("show"));
+  contactFilterBtn.addEventListener("click", () => contactFilterPanel.classList.toggle("show"));
+
+  contactSortMenu.querySelectorAll(".sort-option").forEach(btn => {
+    btn.addEventListener("click", () => {
+      sortMode = btn.dataset.sort;
+      contactSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      btn.classList.add("active");
+      contactSortMenu.classList.remove("show");
+      renderContacts();
+    });
+  });
+
   contactSearch.addEventListener("input", renderContacts);
+  constitutionFilter.addEventListener("change", renderContacts);
+  phoneStatusFilter.addEventListener("change", renderContacts);
 
   contactRefreshBtn.addEventListener("click", async () => {
     contactRefreshBtn.classList.add("spinning");
