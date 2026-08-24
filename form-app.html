@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CM Developers | Admin Dashboard</title>
+
+<!-- Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- jsPDF -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+<style>
+:root {
+    --dev-navy: #16263F;
+    --dev-bg: #F4F5F7;
+    --dev-text: #17202D;
+    --dev-muted: #707985;
+    --dev-border: #E1E5EA;
+    --dev-urgent: #E05656;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: "Inter", sans-serif;
+    background: var(--dev-bg);
+    color: var(--dev-text);
+    min-height: 100vh;
+}
+
+.admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    background: #fff;
+    border-bottom: 1px solid var(--dev-border);
+}
+
+.admin-brand { display: flex; align-items: center; gap: 10px; }
+.admin-logo {
+    width: 32px;
+    height: 32px;
+    background: var(--dev-navy);
+    color: #fff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+.admin-title { font-size: 15px; font-weight: 700; color: var(--dev-navy); }
+
+.admin-container {
+    max-width: 1200px;
+    margin: 28px auto;
+    padding: 0 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid var(--dev-border);
+    border-radius: 8px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-card span { font-size: 11px; color: var(--dev-muted); font-weight: 500; }
+.stat-card strong { font-size: 24px; color: var(--dev-navy); font-weight: 700; }
+
+.admin-controls { display: flex; gap: 12px; margin-bottom: 16px; }
+
+.search-input {
+    flex: 1;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--dev-border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    background: #fff;
+}
+
+.table-card {
+    background: #fff;
+    border: 1px solid var(--dev-border);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+th { background: #FAFBFC; color: var(--dev-muted); font-weight: 600; padding: 12px 16px; border-bottom: 1px solid var(--dev-border); }
+td { padding: 14px 16px; border-bottom: 1px solid #F0F2F5; vertical-align: middle; }
+tr:hover td { background: #F8F9FA; }
+
+.badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+.badge-urgent { background: #FEE2E2; color: #991B1B; }
+.badge-high { background: #FEF3C7; color: #92400E; }
+.badge-normal { background: #E0E7FF; color: #3730A3; }
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border: 1px solid var(--dev-border);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--dev-navy);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+.btn-action:hover { background: #F4F5F7; }
+
+/* Login Modal */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 32, 57, 0.7);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.login-card {
+    background: #fff;
+    width: 100%;
+    max-width: 360px;
+    border-radius: 10px;
+    padding: 26px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.login-card h2 { font-size: 18px; margin-bottom: 6px; color: var(--dev-navy); }
+.login-card p { font-size: 12px; color: var(--dev-muted); margin-bottom: 20px; }
+.login-field { margin-bottom: 14px; }
+.login-field label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
+.login-field input {
+    width: 100%;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--dev-border);
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+}
+.login-field input:focus { border-color: var(--dev-navy); }
+.login-btn {
+    width: 100%;
+    height: 40px;
+    background: var(--dev-navy);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* Detail Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 32, 57, 0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    max-width: 760px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--dev-border); }
+.modal-body { padding: 24px; overflow-y: auto; font-size: 12px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 24px; border-top: 1px solid var(--dev-border); background: #FAFBFC; }
+.detail-section { margin-bottom: 20px; }
+.detail-section h4 { color: var(--dev-navy); font-size: 13px; margin-bottom: 10px; border-bottom: 1px solid var(--dev-border); padding-bottom: 4px; }
+.detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.detail-item { display: flex; flex-direction: column; gap: 2px; }
+.detail-item span { color: var(--dev-muted); font-size: 10px; }
+.detail-item strong { font-size: 12px; }
+.detail-item.full { grid-column: 1 / -1; }
+</style>
+</head>
+
+<body>
+
+<!-- Login Modal -->
+<div class="login-overlay" id="loginModal" style="display: none;">
+    <div class="login-card">
+        <h2>Admin Authentication</h2>
+        <p>Sign in to view submitted requirements.</p>
+        <form id="adminLoginForm">
+            <div class="login-field">
+                <label>Admin Email</label>
+                <input type="email" id="loginEmail" placeholder="admin@domain.com" required>
+            </div>
+            <div class="login-field">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <div id="loginError" style="color: red; font-size: 11px; margin-bottom: 10px; display: none;"></div>
+            <button type="submit" class="login-btn" id="loginSubmitBtn">Sign In</button>
+        </form>
+    </div>
+</div>
+
+<header class="admin-header">
+    <div class="admin-brand">
+        <div class="admin-logo">CM</div>
+        <div class="admin-title">Client Requirements Admin</div>
+    </div>
+    <div id="userProfile" style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
+        <span id="userEmailTag" style="color: var(--dev-muted);"></span>
+        <button class="btn-action" id="logoutBtn" style="display: none;">Logout</button>
+    </div>
+</header>
+
+<main class="admin-container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Submissions</span>
+            <strong id="statTotal">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Urgent Priority</span>
+            <strong id="statUrgent" style="color: var(--dev-urgent)">0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Latest Received</span>
+            <strong id="statLatest" style="font-size: 16px; margin-top: 4px;">—</strong>
+        </div>
+    </div>
+
+    <div class="admin-controls">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by company, contact, or Ref ID...">
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ref ID</th>
+                    <th>Company Name</th>
+                    <th>Contact Person</th>
+                    <th>Mobile / Email</th>
+                    <th>Priority</th>
+                    <th>Submitted</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="submissionsTableBody">
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--dev-muted); padding: 30px;">
+                        Authenticating...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Details Modal -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div>
+                <h3 id="modalTitle" style="color: var(--dev-navy);">Requirement Details</h3>
+                <span id="modalRef" style="font-size: 11px; color: var(--dev-muted);"></span>
+            </div>
+            <button class="btn-action" id="closeModalBtn" style="border: none; font-size: 18px;">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn-action" id="modalDownloadPdfBtn">
+                <i data-lucide="download" width="14" height="14"></i> Download PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+// Replace this in your admin page script:
+const firebaseConfig = {
+    apiKey: "AIzaSyCXyKSTImIzkYnH2LW408cVWWV1CPvlFbO", // <-- Corrected Key
+    authDomain: "cmfilings-6a37c.firebaseapp.com",
+    projectId: "cmfilings-6a37c",
+    storageBucket: "cmfilings-6a37c.firebasestorage.app",
+    messagingSenderId: "138705123778",
+    appId: "1:138705123778:web:9561bff9f0f5d89bb6fe5b",
+    measurementId: "G-09DM4NZF8D"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let allSubmissions = [];
+let activeItem = null;
+let unsubscribeFirestore = null;
+
+const tbody = document.getElementById("submissionsTableBody");
+const searchInput = document.getElementById("searchInput");
+const modal = document.getElementById("detailModal");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const modalBody = document.getElementById("modalBody");
+const modalTitle = document.getElementById("modalTitle");
+const modalRef = document.getElementById("modalRef");
+const modalDownloadPdfBtn = document.getElementById("modalDownloadPdfBtn");
+const loginModal = document.getElementById("loginModal");
+const loginForm = document.getElementById("adminLoginForm");
+const loginError = document.getElementById("loginError");
+const userEmailTag = document.getElementById("userEmailTag");
+const logoutBtn = document.getElementById("logoutBtn");
+
+// Auth State Observer
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        loginModal.style.display = "none";
+        userEmailTag.textContent = user.email;
+        logoutBtn.style.display = "inline-flex";
+        initFirestoreListener();
+    } else {
+        loginModal.style.display = "flex";
+        userEmailTag.textContent = "";
+        logoutBtn.style.display = "none";
+        if (unsubscribeFirestore) unsubscribeFirestore();
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--dev-muted); padding: 30px;">Please sign in to view records.</td></tr>`;
+    }
+});
+
+// Handle Login
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginError.style.display = "none";
+    const email = document.getElementById("loginEmail").value;
+    const pass = document.getElementById("loginPassword").value;
+
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+    } catch (err) {
+        loginError.textContent = err.message;
+        loginError.style.display = "block";
+    }
+});
+
+// Handle Logout
+logoutBtn.addEventListener("click", () => signOut(auth));
+
+// Render Table
+function renderTable(data) {
+    if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--dev-muted);">No submissions found.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.map((item) => {
+        const priorityClass = item.priorityLevel === 'Urgent' ? 'badge-urgent' : (item.priorityLevel === 'High' ? 'badge-high' : 'badge-normal');
+        const dateStr = item.submittedAt?.toDate ? item.submittedAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Recent';
+
+        return `
+            <tr>
+                <td><strong>${item.referenceId || '—'}</strong></td>
+                <td><strong>${item.companyName || '—'}</strong></td>
+                <td>${item.contactPerson || '—'}</td>
+                <td>${item.mobile || '—'}<br><span style="color: var(--dev-muted);">${item.email || ''}</span></td>
+                <td><span class="badge ${priorityClass}">${item.priorityLevel || 'Normal'}</span></td>
+                <td>${dateStr}</td>
+                <td style="text-align: right;">
+                    <button class="btn-action view-btn" data-id="${item.referenceId}">View</button>
+                    <button class="btn-action pdf-btn" data-id="${item.referenceId}">
+                        <i data-lucide="download" width="12" height="12"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join("");
+
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function updateStats(data) {
+    document.getElementById("statTotal").textContent = data.length;
+    document.getElementById("statUrgent").textContent = data.filter(d => d.priorityLevel === 'Urgent').length;
+    if (data.length > 0 && data[0].submittedAt?.toDate) {
+        document.getElementById("statLatest").textContent = data[0].submittedAt.toDate().toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    }
+}
+
+// Subscribe to Firestore Submissions
+function initFirestoreListener() {
+    const q = query(collection(db, "client_requirements"), orderBy("submittedAt", "desc"));
+    unsubscribeFirestore = onSnapshot(q, (snapshot) => {
+        allSubmissions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        updateStats(allSubmissions);
+        renderTable(allSubmissions);
+    }, (error) => {
+        console.error("Firestore Listen Error:", error);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--dev-urgent); padding: 20px;">Access denied. Your account does not have admin permissions.</td></tr>`;
+    });
+}
+
+// Search
+searchInput.addEventListener("input", (e) => {
+    const val = e.target.value.toLowerCase().trim();
+    const filtered = allSubmissions.filter(s => 
+        (s.companyName || "").toLowerCase().includes(val) ||
+        (s.contactPerson || "").toLowerCase().includes(val) ||
+        (s.referenceId || "").toLowerCase().includes(val)
+    );
+    renderTable(filtered);
+});
+
+// Detail View
+function showDetails(item) {
+    activeItem = item;
+    modalTitle.textContent = item.companyName || "Company Requirements";
+    modalRef.textContent = `Ref: ${item.referenceId || '—'}`;
+
+    modalBody.innerHTML = `
+        <div class="detail-section">
+            <h4>1. Business Information</h4>
+            <div class="detail-grid">
+                <div class="detail-item"><span>Business Type</span><strong>${item.businessType || '—'}</strong></div>
+                <div class="detail-item"><span>Industry</span><strong>${item.industry || '—'}</strong></div>
+                <div class="detail-item"><span>Contact Person</span><strong>${item.contactPerson || '—'} (${item.designation || 'Owner'})</strong></div>
+                <div class="detail-item"><span>Phone / WhatsApp</span><strong>${item.mobile || '—'} / ${item.whatsapp || '—'}</strong></div>
+                <div class="detail-item full"><span>Email</span><strong>${item.email || '—'}</strong></div>
+                <div class="detail-item full"><span>Description</span><strong>${item.businessDescription || '—'}</strong></div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4>2. Workflow & Automation</h4>
+            <div class="detail-grid">
+                <div class="detail-item full"><span>Current Workflow</span><strong>${item.currentWorkflow || '—'}</strong></div>
+                <div class="detail-item full"><span>Pain Points</span><strong>${item.problems || '—'}</strong></div>
+                <div class="detail-item full"><span>Automation Target</span><strong>${item.automation || '—'}</strong></div>
+                <div class="detail-item"><span>Current Software</span><strong>${item.currentSoftware || '—'}</strong></div>
+                <div class="detail-item"><span>Data Source</span><strong>${item.dataSource || '—'}</strong></div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4>3. Modules & System Setup</h4>
+            <div class="detail-grid">
+                <div class="detail-item full"><span>Modules</span><strong>${item.modules?.join(", ") || 'None selected'}</strong></div>
+                <div class="detail-item full"><span>User Access Roles</span><strong>${item.users?.join(", ") || '—'} (Total: ${item.totalUsers || '-'})</strong></div>
+                <div class="detail-item full"><span>Admin Features</span><strong>${item.adminFeatures?.join(", ") || '—'}</strong></div>
+                <div class="detail-item full"><span>Client App Features</span><strong>${item.clientFeatures?.join(", ") || '—'}</strong></div>
+                <div class="detail-item full"><span>Integrations</span><strong>${item.integrations?.join(", ") || '—'}</strong></div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4>4. Design & Target</h4>
+            <div class="detail-grid">
+                <div class="detail-item"><span>Colors</span><strong>${item.primaryColor} / ${item.secondaryColor}</strong></div>
+                <div class="detail-item"><span>Theme & Font</span><strong>${item.themePreference} | ${item.fontPreference}</strong></div>
+                <div class="detail-item"><span>Launch Date</span><strong>${item.launchDate || 'Flexible'}</strong></div>
+                <div class="detail-item"><span>Priority</span><strong>${item.priorityLevel || 'Normal'}</strong></div>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add("active");
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function generateRecordPdf(data) {
+    const jsPDFConstructor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+    if (!jsPDFConstructor) return;
+
+    const doc = new jsPDFConstructor({ unit: "pt", format: "a4" });
+    let y = 40;
+    const margin = 40;
+
+    function printHeader(title) {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(22, 38, 63);
+        doc.text(title, margin, y);
+        y += 5;
+        doc.setDrawColor(225, 229, 234);
+        doc.line(margin, y, 555, y);
+        y += 15;
+    }
+
+    function printRow(label, value) {
+        if (!value || (Array.isArray(value) && value.length === 0)) return;
+        const valStr = Array.isArray(value) ? value.join(", ") : String(value);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(112, 121, 133);
+        doc.text(label, margin, y);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(23, 32, 45);
+        const splitVal = doc.splitTextToSize(valStr, 340);
+        doc.text(splitVal, margin + 130, y);
+        y += (splitVal.length * 12) + 4;
+    }
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(22, 38, 63);
+    doc.text("CM DEVELOPERS", margin, y);
+    y += 16;
+    doc.setFontSize(9.5);
+    doc.setTextColor(112, 121, 133);
+    doc.text(`App Requirement Document · Ref ID: ${data.referenceId || 'N/A'}`, margin, y);
+    y += 22;
+
+    printHeader("1. Business & Contact Information");
+    printRow("Company Name:", data.companyName);
+    printRow("Business Type:", data.businessType);
+    printRow("Contact Person:", data.contactPerson);
+    printRow("Mobile / Email:", `${data.mobile || '-'} / ${data.email || '-'}`);
+    printRow("Industry:", data.industry);
+    printRow("Description:", data.businessDescription);
+    y += 8;
+
+    printHeader("2. Workflow & Automation");
+    printRow("Current Process:", data.currentWorkflow);
+    printRow("Existing Problems:", data.problems);
+    printRow("To Automate:", data.automation);
+    y += 8;
+
+    printHeader("3. Modules & System Setup");
+    printRow("Selected Modules:", data.modules);
+    printRow("User Roles:", data.users);
+    printRow("Admin Controls:", data.adminFeatures);
+    printRow("Client Features:", data.clientFeatures);
+    printRow("Integrations:", data.integrations);
+    y += 8;
+
+    printHeader("4. Design & Target");
+    printRow("Brand Colors:", `${data.primaryColor} / ${data.secondaryColor}`);
+    printRow("Theme & Font:", `${data.themePreference} | ${data.fontPreference}`);
+    printRow("Launch Target:", data.launchDate);
+    printRow("Priority:", data.priorityLevel);
+
+    const fileName = (data.companyName || "App_Requirement").replace(/[^a-z0-9]/gi, '_');
+    doc.save(`${fileName}_Requirements.pdf`);
+}
+
+tbody.addEventListener("click", (e) => {
+    const viewBtn = e.target.closest(".view-btn");
+    const pdfBtn = e.target.closest(".pdf-btn");
+
+    if (viewBtn) {
+        const refId = viewBtn.dataset.id;
+        const item = allSubmissions.find(s => s.referenceId === refId);
+        if (item) showDetails(item);
+    } else if (pdfBtn) {
+        const refId = pdfBtn.dataset.id;
+        const item = allSubmissions.find(s => s.referenceId === refId);
+        if (item) generateRecordPdf(item);
+    }
+});
+
+closeModalBtn.addEventListener("click", () => modal.classList.remove("active"));
+modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("active"); });
+modalDownloadPdfBtn.addEventListener("click", () => { if (activeItem) generateRecordPdf(activeItem); });
+
+if (window.lucide) window.lucide.createIcons();
+</script>
+</body>
+</html>
