@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b3b66">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BIZODIT">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="assets/logo-app.png">
+<link rel="apple-touch-icon" href="assets/logo-app.png">
+<link rel="stylesheet" href="css/cm.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/responsive.css">
+
+<title>BIZODIT</title>
+</head>
+<body>
+<div id="splash-root"></div>
+<div id="app"></div>
+<div id="dashboard-toast" class="dashboard-toast" aria-live="polite"></div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script type="module">
+  import { initApp } from "js/app.js";
+  initApp();
+</script>
+</body>
+</html>
