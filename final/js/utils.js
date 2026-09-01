@@ -1,0 +1,1 @@
+export function generateDocumentNumber(records=[]){let n=0;records.forEach(r=>{const m=String(r.documentNo||'').match(/^CM-\d{2}-(\d+)$/);if(m)n=Math.max(n,+m[1])});return `CM-${String(new Date().getFullYear()).slice(-2)}-${String(n+1).padStart(4,'0')}`}export function formatMoney(v){return '₹'+Number(v||0).toLocaleString('en-IN')}

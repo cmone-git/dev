@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="theme-color" content="#0b3b66">
+
+<link rel="icon" href="./assets/favicon.png">
+<link rel="shortcut icon" href="./assets/favicon.png">
+<link rel="apple-touch-icon" href="./assets/app-icon.png">
+
+<title>BizOdit</title>
+
+<style>
+
+/* =====================================================
+   ROOT
+===================================================== */
+
+:root{
+  --brand:#0b3b66;
+  --bg:#f4f6f8;
+  --card:#fff;
+  --text:#202b36;
+  --muted:#687583;
+  --line:#d7dee5;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+  font-size:15px;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+button:focus{
+  outline:none;
+}
+
+svg{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+
+/* =====================================================
+   HEADER
+   KEEP EXACTLY 78px
+===================================================== */
+
+.app-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:78px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  z-index:1000;
+}
+
+
+/* =====================================================
+   HEADER MENU
+===================================================== */
+
+.menu-btn{
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:var(--brand);
+  display:grid;
+  place-items:center;
+}
+
+.menu-btn svg{
+  width:23px;
+  height:23px;
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.brand{
+  flex:1;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.brand-logo{
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+  border-radius:8px;
+  background:var(--brand);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  font-size:21px;
+  font-weight:700;
+}
+
+.brand-logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.brand-name{
+  color:var(--brand);
+  font-size:25px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.025em;
+  white-space:nowrap;
+}
+
+.brand-name img{
+  max-width:125px;
+  max-height:35px;
+  display:block;
+  object-fit:contain;
+}
+
+
+/* =====================================================
+   HEADER ACTIONS
+   ONLY SEARCH + PROFILE
+===================================================== */
+
+.header-actions{
+  display:flex;
+  gap:7px;
+}
+
+.header-action{
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:var(--brand);
+  display:grid;
+  place-items:center;
+}
+
+.header-action svg{
+  width:23px;
+  height:23px;
+}
+
+
+/* =====================================================
+   MODULE AREA
+===================================================== */
+
+.module-area{
+  position:fixed;
+  top:78px;
+  left:0;
+  right:0;
+  bottom:66px;
+  overflow:hidden;
+  background:var(--bg);
+}
+
+.dashboard-view {
+  width:100%;
+  height:100%;
+  overflow-y:auto;
+  background:var(--bg);
+  padding:20px;
+}
+
+#moduleFrame{
+  width:100%;
+  height:100%;
+  border:0;
+  display:none; /* Default hidden, managed by loadModule */
+  background:var(--bg);
+}
+
+
+/* =====================================================
+   SIDEBAR OVERLAY
+===================================================== */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(10,25,38,.35);
+  z-index:1500;
+  display:none;
+}
+
+.overlay.open{
+  display:block;
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar{
+  position:fixed;
+  top:0;
+  left:0;
+  bottom:0;
+  width:min(300px,86vw);
+  background:#fff;
+  z-index:2000;
+  transform:translateX(-100%);
+  transition:transform .18s ease;
+  box-shadow:8px 0 25px rgba(0,0,0,.12);
+  padding:16px;
+  overflow:auto;
+}
+
+.sidebar.open{
+  transform:translateX(0);
+}
+
+.side-head{
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.side-title{
+  font-size:17px;
+  font-weight:700;
+  color:var(--brand);
+}
+
+.close{
+  width:40px;
+  height:40px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:#fff;
+  color:var(--brand);
+  font-size:22px;
+}
+
+.side-nav{
+  display:grid;
+  gap:3px;
+}
+
+.side-nav button{
+  width:100%;
+  height:42px;
+  border:0;
+  border-radius:7px;
+  background:#fff;
+  color:#596773;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 10px;
+  text-align:left;
+  font-size:14px;
+}
+
+.side-nav button.active{
+  background:#eaf1f6;
+  color:var(--brand);
+  font-weight:700;
+}
+
+.side-nav svg{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+}
+
+
+/* =====================================================
+   BOTTOM NAV
+   KEEP EXACTLY 66px
+===================================================== */
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:66px;
+  background:#fff;
+  border-top:1px solid var(--line);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  z-index:1000;
+}
+
+.bottom-nav button{
+  border:0;
+  background:#fff;
+  color:#68737d;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  font-size:12px;
+  padding:0;
+}
+
+.bottom-nav button.active{
+  color:var(--brand);
+  font-weight:700;
+}
+
+.bottom-nav svg{
+  width:22px;
+  height:22px;
+}
+
+
+/* =====================================================
+   PROFILE MENU
+===================================================== */
+
+.profile-menu{
+  position:fixed;
+  top:64px;
+  right:14px;
+  width:190px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:9px;
+  box-shadow:0 8px 25px rgba(0,0,0,.12);
+  z-index:3000;
+  display:none;
+  overflow:hidden;
+}
+
+.profile-menu.open{
+  display:block;
+}
+
+.profile-menu button{
+  width:100%;
+  height:44px;
+  border:0;
+  background:#fff;
+  text-align:left;
+  padding:0 13px;
+  color:var(--text);
+  font-size:14px;
+}
+
+.profile-menu button:hover{
+  background:#f4f6f8;
+}
+
+
+/* =====================================================
+   MOBILE SPECIFICS
+===================================================== */
+
+@media(max-width:760px){
+  .app-header{
+    height:78px;
+    padding:10px 14px;
+  }
+  .module-area{
+    top:78px;
+    bottom:66px;
+  }
+  .brand-name{
+    font-size:25px;
+  }
+  
+  /* HIDE HEADER MENU ICON ON MOBILE */
+  .menu-btn {
+    display:none !important;
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="app-header">
+
+  <!-- ONLY HEADER MENU -->
+  <button
+    class="menu-btn"
+    id="menuBtn"
+    type="button"
+    aria-label="Main menu">
+    <svg viewBox="0 0 24 24">
+      <path d="M4 6h16"/>
+      <path d="M4 12h16"/>
+      <path d="M4 18h16"/>
+    </svg>
+  </button>
+
+  <!-- BRAND -->
+  <div class="brand">
+    <div class="brand-logo">
+      <img
+        src="./assets/logo.png"
+        alt="BizOdit"
+        onerror="
+          this.remove();
+          this.parentElement.textContent='B';
+        ">
+    </div>
+    <div class="brand-name">
+      <img
+        src="./assets/name.png"
+        alt="BizOdit"
+        onerror="
+          this.remove();
+          this.parentElement.textContent='BizOdit';
+        ">
+    </div>
+  </div>
+
+  <!-- SEARCH + PROFILE -->
+  <div class="header-actions">
+
+    <!-- SEARCH -->
+    <button
+      class="header-action"
+      id="searchBtn"
+      type="button"
+      aria-label="Search">
+      <svg viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m20 20-4-4"/>
+      </svg>
+    </button>
+
+    <!-- PROFILE -->
+    <button
+      class="header-action"
+      id="profileBtn"
+      type="button"
+      aria-label="Profile">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 21a8 8 0 0 1 16 0"/>
+      </svg>
+    </button>
+
+  </div>
+
+</header>
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<div class="profile-menu" id="profileMenu">
+  <button type="button" data-auth="signin">Sign In</button>
+  <button type="button" data-auth="signup">Sign Up</button>
+</div>
+
+<!-- =====================================================
+     MODULE AREA
+===================================================== -->
+
+<main class="module-area">
+  
+  <!-- BUILT-IN DASHBOARD (Replaces dashboard.html) -->
+  <div id="dashboardView" class="dashboard-view">
+    <h2 style="margin-top: 0; color: var(--brand);">Dashboard</h2>
+    <p>Welcome to BizOdit.</p>
+    <!-- Add your dashboard widgets & content here -->
+  </div>
+
+  <!-- IFRAME FOR OTHER MODULES -->
+  <iframe
+    id="moduleFrame"
+    title="BizOdit Module"
+    frameborder="0">
+  </iframe>
+
+</main>
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="side-head">
+    <div class="side-title">BizOdit</div>
+    <button
+      class="close"
+      id="closeBtn"
+      type="button"
+      aria-label="Close">
+      ×
+    </button>
+  </div>
+  <nav class="side-nav" id="sideNav"></nav>
+</aside>
+
+<!-- =====================================================
+     BOTTOM NAV
+     (Dash, CRM, Accounts, Menu for both Desktop & Mobile)
+===================================================== -->
+
+<nav class="bottom-nav">
+
+  <!-- HOME / DASHBOARD -->
+  <button
+    data-module="dashboard"
+    type="button"
+    class="active">
+    <svg viewBox="0 0 24 24">
+      <path d="M4 4h6v6H4z"/>
+      <path d="M14 4h6v6h-6z"/>
+      <path d="M4 14h6v6H4z"/>
+      <path d="M14 14h6v6h-6z"/>
+    </svg>
+    <span>Home</span>
+  </button>
+
+  <!-- CRM -->
+  <button
+    data-module="crm"
+    type="button">
+    <svg viewBox="0 0 24 24">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+    <span>CRM</span>
+  </button>
+
+  <!-- ACCOUNTS -->
+  <button
+    data-module="accounts"
+    type="button">
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2"/>
+      <path d="M3 10h18"/>
+    </svg>
+    <span>Accounts</span>
+  </button>
+
+  <!-- MENU BUTTON -->
+  <button
+    id="bottomMenu"
+    type="button"
+    aria-label="Menu">
+    <svg viewBox="0 0 24 24">
+      <rect x="4" y="4" width="6" height="6"/>
+      <rect x="14" y="4" width="6" height="6"/>
+      <rect x="4" y="14" width="6" height="6"/>
+      <rect x="14" y="14" width="6" height="6"/>
+    </svg>
+    <span>Menu</span>
+  </button>
+
+</nav>
+
+<script>
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const CONFIG = {
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzxTmiSz2wcurAZjUtLT5aQBpgdR2iE0OvNLoAjrMlrvJgdJEuzH19I9at_jHbYt2cF/exec",
+  SHEET_ID: "1GIcQUF2DJYBh8fn52NP4pnZrDMpnB5GKbtNMFIW_mEw",
+  LOGO: "./assets/logo.png",
+  NAME: "./assets/name.png",
+  FAVICON: "./assets/favicon.png",
+  APP_ICON: "./assets/app-icon.png",
+  SPLASH: "./splash.html",
+  LOADING: "./loading.html"
+};
+
+/* =====================================================
+   SAVE CONFIG
+===================================================== */
+
+try{
+  localStorage.setItem("bizodit_web_app_url", CONFIG.WEB_APP_URL);
+  localStorage.setItem("bizodit_sheet_id", CONFIG.SHEET_ID);
+  localStorage.setItem("bizodit_config", JSON.stringify(CONFIG));
+}
+catch(error){
+  console.warn("BizOdit localStorage unavailable", error);
+}
+
+/* =====================================================
+   MODULES
+===================================================== */
+
+const MODULES = {
+  dashboard: { label:"Dashboard", file:"" }, // File not needed, natively built in index
+  company: { label:"Company", file:"company.html" },
+  crm: { label:"CRM", file:"crm.html" },
+  accounts: { label:"Accounts", file:"accounts.html" },
+  employees: { label:"Employees", file:"employees.html" },
+  task: { label:"Task", file:"task.html" },
+  tools: { label:"Tools", file:"tools.html" },
+  templates: { label:"Templates", file:"templates.html" },
+  data: { label:"Data", file:"data.html" },
+  settings: { label:"Settings", file:"settings.html" },
+  users: { label:"Users", file:"users.html" },
+  login: { label:"Login", file:"Login.html" }
+};
+
+/* =====================================================
+   ICONS
+===================================================== */
+
+const ICONS = {
+  dashboard:`<svg viewBox="0 0 24 24"><path d="M4 4h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M4 14h6v6H4z"/><path d="M14 14h6v6h-6z"/></svg>`,
+  company:`<svg viewBox="0 0 24 24"><path d="M4 21V4h16v17"/><path d="M8 8h2M14 8h2"/><path d="M8 12h2M14 12h2"/><path d="M8 16h2M14 16h2"/><path d="M10 21v-4h4v4"/></svg>`,
+  crm:`<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  accounts:`<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>`,
+  employees:`<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>`,
+  task:`<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg>`,
+  tools:`<svg viewBox="0 0 24 24"><path d="m14 6 4-4 4 4-4 4z"/><path d="M3 21l6-6"/><path d="M13 11l-4-4"/></svg>`,
+  templates:`<svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h5"/><path d="M8 13h8"/><path d="M8 17h8"/></svg>`,
+  data:`<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 2 16 2 16 0V5"/><path d="M4 12v7c0 2 16 2 16 0v-7"/></svg>`,
+  settings:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15l2 1-2 3-2-1a7 7 0 0 1-2 1l-.3 2h-3.4L11 19a7 7 0 0 1-2-1l-2 1-2-3 2-1a7 7 0 0 1 0-2l-2-1 2-3 2 1a7 7 0 0 1 2-1l.3-2h3.4L15 5a7 7 0 0 1 2 1l2-1 2 3-2 1a7 7 0 0 1 0 2z"/></svg>`,
+  users:`<svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 4a4 4 0 0 1 0 7"/></svg>`,
+  login:`<svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 4v16"/></svg>`
+};
+
+/* =====================================================
+   ELEMENT HELPER
+===================================================== */
+
+function $(id){
+  return document.getElementById(id);
+}
+
+/* =====================================================
+   BUILD SIDEBAR
+===================================================== */
+
+function buildMenu(){
+  const nav = $("sideNav");
+  nav.innerHTML = Object.entries(MODULES).map(([key,item])=>`
+      <button
+        type="button"
+        data-module="${key}">
+        ${ICONS[key] || ICONS.dashboard}
+        <span>
+          ${item.label}
+        </span>
+      </button>
+    `).join("");
+
+  nav.querySelectorAll("[data-module]").forEach(button=>{
+    button.addEventListener("click", function(){
+      loadModule(button.dataset.module);
+      closeMenu();
+    });
+  });
+}
+
+/* =====================================================
+   LOAD MODULE
+===================================================== */
+
+function loadModule(name){
+  if(!MODULES[name]){
+    name="dashboard";
+  }
+
+  const module = MODULES[name];
+  const frame = $("moduleFrame");
+  const dashboardView = $("dashboardView");
+
+  // Save current module.
+  localStorage.setItem("bizodit_module", name);
+
+  // Update sidebar active item.
+  document.querySelectorAll(".side-nav [data-module]").forEach(button=>{
+    button.classList.toggle("active", button.dataset.module === name);
+  });
+
+  // Update bottom navigation active state.
+  document.querySelectorAll(".bottom-nav [data-module]").forEach(button=>{
+    button.classList.toggle("active", button.dataset.module === name);
+  });
+
+  // Toggle View
+  if(name === "dashboard") {
+    // Show Dashboard, hide Iframe
+    dashboardView.style.display = "block";
+    frame.style.display = "none";
+    frame.src = "about:blank"; // unload other memory
+  } else {
+    // Hide Dashboard, show Iframe
+    dashboardView.style.display = "none";
+    frame.style.display = "block";
+    frame.src = CONFIG.MODULE_PATH ? CONFIG.MODULE_PATH + module.file : "./" + module.file;
+  }
+}
+
+/* =====================================================
+   MODULE PATH
+===================================================== */
+CONFIG.MODULE_PATH = "./";
+
+/* =====================================================
+   OPEN / CLOSE MENU
+===================================================== */
+
+function openMenu(){
+  $("sidebar").classList.add("open");
+  $("overlay").classList.add("open");
+}
+
+function closeMenu(){
+  $("sidebar").classList.remove("open");
+  $("overlay").classList.remove("open");
+}
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+function toggleProfile(){
+  $("profileMenu").classList.toggle("open");
+}
+
+function openAuth(type){
+  $("profileMenu").classList.remove("open");
+  if(type === "signin"){
+    window.location.href = "./Login.html";
+    return;
+  }
+  if(type === "signup"){
+    window.location.href = "./Signup.html";
+  }
+}
+
+/* =====================================================
+   EVENT LISTENERS
+===================================================== */
+
+$("menuBtn").addEventListener("click", function(event){
+  event.stopPropagation();
+  openMenu();
+});
+
+$("searchBtn").addEventListener("click", function(){
+  loadModule("crm");
+});
+
+$("profileBtn").addEventListener("click", function(event){
+  event.stopPropagation();
+  toggleProfile();
+});
+
+document.querySelectorAll("[data-auth]").forEach(button=>{
+  button.addEventListener("click", function(){
+    openAuth(button.dataset.auth);
+  });
+});
+
+$("closeBtn").addEventListener("click", closeMenu);
+$("overlay").addEventListener("click", closeMenu);
+$("bottomMenu").addEventListener("click", openMenu);
+
+document.querySelectorAll(".bottom-nav [data-module]").forEach(button=>{
+  button.addEventListener("click", function(){
+    loadModule(button.dataset.module);
+  });
+});
+
+document.addEventListener("click", function(event){
+  const menu = $("profileMenu");
+  const profile = $("profileBtn");
+  if(menu.classList.contains("open") && !menu.contains(event.target) && !profile.contains(event.target)){
+    menu.classList.remove("open");
+  }
+});
+
+document.addEventListener("keydown", function(event){
+  if(event.key === "Escape"){
+    closeMenu();
+    $("profileMenu").classList.remove("open");
+  }
+});
+
+
+/* =====================================================
+   START
+===================================================== */
+
+buildMenu();
+
+const saved = localStorage.getItem("bizodit_module");
+
+// Always open index with Dashboard logic
+loadModule(MODULES[saved] ? saved : "dashboard");
+
+/* =====================================================
+   GLOBAL BIZODIT API
+===================================================== */
+
+window.BizOdit = {
+  CONFIG:CONFIG,
+  MODULES:MODULES,
+  loadModule:loadModule,
+  openMenu:openMenu,
+  closeMenu:closeMenu
+};
+
+</script>
+
+</body>
+</html>

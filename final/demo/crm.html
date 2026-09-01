@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<title>CRM - BizOdit</title>
+
+<style>
+:root{
+  --brand:#0b3b66;
+  --bg:#f4f6f8;
+  --card:#fff;
+  --text:#202b36;
+  --muted:#687583;
+  --line:#d7dee5;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,
+  "Segoe UI",Roboto,Arial,sans-serif;
+  font-size:15px;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+svg{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.page{
+  padding:18px 24px 30px;
+  max-width:900px;
+  margin:auto;
+}
+
+.page-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.page-title{
+  font-size:27px;
+  line-height:1.1;
+  margin:0;
+  letter-spacing:-.025em;
+}
+
+.page-sub{
+  font-size:14px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.report{
+  font-size:14px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.report strong{
+  color:var(--brand);
+}
+
+.refresh{
+  width:50px;
+  height:50px;
+  flex:0 0 50px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  color:var(--brand);
+  display:grid;
+  place-items:center;
+}
+
+.refresh svg{
+  width:23px;
+  height:23px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.crm-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.crm-card:active{
+  transform:scale(.99);
+}
+
+.icon-box{
+  width:40px;
+  height:40px;
+  border-radius:8px;
+  background:#edf3f7;
+  color:var(--brand);
+  display:grid;
+  place-items:center;
+  margin-bottom:12px;
+}
+
+.icon-box svg{
+  width:22px;
+  height:22px;
+}
+
+.card-title{
+  font-size:17px;
+  font-weight:700;
+  color:var(--text);
+}
+
+.card-sub{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.card-count{
+  font-size:24px;
+  font-weight:700;
+  color:var(--brand);
+  margin-top:12px;
+}
+
+.quick{
+  margin-top:14px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+}
+
+.quick-title{
+  font-size:17px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.quick-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.quick-btn{
+  height:40px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--brand);
+  border-radius:7px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.quick-btn svg{
+  width:18px;
+  height:18px;
+}
+
+@media(max-width:760px){
+
+  .page{
+    padding:18px 24px 30px;
+  }
+
+  .cards{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+  <div class="page-head">
+
+    <div>
+      <h1 class="page-title">CRM</h1>
+
+      <div class="page-sub">
+        Client relationship and compliance management
+      </div>
+
+      <div class="report">
+        Report as on :
+        <strong id="today"></strong>
+      </div>
+    </div>
+
+    <button
+      class="refresh"
+      onclick="location.reload()"
+      aria-label="Refresh">
+
+      <svg viewBox="0 0 24 24">
+        <path d="M20 11a8 8 0 0 0-14.7-4L3 10"/>
+        <path d="M3 5v5h5"/>
+        <path d="M4 13a8 8 0 0 0 14.7 4L21 14"/>
+        <path d="M21 19v-5h-5"/>
+      </svg>
+
+    </button>
+
+  </div>
+
+
+  <section class="cards">
+
+
+    <!-- CLIENTS -->
+
+    <div
+      class="crm-card"
+      onclick="openPage('clients.html')">
+
+      <div class="icon-box">
+
+        <svg viewBox="0 0 24 24">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+
+      </div>
+
+      <div class="card-title">
+        Clients
+      </div>
+
+      <div class="card-sub">
+        Client master and contact information
+      </div>
+
+      <div
+        class="card-count"
+        id="clientCount">
+        0
+      </div>
+
+    </div>
+
+
+    <!-- CREDENTIALS -->
+
+    <div
+      class="crm-card"
+      onclick="openPage('Credentials.html')">
+
+      <div class="icon-box">
+
+        <svg viewBox="0 0 24 24">
+          <circle cx="7.5" cy="15.5" r="4.5"/>
+          <path d="m11 12 9-9"/>
+          <path d="m17 6 2 2"/>
+          <path d="m14 9 2 2"/>
+        </svg>
+
+      </div>
+
+      <div class="card-title">
+        Credentials
+      </div>
+
+      <div class="card-sub">
+        Portal usernames and passwords
+      </div>
+
+      <div
+        class="card-count"
+        id="credentialCount">
+        0
+      </div>
+
+    </div>
+
+
+    <!-- COMPLIANCE -->
+
+    <div
+      class="crm-card"
+      onclick="openPage('Compliance.html')">
+
+      <div class="icon-box">
+
+        <svg viewBox="0 0 24 24">
+          <rect x="4" y="3" width="16" height="18" rx="2"/>
+          <path d="M8 7h8"/>
+          <path d="M8 11h8"/>
+          <path d="M8 15h5"/>
+        </svg>
+
+      </div>
+
+      <div class="card-title">
+        Compliance
+      </div>
+
+      <div class="card-sub">
+        GST, tax and other compliance tracking
+      </div>
+
+      <div
+        class="card-count"
+        id="complianceCount">
+        0
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section class="quick">
+
+    <div class="quick-title">
+      Quick Actions
+    </div>
+
+    <div class="quick-row">
+
+      <button
+        class="quick-btn"
+        onclick="openPage('clients.html')">
+
+        <svg viewBox="0 0 24 24">
+          <path d="M12 5v14"/>
+          <path d="M5 12h14"/>
+        </svg>
+
+        Add Client
+
+      </button>
+
+
+      <button
+        class="quick-btn"
+        onclick="openPage('Credentials.html')">
+
+        <svg viewBox="0 0 24 24">
+          <circle cx="7.5" cy="15.5" r="4.5"/>
+          <path d="m11 12 9-9"/>
+        </svg>
+
+        Credentials
+
+      </button>
+
+
+      <button
+        class="quick-btn"
+        onclick="openPage('Compliance.html')">
+
+        <svg viewBox="0 0 24 24">
+          <rect x="4" y="3" width="16" height="18" rx="2"/>
+          <path d="M8 7h8"/>
+          <path d="M8 11h8"/>
+        </svg>
+
+        Compliance
+
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+function today(){
+
+  const d=new Date();
+
+  return String(d.getDate()).padStart(2,"0")+
+    "/"+
+    String(d.getMonth()+1).padStart(2,"0")+
+    "/"+
+    d.getFullYear();
+
+}
+
+document.getElementById("today").textContent=today();
+
+
+function openPage(file){
+
+  window.location.href=file;
+
+}
+
+
+/*
+   Read CRM counts from the shared
+   Apps Script endpoint.
+*/
+
+const WEB_APP_URL =
+  localStorage.getItem("bizodit_web_app_url");
+
+
+async function loadCounts(){
+
+  if(!WEB_APP_URL) return;
+
+  async function get(sheet){
+
+    try{
+
+      const url =
+        WEB_APP_URL+
+        "?action=list&sheet="+
+        encodeURIComponent(sheet);
+
+      const response =
+        await fetch(url);
+
+      const result =
+        await response.json();
+
+      return result.data || [];
+
+    }
+    catch(e){
+
+      return [];
+
+    }
+
+  }
+
+
+  const [
+    clients,
+    compliance,
+    credentials
+  ] = await Promise.all([
+
+    get("Clients"),
+    get("Compliance"),
+    get("Credentials")
+
+  ]);
+
+
+  document.getElementById(
+    "clientCount"
+  ).textContent=clients.length;
+
+
+  document.getElementById(
+    "complianceCount"
+  ).textContent=compliance.length;
+
+
+  document.getElementById(
+    "credentialCount"
+  ).textContent=credentials.length;
+
+}
+
+loadCounts();
+
+</script>
+
+</body>
+</html>

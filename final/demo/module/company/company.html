@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f8">
+<title>BizOdit — Company</title>
+<style>
+:root{
+  --brand:#0b3b66;
+  --brand-soft:#e8f1f7;
+  --bg:#f4f6f8;
+  --card:#fff;
+  --text:#202b36;
+  --muted:#687583;
+  --line:#d7dee5;
+  --green:#247a50;
+  --red:#b84a4a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg)}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.page{max-width:1180px;margin:auto;padding:20px 24px 40px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+h1{margin:0;font-size:29px;line-height:1.15;letter-spacing:-.02em}
+.subtitle{margin-top:6px;color:var(--muted);font-size:14px}
+.report{margin-top:8px;color:var(--muted);font-size:12px}
+.report strong{color:var(--brand);font-size:13px}
+.actions{display:flex;gap:7px}
+.icon-btn{
+  width:40px;height:40px;border:1px solid var(--line);border-radius:8px;
+  background:#fff;color:var(--brand);display:grid;place-items:center
+}
+.icon-btn svg,.field-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.card-title{font-size:16px;font-weight:800}
+.card-sub{margin-top:3px;color:var(--muted);font-size:10px}
+.company-preview{display:flex;align-items:center;gap:12px}
+.logo-preview{
+ width:55px;height:55px;border-radius:9px;border:1px solid var(--line);
+ background:var(--brand-soft);object-fit:contain;display:grid;place-items:center;
+}
+.logo-preview img{max-width:90%;max-height:90%;object-fit:contain}
+.company-name-preview{font-size:17px;font-weight:800;color:var(--brand)}
+.company-id-preview{font-size:10px;color:var(--muted);margin-top:3px}
+.form{padding:17px}
+.section-label{
+ margin:2px 0 12px;color:var(--brand);font-size:12px;font-weight:800;
+ text-transform:uppercase;letter-spacing:.05em
+}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 14px}
+.field{min-width:0}
+.field.full{grid-column:1/-1}
+label{display:block;margin-bottom:6px;font-size:11px;font-weight:750}
+.req{color:var(--red)}
+input,select,textarea{
+ width:100%;border:1px solid #cfd7df;border-radius:7px;background:#fff;color:var(--text);
+ outline:none;font-size:13px;padding:0 11px
+}
+input,select{height:44px}
+textarea{min-height:82px;padding-top:10px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(11,59,102,.07)}
+.locked{
+ background:#f1f4f6;color:#687583;cursor:not-allowed;font-weight:700
+}
+.hint{font-size:9px;color:var(--muted);margin-top:4px}
+.logo-row{display:flex;align-items:center;gap:12px}
+.logo-upload{
+ width:78px;height:78px;border:1px dashed #bcc8d2;border-radius:9px;background:var(--brand-soft);
+ display:grid;place-items:center;overflow:hidden;flex:0 0 auto
+}
+.logo-upload img{width:100%;height:100%;object-fit:contain}
+.logo-placeholder{color:var(--muted);font-size:9px;text-align:center;padding:8px}
+.file-input{display:none}
+.upload-btn{
+ height:38px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--brand);font-size:11px;font-weight:750
+}
+.actions-row{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:15px;border-top:1px solid var(--line)}
+.btn{
+ height:42px;border-radius:7px;padding:0 18px;font-size:12px;font-weight:750
+}
+.btn.secondary{background:#fff;border:1px solid var(--line);color:var(--brand)}
+.btn.primary{background:var(--brand);border:1px solid var(--brand);color:#fff}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.message{display:none;margin:0 17px 15px;padding:10px 12px;border-radius:7px;font-size:11px;line-height:1.45}
+.message.show{display:block}.message.success{background:#edf8f2;color:var(--green)}.message.error{background:#fceeee;color:var(--red)}
+.loading{font-size:11px;color:var(--muted)}
+.toast{position:fixed;right:15px;bottom:15px;background:#202b36;color:#fff;padding:10px 13px;border-radius:7px;font-size:11px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:100}
+.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){
+ .page{padding:16px 13px 28px}
+ .top{align-items:center}
+ h1{font-size:26px}
+ .grid{grid-template-columns:1fr}
+ .field.full{grid-column:auto}
+ .card-head{align-items:flex-start}
+ .company-preview{min-width:0}
+ .company-name-preview{font-size:15px}
+ .actions-row{position:sticky;bottom:0;background:#fff}
+}
+</style>
+</head>
+<body>
+
+<main class="page">
+
+  <section class="top">
+    <div>
+      <h1>Company</h1>
+      <div class="subtitle">Company profile and business settings</div>
+      <div class="report">Report as on : <strong id="todayText">--/--/----</strong></div>
+    </div>
+    <div class="actions">
+      <button class="icon-btn" id="refreshBtn" title="Refresh" aria-label="Refresh">
+        <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.7-4L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.7 4L21 15"/><path d="M21 20v-5h-5"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-title">Company Profile</div>
+        <div class="card-sub">The selected company becomes the active company for all BizOdit modules.</div>
+      </div>
+      <div class="company-preview">
+        <div class="logo-preview" id="headLogo"><span class="loading">—</span></div>
+        <div>
+          <div class="company-name-preview" id="headCompanyName">Loading…</div>
+          <div class="company-id-preview" id="headCompanyId">Company ID: —</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <form class="form" id="companyForm" novalidate>
+
+      <!-- ORDERED TO MATCH / CLEAN UP THE FIRESTORE COMPANY RECORD -->
+      <div class="section-label">Basic Information</div>
+      <div class="grid">
+
+        <div class="field">
+          <label>Company ID</label>
+          <input id="companyId" class="locked" type="text" readonly tabindex="-1">
+          <div class="hint">Automatic • non-editable</div>
+        </div>
+
+        <div class="field">
+          <label for="companyName">Company Name <span class="req">*</span></label>
+          <input id="companyName" type="text" required placeholder="Company / business name">
+        </div>
+
+        <div class="field">
+          <label for="tagline">Tagline</label>
+          <input id="tagline" type="text" placeholder="Business tagline">
+        </div>
+
+        <div class="field">
+          <label for="constitutionType">Constitution Type</label>
+          <select id="constitutionType">
+            <option value="">Select</option>
+            <option>Proprietorship</option>
+            <option>Partnership Firm</option>
+            <option>LLP</option>
+            <option>Private Limited Company</option>
+            <option>Public Limited Company</option>
+            <option>One Person Company</option>
+            <option>HUF</option>
+            <option>Trust</option>
+            <option>Society</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="financialYear">Financial Year</label>
+          <select id="financialYear"></select>
+        </div>
+
+        <div class="field">
+          <label for="status">Status</label>
+          <select id="status">
+            <option>Active</option>
+            <option>Inactive</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="section-label" style="margin-top:23px">Contact & Address</div>
+      <div class="grid">
+
+        <div class="field full">
+          <label for="address">Address</label>
+          <textarea id="address" placeholder="Registered / business address"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="city">City</label>
+          <input id="city" type="text" placeholder="City">
+        </div>
+
+        <div class="field">
+          <label for="state">State</label>
+          <select id="state"></select>
+        </div>
+
+        <div class="field">
+          <label for="pincode">Pincode</label>
+          <input id="pincode" inputmode="numeric" maxlength="6" placeholder="6-digit pincode">
+        </div>
+
+        <div class="field">
+          <label for="mobileNo">Mobile No.</label>
+          <input id="mobileNo" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile">
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="business@email.com">
+        </div>
+
+        <div class="field">
+          <label for="website">Website</label>
+          <input id="website" type="url" placeholder="https://">
+        </div>
+
+      </div>
+
+      <div class="section-label" style="margin-top:23px">Tax & Registration</div>
+      <div class="grid">
+
+        <div class="field">
+          <label for="gstin">GSTIN</label>
+          <input id="gstin" maxlength="15" placeholder="15-character GSTIN">
+        </div>
+
+        <div class="field">
+          <label for="pan">PAN</label>
+          <input id="pan" maxlength="10" placeholder="ABCDE1234F">
+        </div>
+
+        <div class="field">
+          <label for="cin">CIN</label>
+          <input id="cin" maxlength="21" placeholder="Company CIN">
+        </div>
+
+        <div class="field">
+          <label for="dateOfIncorporation">Date of Incorporation</label>
+          <input id="dateOfIncorporation" type="date">
+        </div>
+
+        <div class="field">
+          <label for="authorizedSignatory">Authorized Signatory</label>
+          <input id="authorizedSignatory" type="text" placeholder="Authorized person">
+        </div>
+
+        <div class="field">
+          <label for="role">Role</label>
+          <input id="role" type="text" placeholder="Founder / Director / Partner">
+        </div>
+
+      </div>
+
+      <div class="section-label" style="margin-top:23px">Bank & UPI</div>
+      <div class="grid">
+
+        <div class="field">
+          <label for="bankName">Bank Name</label>
+          <input id="bankName" type="text" placeholder="Bank">
+        </div>
+
+        <div class="field">
+          <label for="accountNo">Account No.</label>
+          <input id="accountNo" type="text" inputmode="numeric" placeholder="Account number">
+        </div>
+
+        <div class="field">
+          <label for="ifsc">IFSC</label>
+          <input id="ifsc" maxlength="11" placeholder="ABCD0123456">
+        </div>
+
+        <div class="field">
+          <label for="branch">Branch</label>
+          <input id="branch" type="text" placeholder="Branch">
+        </div>
+
+        <div class="field">
+          <label for="upiid">UPI ID</label>
+          <input id="upiid" type="text" placeholder="business@upi">
+        </div>
+
+        <div class="field">
+          <label for="upino">UPI No.</label>
+          <input id="upino" type="tel" inputmode="numeric" maxlength="10" placeholder="UPI mobile number">
+        </div>
+
+      </div>
+
+      <div class="section-label" style="margin-top:23px">Company Logo</div>
+      <div class="logo-row">
+        <div class="logo-upload" id="logoBox">
+          <div class="logo-placeholder">No logo</div>
+        </div>
+        <div>
+          <input class="file-input" id="logoFile" type="file" accept="image/png,image/jpeg,image/webp">
+          <button class="upload-btn" type="button" id="chooseLogo">Choose Logo</button>
+          <div class="hint">PNG, JPG or WebP • stored in Firebase Storage and linked to Firestore.</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:23px">Notes</div>
+      <div class="grid">
+        <div class="field full">
+          <label for="notes">Notes</label>
+          <textarea id="notes" placeholder="Additional company information"></textarea>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn secondary" type="button" id="resetBtn">Reset</button>
+        <button class="btn primary" type="submit" id="saveBtn">Save Company</button>
+      </div>
+
+    </form>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+/*
+  BizOdit Company Module
+
+  Firestore:
+    settings/company
+
+  Company ID:
+    Existing CompanyID is preserved.
+    If empty, a Company ID is generated once and then locked.
+    Format: COM00001, COM00002...
+
+  Logo:
+    Firebase Storage -> companyLogos/{companyId}/logo
+    Firestore -> settings/company.logoURL
+
+  Active company:
+    After save, the selected company is broadcast to the
+    parent index and stored locally so other modules can
+    read the same active company.
+*/
+
+import { auth, db, storage } from "../../js/firebase-config.js";
+import {
+  doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, limit
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import {
+  ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+
+const $=id=>document.getElementById(id);
+
+const states=[
+"Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh",
+"Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka",
+"Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram",
+"Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu",
+"Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal",
+"Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu",
+"Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"
+];
+
+let existingCompany=null;
+let selectedLogoFile=null;
+let originalData={};
+
+function pad(n){return String(n).padStart(2,"0")}
+function indianDate(d=new Date()){
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+}
+
+$("todayText").textContent=indianDate();
+
+function showMessage(text,type="error"){
+  const el=$("message");
+  el.textContent=text;
+  el.className="message show "+type;
+}
+function clearMessage(){
+  $("message").className="message";
+  $("message").textContent="";
+}
+function toast(text){
+  const el=$("toast");
+  el.textContent=text;
+  el.classList.add("show");
+  clearTimeout(window.__toast);
+  window.__toast=setTimeout(()=>el.classList.remove("show"),2200);
+}
+
+function setupSelects(){
+  $("state").innerHTML='<option value="">Select State</option>'+
+    states.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+
+  const now=new Date();
+  const fyStart=now.getMonth()>=3?now.getFullYear():now.getFullYear()-1;
+  const options=[];
+  for(let y=fyStart+1;y>=fyStart-6;y--){
+    options.push(`<option value="${y}-${String(y+1).slice(-2)}">${y}-${String(y+1).slice(-2)}</option>`);
+  }
+  $("financialYear").innerHTML=options.join("");
+  $("financialYear").value=`${fyStart}-${String(fyStart+1).slice(-2)}`;
+}
+setupSelects();
+
+function setValue(id,value=""){
+  const el=$(id);
+  if(el) el.value=value??"";
+}
+
+function getValue(id){
+  return $(id)?.value?.trim()||"";
+}
+
+function generateCompanyId(existingIds=[]){
+  let max=0;
+  for(const id of existingIds){
+    const m=String(id||"").match(/^COM(\d+)$/i);
+    if(m) max=Math.max(max,parseInt(m[1],10)||0);
+  }
+  return "COM"+String(max+1).padStart(5,"0");
+}
+
+async function getOrCreateCompanyId(){
+  const companyRef=doc(db,"settings","company");
+  const snap=await getDoc(companyRef);
+  if(snap.exists() && snap.data().CompanyID){
+    return snap.data().CompanyID;
+  }
+
+  /*
+    Preferred single-company setup: COM00001.
+    We do not allow typing/editing the ID.
+  */
+  return "COM00001";
+}
+
+function fillForm(data){
+  originalData={...data};
+
+  setValue("companyId",data.CompanyID||data.companyId||"");
+  setValue("companyName",data.CompanyName);
+  setValue("tagline",data.Tagline);
+  setValue("constitutionType",data.ConstitutionType);
+  setValue("financialYear",data.FinancialYear);
+  setValue("status",data.Status||"Active");
+
+  setValue("address",data.Address);
+  setValue("city",data.City);
+  setValue("state",data.State);
+  setValue("pincode",data.Pincode);
+  setValue("mobileNo",data.MobileNo);
+  setValue("email",data.Email);
+  setValue("website",data.Website);
+
+  setValue("gstin",data.GSTIN);
+  setValue("pan",data.Pan||data.PAN);
+  setValue("cin",data.CIN);
+  setValue("dateOfIncorporation",normaliseDateInput(data.DateOfIncorporation));
+  setValue("authorizedSignatory",data.AuthorizedSignatory);
+  setValue("role",data.Role);
+
+  setValue("bankName",data.BankName);
+  setValue("accountNo",data.AccountNo);
+  setValue("ifsc",data.IFSC);
+  setValue("branch",data.Branch);
+  setValue("upiid",data.UPIID);
+  setValue("upino",data.UPINo);
+
+  setValue("notes",data.Notes);
+
+  renderLogo(data.LogoURL||data.logoURL);
+  renderHeader();
+}
+
+function normaliseDateInput(value){
+  if(!value)return "";
+  if(typeof value==="string"){
+    if(/^\\d{4}-\\d{2}-\\d{2}$/.test(value))return value;
+    const m=value.match(/^(\\d{2})\\/(\\d{2})\\/(\\d{4})$/);
+    if(m)return `${m[3]}-${m[2]}-${m[1]}`;
+  }
+  if(value?.toDate){
+    const d=value.toDate();
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  return "";
+}
+
+function formData(){
+  return {
+    CompanyID:getValue("companyId"),
+    CompanyName:getValue("companyName"),
+    Tagline:getValue("tagline"),
+    ConstitutionType:getValue("constitutionType"),
+    Address:getValue("address"),
+    City:getValue("city"),
+    State:getValue("state"),
+    Pincode:getValue("pincode"),
+    MobileNo:getValue("mobileNo"),
+    Email:getValue("email"),
+    Website:getValue("website"),
+    GSTIN:getValue("gstin").toUpperCase(),
+    Pan:getValue("pan").toUpperCase(),
+    CIN:getValue("cin").toUpperCase(),
+    FinancialYear:getValue("financialYear"),
+    Status:getValue("status"),
+    AuthorizedSignatory:getValue("authorizedSignatory"),
+    Role:getValue("role"),
+    DateOfIncorporation:getValue("dateOfIncorporation")
+      ? indianDate(new Date(getValue("dateOfIncorporation")+"T00:00:00"))
+      : "",
+    BankName:getValue("bankName"),
+    AccountNo:getValue("accountNo"),
+    IFSC:getValue("ifsc").toUpperCase(),
+    Branch:getValue("branch"),
+    UPIID:getValue("upiid"),
+    UPINo:getValue("upino"),
+    Notes:getValue("notes")
+  };
+}
+
+function renderHeader(){
+  const name=getValue("companyName")||"Company";
+  const id=getValue("companyId")||"—";
+  $("headCompanyName").textContent=name;
+  $("headCompanyId").textContent="Company ID: "+id;
+}
+
+function renderLogo(url){
+  const head=$("headLogo");
+  const box=$("logoBox");
+  const markup=url
+    ? `<img src="${escapeAttribute(url)}" alt="Company logo">`
+    : `<div class="logo-placeholder">No logo</div>`;
+  head.innerHTML=markup;
+  box.innerHTML=markup;
+}
+
+$("companyName").addEventListener("input",renderHeader);
+
+$("chooseLogo").addEventListener("click",()=>$("logoFile").click());
+
+$("logoFile").addEventListener("change",e=>{
+  selectedLogoFile=e.target.files?.[0]||null;
+  if(!selectedLogoFile)return;
+
+  if(!/^image\\/(png|jpeg|webp)$/.test(selectedLogoFile.type)){
+    selectedLogoFile=null;
+    showMessage("Please choose a PNG, JPG or WebP image.");
+    return;
+  }
+
+  if(selectedLogoFile.size>2*1024*1024){
+    selectedLogoFile=null;
+    showMessage("Logo size should be 2 MB or less.");
+    return;
+  }
+
+  const reader=new FileReader();
+  reader.onload=()=>renderLogo(reader.result);
+  reader.readAsDataURL(selectedLogoFile);
+});
+
+$("pincode").addEventListener("input",e=>{
+  e.target.value=e.target.value.replace(/\\D/g,"").slice(0,6);
+});
+$("mobileNo").addEventListener("input",e=>{
+  e.target.value=e.target.value.replace(/\\D/g,"").slice(0,10);
+});
+$("upino").addEventListener("input",e=>{
+  e.target.value=e.target.value.replace(/\\D/g,"").slice(0,10);
+});
+["gstin","pan","cin","ifsc"].forEach(id=>{
+  $(id).addEventListener("input",e=>e.target.value=e.target.value.toUpperCase());
+});
+
+function validate(data){
+  if(!data.CompanyName){
+    showMessage("Company Name is required.");
+    $("companyName").focus();
+    return false;
+  }
+  if(data.MobileNo && !/^[6-9]\\d{9}$/.test(data.MobileNo)){
+    showMessage("Please enter a valid 10-digit Indian mobile number.");
+    $("mobileNo").focus();
+    return false;
+  }
+  if(data.Pincode && !/^\\d{6}$/.test(data.Pincode)){
+    showMessage("Please enter a valid 6-digit pincode.");
+    $("pincode").focus();
+    return false;
+  }
+  if(data.Email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(data.Email)){
+    showMessage("Please enter a valid email address.");
+    $("email").focus();
+    return false;
+  }
+  if(data.Pan && !/^[A-Z]{5}\\d{4}[A-Z]$/.test(data.Pan)){
+    showMessage("PAN format is invalid. Example: ABCDE1234F.");
+    $("pan").focus();
+    return false;
+  }
+  if(data.GSTIN && !/^[0-9A-Z]{15}$/.test(data.GSTIN)){
+    showMessage("GSTIN must contain 15 characters.");
+    $("gstin").focus();
+    return false;
+  }
+  if(data.IFSC && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(data.IFSC)){
+    showMessage("IFSC format is invalid.");
+    $("ifsc").focus();
+    return false;
+  }
+  if(data.Website){
+    try{new URL(data.Website)}catch{
+      showMessage("Please enter a valid website URL.");
+      $("website").focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+async function uploadLogo(companyId){
+  if(!selectedLogoFile)return originalData.LogoURL||originalData.logoURL||"";
+
+  if(!storage)throw new Error("Firebase Storage is not configured in firebase-config.js");
+
+  const logoRef=ref(storage,`companyLogos/${companyId}/logo`);
+  await uploadBytes(logoRef,selectedLogoFile,{
+    contentType:selectedLogoFile.type,
+    cacheControl:"public,max-age=3600"
+  });
+  return await getDownloadURL(logoRef);
+}
+
+async function loadCompany(){
+  try{
+    const snap=await getDoc(doc(db,"settings","company"));
+
+    if(snap.exists()){
+      existingCompany=snap.data();
+      fillForm(existingCompany);
+      return;
+    }
+
+    const id=await getOrCreateCompanyId();
+    setValue("companyId",id);
+    renderHeader();
+    renderLogo("");
+  }catch(error){
+    console.error(error);
+    showMessage("Unable to load company settings. Check Firebase configuration and Firestore rules.");
+  }
+}
+
+$("companyForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  clearMessage();
+
+  const data=formData();
+
+  if(!validate(data))return;
+
+  const button=$("saveBtn");
+  button.disabled=true;
+  button.textContent="Saving…";
+
+  try{
+    /*
+      Never accept a typed Company ID.
+      Existing ID is preserved; otherwise COM00001 is created.
+    */
+    const companyId=existingCompany?.CompanyID||data.CompanyID||"COM00001";
+    data.CompanyID=companyId;
+
+    const user=auth?.currentUser;
+
+    let logoURL=originalData.LogoURL||originalData.logoURL||"";
+    if(selectedLogoFile){
+      logoURL=await uploadLogo(companyId);
+    }
+
+    data.LogoURL=logoURL;
+
+    const nowFields={
+      ...data,
+      CreatedAt:existingCompany?.CreatedAt||serverTimestamp(),
+      UpdatedAt:serverTimestamp(),
+      UpdatedByUID:user?.uid||"",
+      UpdatedByEmail:user?.email||""
+    };
+
+    await setDoc(doc(db,"settings","company"),nowFields,{merge:true});
+
+    existingCompany={
+      ...existingCompany,
+      ...data
+    };
+    originalData={
+      ...existingCompany
+    };
+    selectedLogoFile=null;
+
+    fillForm(existingCompany);
+    broadcastCompany(existingCompany);
+
+    showMessage("Company details saved successfully.","success");
+    toast("Company saved.");
+
+  }catch(error){
+    console.error(error);
+    showMessage(firebaseError(error));
+  }finally{
+    button.disabled=false;
+    button.textContent="Save Company";
+  }
+});
+
+$("resetBtn").addEventListener("click",()=>{
+  if(existingCompany)fillForm(existingCompany);
+  else {
+    $("companyForm").reset();
+    setupSelects();
+    setValue("companyId","COM00001");
+    renderLogo("");
+    renderHeader();
+  }
+  clearMessage();
+  selectedLogoFile=null;
+  $("logoFile").value="";
+});
+
+$("refreshBtn").addEventListener("click",async()=>{
+  clearMessage();
+  await loadCompany();
+  toast("Company refreshed.");
+});
+
+/*
+  Make the selected company available to the entire BizOdit
+  application. index.html can store this and pass it into
+  modules loaded in its iframe.
+*/
+function broadcastCompany(company){
+  try{
+    localStorage.setItem("bizodit.activeCompany",JSON.stringify({
+      CompanyID:company.CompanyID||"",
+      CompanyName:company.CompanyName||"",
+      LogoURL:company.LogoURL||"",
+      UpdatedAt:new Date().toISOString()
+    }));
+  }catch{}
+
+  if(window.parent && window.parent!==window){
+    window.parent.postMessage({
+      type:"BIZODIT_COMPANY_CHANGED",
+      company:{
+        CompanyID:company.CompanyID||"",
+        CompanyName:company.CompanyName||"",
+        LogoURL:company.LogoURL||""
+      }
+    },"*");
+  }
+}
+
+function escapeHtml(v){
+  return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function escapeAttribute(v){return escapeHtml(v)}
+
+function firebaseError(error){
+  if(error?.code==="permission-denied")
+    return "Permission denied. Please check your Firestore/Storage security rules.";
+  if(error?.code==="storage/unauthorized")
+    return "Logo upload was blocked by Firebase Storage rules.";
+  if(error?.code==="storage/quota-exceeded")
+    return "Firebase Storage quota was exceeded.";
+  return error?.message||"Unable to save company details.";
+}
+
+loadCompany();
+</script>
+</body>
+</html>

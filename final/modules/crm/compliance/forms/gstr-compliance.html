@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b3b66">
+<title>BizOdit | GST Return Compliance</title>
+<style>
+:root{
+ --brand:#0b3b66;--brand2:#173f63;--bg:#f4f6f8;--card:#fff;
+ --text:#202b36;--muted:#687583;--line:#d7dee5;
+ --green:#23794f;--red:#b74646;--amber:#a06a17;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.top{max-width:1280px;margin:auto;padding:14px 20px 10px;display:grid;grid-template-columns:50px minmax(0,1fr) 42px;grid-template-areas:"back title refresh" "actions actions actions";gap:10px}
+.back{grid-area:back}.refresh{grid-area:refresh}
+.back,.refresh{width:50px;height:50px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--brand);display:grid;place-items:center}
+.back svg,.refresh svg{width:23px;height:23px}
+.top-main{grid-area:title;min-width:0}
+.top-main h1{margin:0;font-size:27px;line-height:1.1;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{font-size:14px;color:var(--muted);margin-top:4px}.report{font-size:14px;color:var(--muted);margin-top:5px}.report strong{color:var(--brand)}
+.top-actions{grid-area:actions;display:flex;justify-content:flex-end;gap:7px}
+.top-action{width:40px;height:40px;border:1px solid var(--line);background:#fff;color:var(--brand);border-radius:7px;display:grid;place-items:center}
+.top-action svg{width:19px;height:19px}
+.top-action.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.top-action.add{width:72px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:15px;font-weight:600}
+.top-action.add svg{width:18px;height:18px}
+.wrap{max-width:1280px;margin:0 auto 30px;padding:0 14px}
+.toolbar{background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px;margin-top:4px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.search{height:40px;flex:1;min-width:220px;border:1px solid var(--line);border-radius:7px;padding:0 11px;font-size:15px;outline:0}
+.tool{height:40px;padding:0 11px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--brand);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600}
+.tool svg{width:18px;height:18px}.tool.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.filter-panel{display:none;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;margin-top:8px}
+.filter-panel.open{display:block}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.form-card,.list-card{background:#fff;border:1px solid var(--line);border-radius:10px;margin-top:12px;padding:14px}
+.form-card{display:none}.form-card.open{display:block}
+.form-head,.list-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h2{margin:0;font-size:20px}.count{font-size:14px;color:var(--muted);margin-top:3px}
+.next-id{font-size:13px;color:var(--muted)}.next-id strong{color:var(--brand)}
+.notice{background:#f5f8fa;border:1px solid #e0e7ec;border-radius:8px;padding:10px 12px;margin:12px 0;font-size:13px;color:var(--muted)}
+.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.full{grid-column:1/-1}.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.field.required label:after{content:" *";color:var(--red)}
+.field input,.field select,.field textarea{width:100%;min-height:48px;border:1px solid var(--line);border-radius:7px;padding:9px 11px;background:#fff;color:var(--text);font-size:15px;outline:0}
+.field textarea{min-height:84px;resize:vertical}
+.locked{background:#f1f4f6!important;color:#65717d!important}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.btn{min-height:50px;padding:0 16px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--brand);font-size:15px;font-weight:600}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.message{display:none;padding:9px 11px;border-radius:7px;margin-top:10px;font-size:13px}.message.show{display:block}.error{background:#fff1f1;color:var(--red);border:1px solid #efd1d1}.success{background:#eff8f3;color:var(--green);border:1px solid #d1e8db}
+.status{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:700}.pending{background:#fff6df;color:#8a5a00}.completed{background:#eaf7ef;color:#23794f}.overdue{background:#fff0f0;color:#a63d3d}
+.payment{font-weight:700}.paid{color:var(--green)}.partial{color:var(--amber)}.notpaid{color:var(--red)}
+.table-wrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:1250px}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid #edf0f2;font-size:13px;white-space:nowrap}th{font-weight:700;color:#5f6d79;background:#fafbfc}td strong{font-size:14px}
+.actions{display:flex;gap:5px}.action{width:36px;height:36px;border:1px solid var(--line);background:#fff;border-radius:6px;color:var(--brand);display:grid;place-items:center}.action svg{width:18px;height:18px}.action.delete{color:var(--red)}
+.mobile-list{display:none}
+.card{border:1px solid #d9e0e5;border-radius:10px;background:#fff;margin:10px 0;padding:14px}
+.card-title{font-size:16px;font-weight:700;color:var(--brand2);margin-bottom:8px}.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #edf0f2}.row:last-child{border:0}.label{font-size:13px;color:var(--muted);flex:0 0 38%}.value{text-align:right;font-size:14px;font-weight:600;word-break:break-word}.subvalue{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:2px}
+.modal{display:none;position:fixed;inset:0;background:rgba(12,27,39,.45);z-index:100;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}.modal-box{background:#fff;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:10px;padding:16px}.modal-head{display:flex;justify-content:space-between;align-items:center}.close{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:7px;font-size:24px;color:var(--muted)}
+.details{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}.detail{border:1px solid #edf0f2;border-radius:8px;padding:10px}.detail small{display:block;color:var(--muted);font-size:12px}.detail strong{display:block;margin-top:4px;font-size:14px;word-break:break-word}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;background:#17232d;color:#fff;padding:10px 14px;border-radius:7px;font-size:13px;transition:.2s;z-index:200}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:760px){
+ .top{padding:14px 20px 10px}.top-main h1{font-size:27px}.top-actions{justify-content:flex-end}.wrap{padding:0 14px}
+ .toolbar{margin-top:4px}.toolbar .search{flex-basis:100%;min-width:0}
+ .grid,.form-grid{grid-template-columns:1fr}.full{grid-column:auto}
+ .table-wrap{display:none}.mobile-list{display:block}
+ .details{grid-template-columns:1fr}
+ .form-head,.list-head{flex-direction:column}
+ .filter-panel .grid{grid-template-columns:1fr}
+ .optional{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+<button class="back" id="backBtn" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
+<div class="top-main">
+<h1>GST Return Compliance</h1>
+<div class="sub">BizOdit • GST Return Compliance</div>
+<div class="report">Report as on : <strong id="today"></strong></div>
+</div>
+<button class="refresh" id="refresh" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8.1 8.1 0 0 0-14.7-4L3 10"/><path d="M3 5v5h5"/><path d="M4 13a8.1 8.1 0 0 0 14.7 4L21 14"/><path d="M21 19v-5h-5"/></svg></button>
+<div class="top-actions">
+<button class="top-action" id="searchBtn" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+<button class="top-action add primary" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button>
+<button class="top-action" id="filterBtn" title="Filter"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button>
+<button class="top-action" id="sortBtn" title="Sort"><svg viewBox="0 0 24 24"><path d="M8 5v14"/><path d="m5 8 3-3 3 3"/><path d="M16 19V5"/><path d="m13 16 3 3 3-3"/></svg></button>
+<button class="top-action optional" id="importBtn" title="Import CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg></button>
+<button class="top-action optional" id="exportBtn" title="Export CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg></button>
+</div>
+</header>
+
+<main class="wrap">
+<section class="toolbar">
+<input id="search" class="search" placeholder="Search Task ID, Client, GSTIN, Period, Branch, Portal ID">
+<button class="tool" id="sampleBtn">Sample CSV</button>
+<button class="tool" id="listImportBtn">Import CSV</button>
+<button class="tool primary" id="listExportBtn">Export CSV</button>
+</section>
+
+<section class="filter-panel" id="filterPanel">
+<div class="grid">
+<div class="field"><label>From</label><input id="fromDate" type="date"></div>
+<div class="field"><label>To</label><input id="toDate" type="date"></div>
+<div class="field"><label>Status</label><select id="filterStatus"><option value="">All Status</option><option>Pending</option><option>Completed</option><option>Over Due</option></select></div>
+<div class="field"><label>Payment</label><select id="filterPayment"><option value="">All Payment</option><option>NotPaid</option><option>Partially Paid</option><option>Paid</option></select></div>
+<div class="field"><label>Branch</label><select id="filterBranch"><option value="">All Branches</option></select></div>
+<div class="field"><label>Priority</label><select id="filterPriority"><option value="">All Priority</option><option>Low</option><option>Medium</option><option>High</option></select></div>
+</div>
+</section>
+
+<section class="form-card" id="formCard">
+<div class="form-head"><div><h2 id="formTitle">Add GST Return</h2><div class="next-id">Task ID: <strong id="nextId">T/GST/2608001</strong></div></div></div>
+<div class="notice">Client and compliance details are linked to Firebase. Task ID is automatic. Payment values use INR 0.00 format. Stage status: Pending, Completed or Over Due.</div>
+<div id="message" class="message"></div>
+
+<div class="form-grid">
+<div class="field required"><label>Task ID</label><input id="taskId" class="locked" readonly></div>
+<div class="field required"><label>Task Date</label><input id="taskDate" type="date"></div>
+<div class="field required"><label>Task Name</label><select id="taskName"><option value="">Select</option><option>GST Return Regular</option><option>GST Return QRMP</option><option>GST Annual Return</option><option>GST Amendment</option><option>Other GST Return</option></select></div>
+
+<div class="field required"><label>Return Period</label><input id="taskPeriod" placeholder="e.g. Aug-2026"></div>
+<div class="field required"><label>Due Date</label><input id="taskDueDate" type="date"></div>
+<div class="field"><label>Branch</label><select id="branchId"><option value="">Select branch</option></select></div>
+
+<div class="field required"><label>Priority</label><select id="taskPriority"><option value="">Select</option><option>Low</option><option>Medium</option><option>High</option></select></div>
+<div class="field required"><label>Client Name</label>
+<select id="clientId"><option value="">Select client</option></select></div>
+<div class="field required"><label>WhatsApp Number</label><input id="whatsapp" class="locked" readonly></div>
+
+<div class="field required"><label>GSTIN</label><input id="gstin" class="locked" readonly></div>
+<div class="field required"><label>Portal ID</label><input id="portalId" class="locked" readonly></div>
+<div class="field required"><label>Portal Username</label><input id="portalUserName" class="locked" readonly></div>
+
+<div class="field required"><label>Portal Password</label><input id="portalPassword" class="locked" readonly></div>
+<div class="field"><label>Portal Link</label><input id="portalLinkUrl" value="https://services.gst.gov.in/services/login"></div>
+<div class="field"><label>Filed At</label><input id="filedAt" type="datetime-local"></div>
+
+<div class="field"><label>Acknowledgement No.</label><input id="ackNo"></div>
+<div class="field"><label>Proforma Invoice No.</label><input id="invoiceNo"></div>
+<div class="field required"><label>Invoice Amount</label><input id="invoiceAmount" inputmode="decimal" placeholder="0.00"></div>
+
+<div class="field required"><label>Received Amount</label><input id="receivedAmount" inputmode="decimal" placeholder="0.00"></div>
+<div class="field required"><label>Balance Due</label><input id="balanceDue" class="locked" readonly></div>
+<div class="field required"><label>Payment Status</label><select id="paymentStatus"><option value="">Select</option><option>NotPaid</option><option>Partially Paid</option><option>Paid</option></select></div>
+
+<div class="field required"><label>Task Status</label><select id="taskStatus"><option value="">Select</option><option>Pending</option><option>Completed</option><option>Over Due</option></select></div>
+<div class="field required"><label>Stage-1 Statement</label><select id="stage1"><option>Pending</option><option>Completed</option><option>Over Due</option></select></div>
+<div class="field required"><label>Stage-2 GSTR-1</label><select id="stage2"><option>Pending</option><option>Completed</option><option>Over Due</option></select></div>
+
+<div class="field required"><label>Stage-3 Final GSTR-3B</label><select id="stage3"><option>Pending</option><option>Completed</option><option>Over Due</option></select></div>
+<div class="field"><label>Task Folder URL</label><input id="taskFolderUrl" placeholder="Drive / Client folder URL"></div>
+<div class="field full"><label>Narration</label><textarea id="narration" placeholder="Optional notes"></textarea></div>
+</div>
+<div class="form-actions"><button class="btn" id="cancelBtn">Cancel</button><button class="btn primary" id="saveBtn">Save GST Return</button></div>
+</section>
+
+<section class="list-card">
+<div class="list-head"><div><h2>GST Return Compliance</h2><div class="count" id="count">0 records</div></div></div>
+<div class="table-wrap"><table><thead><tr>
+<th>Task ID</th><th>Client</th><th>Period</th><th>Due Date</th><th>Branch</th><th>Priority</th><th>Stage 1</th><th>GSTR-1</th><th>GSTR-3B</th><th>Status</th><th>Invoice</th><th>Received</th><th>Balance</th><th>Payment</th><th>Actions</th>
+</tr></thead><tbody id="rows"></tbody></table></div>
+<div id="mobileList" class="mobile-list"></div>
+</section>
+</main>
+
+<input type="file" id="fileInput" accept=".csv" hidden>
+<div class="modal" id="viewModal"><div class="modal-box"><div class="modal-head"><h2>GST Return Details</h2><button class="close" id="closeModal">×</button></div><div id="details" class="details"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const todayDate=new Date();
+$("today").textContent=`${pad(todayDate.getDate())}/${pad(todayDate.getMonth()+1)}/${todayDate.getFullYear()}`;
+let firebase=null,records=[],clients=[],branches=[],activeCompany={},editingId=null;
+
+function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function toast(t){$("toast").textContent=t;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}
+function msg(t,type="error"){$("message").textContent=t;$("message").className="message show "+type}
+function dt(v){if(!v)return null;if(v.toDate)return v.toDate();const d=new Date(v);return isNaN(d)?null:d}
+function ind(v){const d=dt(v);return d?`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`:"—"}
+function inr(v){const n=Number(String(v??0).replace(/[₹,\s]/g,""))||0;return new Intl.NumberFormat("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)}
+function num(v){return Number(String(v??"").replace(/[₹,\s,]/g,""))||0}
+
+function nextId(){
+ const now=new Date(),prefix=`T/GST/${String(now.getFullYear()).slice(2)}${pad(now.getMonth()+1)}`;
+ let max=0;
+ records.forEach(r=>{const m=String(r.taskId||"").match(/^T\/GST\/\d{4}(\d{3})$/);if(m)max=Math.max(max,+m[1])});
+ return prefix+String(max+1).padStart(3,"0");
+}
+function populateClients(){
+ $("clientId").innerHTML='<option value="">Select client</option>'+clients.map(c=>`<option value="${esc(c.clientId)}">${esc(c.clientName)} — ${esc(c.clientId)}</option>`).join("");
+}
+function populateBranches(){
+ $("branchId").innerHTML='<option value="">Select branch</option>'+branches.map(b=>`<option value="${esc(b.branchId)}">${esc(b.branchName)} — ${esc(b.branchId)}</option>`).join("");
+ $("filterBranch").innerHTML='<option value="">All Branches</option>'+branches.map(b=>`<option value="${esc(b.branchId)}">${esc(b.branchName)}</option>`).join("");
+}
+function selectClient(){
+ const c=clients.find(x=>x.clientId===$("clientId").value);
+ $("whatsapp").value=c?.mobile||c?.whatsapp||c?.Whatsapp||"";
+ $("gstin").value=c?.gstin||c?.GSTIN||"";
+ $("portalId").value=c?.portalId||c?.PortalId||"";
+ $("portalUserName").value=c?.portalUserName||c?.PortalUserName||"";
+ $("portalPassword").value=c?.portalPassword||c?.PortalPassword||"";
+}
+function calcBalance(){
+ const balance=Math.max(0,num($("invoiceAmount").value)-num($("receivedAmount").value));
+ $("balanceDue").value=inr(balance);
+ if($("paymentStatus").dataset.manual!=="1"){
+   $("paymentStatus").value=balance<=0&&num($("invoiceAmount").value)>0?"Paid":num($("receivedAmount").value)>0?"Partially Paid":"NotPaid";
+ }
+}
+function openForm(r=null){
+ editingId=r?.taskId||null;$("formCard").classList.add("open");$("message").className="message";
+ $("formTitle").textContent=r?"Edit GST Return":"Add GST Return";
+ $("nextId").textContent=r?.taskId||nextId();$("taskId").value=r?.taskId||nextId();
+ populateClients();populateBranches();
+ $("taskDate").value=r?.taskDate||todayDate.toISOString().slice(0,10);
+ $("taskName").value=r?.taskName||"GST Return Regular";$("taskPeriod").value=r?.taskPeriod||"";
+ $("taskDueDate").value=r?.taskDueDate||"";$("branchId").value=r?.branchId||"";
+ $("taskPriority").value=r?.taskPriority||"Low";$("clientId").value=r?.clientId||"";
+ $("portalLinkUrl").value=r?.portalLinkUrl||"https://services.gst.gov.in/services/login";
+ $("filedAt").value=r?.filedAt?String(r.filedAt).slice(0,16):"";
+ $("ackNo").value=r?.acknowledgementNo||r?.AknowledgementNo||"";
+ $("invoiceNo").value=r?.proformaInvoiceNo||"";$("invoiceAmount").value=num(r?.invoiceAmount);
+ $("receivedAmount").value=num(r?.receivedAmount);$("balanceDue").value=inr(num(r?.balanceDue));
+ $("paymentStatus").value=r?.paymentStatus||"NotPaid";$("paymentStatus").dataset.manual="0";
+ $("taskStatus").value=r?.taskStatus||"Pending";$("stage1").value=r?.stage1||"Pending";$("stage2").value=r?.stage2||"Pending";$("stage3").value=r?.stage3||"Pending";
+ $("taskFolderUrl").value=r?.taskFolderUrl||"";$("narration").value=r?.narration||"";
+ selectClient();calcBalance();window.scrollTo({top:0,behavior:"smooth"});
+}
+function closeForm(){editingId=null;$("formCard").classList.remove("open");$("message").className="message"}
+function validate(){
+ const required=["taskDate","taskName","taskPeriod","taskDueDate","taskPriority","clientId","invoiceAmount","receivedAmount","paymentStatus","taskStatus"];
+ for(const id of required)if(!$(id).value)return `${id.replace(/([A-Z])/g," $1")} is mandatory.`;
+ if(num($("receivedAmount").value)>num($("invoiceAmount").value))return"Received Amount cannot exceed Invoice Amount.";
+ if($("stage3").value==="Completed"&&$("taskStatus").value!=="Completed")return"Complete Task Status after GSTR-3B is completed.";
+ return"";
+}
+function filtered(){
+ const q=$("search").value.trim().toLowerCase(),from=$("fromDate").value?new Date($("fromDate").value+"T00:00:00"):null,to=$("toDate").value?new Date($("toDate").value+"T23:59:59"):null;
+ const st=$("filterStatus").value,pay=$("filterPayment").value,br=$("filterBranch").value,pri=$("filterPriority").value;
+ return records.filter(r=>{
+  const text=[r.taskId,r.taskName,r.taskPeriod,r.clientName,r.clientId,r.gstin,r.branchId,r.taskPriority,r.portalId,r.taskStatus,r.paymentStatus,r.stage1,r.stage2,r.stage3].join(" ").toLowerCase();
+  const d=dt(r.taskDueDate||r.taskDate);
+  return(!q||text.includes(q))&&(!from||!d||d>=from)&&(!to||!d||d<=to)&&(!st||r.taskStatus===st)&&(!pay||r.paymentStatus===pay)&&(!br||r.branchId===br)&&(!pri||r.taskPriority===pri);
+ });
+}
+function badge(v){const c=String(v||"Pending").toLowerCase().replaceAll(" ","");return`<span class="status ${c==="completed"?"completed":c==="overdue"?"overdue":"pending"}">${esc(v||"Pending")}</span>`}
+function render(){
+ const list=filtered();$("count").textContent=`${list.length} of ${records.length} records`;
+ $("rows").innerHTML=list.length?list.map(r=>`<tr>
+<td><strong>${esc(r.taskId)}</strong></td><td><strong>${esc(r.clientName||r.clientId)}</strong><br><small>${esc(r.clientId)}</small></td>
+<td>${esc(r.taskPeriod)}</td><td>${ind(r.taskDueDate)}</td><td>${esc(r.branchId||"—")}</td><td>${esc(r.taskPriority)}</td>
+<td>${badge(r.stage1)}</td><td>${badge(r.stage2)}</td><td>${badge(r.stage3)}</td><td>${badge(r.taskStatus)}</td>
+<td>₹ ${inr(r.invoiceAmount)}</td><td>₹ ${inr(r.receivedAmount)}</td><td>₹ ${inr(r.balanceDue)}</td><td>${esc(r.paymentStatus)}</td>
+<td><div class="actions"><button class="action" onclick="viewRecord('${esc(r.taskId)}')"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg></button><button class="action" onclick="editRecord('${esc(r.taskId)}')"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button><button class="action delete" onclick="deleteRecord('${esc(r.taskId)}')"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2M19 6l-1 15H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></div></td></tr>`).join(""):`<tr><td colspan="15" style="text-align:center">No records found.</td></tr>`;
+ $("mobileList").innerHTML=list.map(r=>`<div class="card">
+<div class="card-title">${esc(r.taskId)}<span class="subvalue">${esc(r.taskName)}</span></div>
+<div class="row"><span class="label">Client</span><span class="value">${esc(r.clientName||"—")}<span class="subvalue">${esc(r.clientId||"—")}</span></span></div>
+<div class="row"><span class="label">Period / Due</span><span class="value">${esc(r.taskPeriod||"—")}<span class="subvalue">${ind(r.taskDueDate)}</span></span></div>
+<div class="row"><span class="label">Branch / Priority</span><span class="value">${esc(r.branchId||"—")}<span class="subvalue">${esc(r.taskPriority||"—")}</span></span></div>
+<div class="row"><span class="label">Statement</span><span class="value">${badge(r.stage1)}</span></div>
+<div class="row"><span class="label">GSTR-1</span><span class="value">${badge(r.stage2)}</span></div>
+<div class="row"><span class="label">GSTR-3B</span><span class="value">${badge(r.stage3)}</span></div>
+<div class="row"><span class="label">Task Status</span><span class="value">${badge(r.taskStatus)}</span></div>
+<div class="row"><span class="label">Invoice</span><span class="value">₹ ${inr(r.invoiceAmount)}</span></div>
+<div class="row"><span class="label">Received</span><span class="value">₹ ${inr(r.receivedAmount)}</span></div>
+<div class="row"><span class="label">Balance</span><span class="value">₹ ${inr(r.balanceDue)}</span></div>
+<div class="row"><span class="label">Payment</span><span class="value">${esc(r.paymentStatus)}</span></div>
+<div class="actions" style="justify-content:flex-end;margin-top:10px"><button class="action" onclick="viewRecord('${esc(r.taskId)}')">View</button><button class="action" onclick="editRecord('${esc(r.taskId)}')">Edit</button></div>
+</div>`).join("")||`<div style="padding:15px;text-align:center;color:var(--muted)">No records found.</div>`;
+}
+async function loadFirebase(){
+ try{
+  const mod=await import("../../js/firebase-config.js");
+  const fs=await import("https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js");
+  firebase={...mod,...fs};await loadCompany();await loadClients();await loadBranches();await loadRecords();
+ }catch(e){console.error(e);$("rows").innerHTML=`<tr><td colspan="15" style="text-align:center;padding:20px">Firebase connection unavailable. Check ../../js/firebase-config.js</td></tr>`}
+}
+async function loadCompany(){
+ try{const x=JSON.parse(localStorage.getItem("bizodit.activeCompany")||"null");if(x?.CompanyID){activeCompany=x;return}}catch(e){}
+}
+async function loadClients(){
+ const snap=await firebase.getDocs(firebase.collection(firebase.db,"clients"));clients=[];
+ snap.forEach(s=>{const d=s.data();if(!activeCompany.CompanyID||d.companyId===activeCompany.CompanyID)clients.push(d)});populateClients();
+}
+async function loadBranches(){
+ try{const snap=await firebase.getDocs(firebase.collection(firebase.db,"branches"));branches=[];snap.forEach(s=>{const d=s.data();if(!activeCompany.CompanyID||d.companyId===activeCompany.CompanyID)branches.push(d)});populateBranches()}catch(e){populateBranches()}
+}
+async function loadRecords(){
+ const snap=await firebase.getDocs(firebase.collection(firebase.db,"gstCompliance"));records=[];
+ snap.forEach(s=>{const d=s.data();if(!activeCompany.CompanyID||d.companyId===activeCompany.CompanyID)records.push(d)});
+ $("taskId").value=nextId();$("nextId").textContent=nextId();render();
+}
+$("clientId").onchange=selectClient;
+$("invoiceAmount").oninput=calcBalance;$("receivedAmount").oninput=calcBalance;
+$("paymentStatus").onchange=()=>{$("paymentStatus").dataset.manual="1"};
+$("newBtn").onclick=()=>openForm();$("cancelBtn").onclick=closeForm;
+$("filterBtn").onclick=()=>$("filterPanel").classList.toggle("open");
+$("searchBtn").onclick=()=>{$("search").focus();window.scrollTo({top:0,behavior:"smooth"})};
+$("sortBtn").onclick=()=>{records.reverse();render();toast("Sort order changed")};
+$("search").oninput=render;
+["fromDate","toDate","filterStatus","filterPayment","filterBranch","filterPriority"].forEach(id=>$(id).onchange=render);
+$("refresh").onclick=()=>loadRecords();
+$("backBtn").onclick=()=>{if(history.length>1)history.back();else if(parent!==window)parent.postMessage({type:"bizodit:navigate",page:"modules/tax-compliance/index.html"},"*");else location.href="../index.html"};
+
+$("saveBtn").onclick=async()=>{
+ const e=validate();if(e){msg(e);return}
+ if(!firebase){msg("Firebase is not connected.");return}
+ if(!activeCompany.CompanyID){msg("No active company selected.");return}
+ const id=editingId||nextId(),c=clients.find(x=>x.clientId===$("clientId").value);
+ const data={
+  taskId:id,taskDate:$("taskDate").value,taskName:$("taskName").value,taskPeriod:$("taskPeriod").value.trim(),taskDueDate:$("taskDueDate").value,
+  branchId:$("branchId").value,branchName:branches.find(b=>b.branchId===$("branchId").value)?.branchName||"",
+  taskPriority:$("taskPriority").value,clientId:c.clientId,clientName:c.clientName,whatsapp:$("whatsapp").value,gstin:$("gstin").value,
+  portalLinkUrl:$("portalLinkUrl").value,portalId:$("portalId").value,portalUserName:$("portalUserName").value,portalPassword:$("portalPassword").value,
+  filedAt:$("filedAt").value,acknowledgementNo:$("ackNo").value.trim(),proformaInvoiceNo:$("invoiceNo").value.trim(),
+  invoiceAmount:num($("invoiceAmount").value),receivedAmount:num($("receivedAmount").value),balanceDue:num($("balanceDue").value),
+  taskStatus:$("taskStatus").value,paymentStatus:$("paymentStatus").value,stage1:$("stage1").value,stage2:$("stage2").value,stage3:$("stage3").value,
+  taskFolderUrl:$("taskFolderUrl").value.trim(),narration:$("narration").value.trim(),companyId:activeCompany.CompanyID,companyName:activeCompany.CompanyName||"",
+  updatedAt:firebase.serverTimestamp(),updatedBy:firebase.auth?.currentUser?.email||firebase.auth?.currentUser?.uid||""
+ };
+ if(!editingId)data.createdAt=firebase.serverTimestamp();
+ try{await firebase.setDoc(firebase.doc(firebase.db,"gstCompliance",id),data,{merge:true});msg(editingId?"GST return updated":"GST return saved","success");setTimeout(()=>{closeForm();loadRecords()},500)}catch(err){msg(err.message||"Unable to save")}
+};
+window.editRecord=id=>{const r=records.find(x=>x.taskId===id);if(r)openForm(r)};
+window.deleteRecord=async id=>{if(confirm("Delete "+id+"?")){await firebase.deleteDoc(firebase.doc(firebase.db,"gstCompliance",id));toast("Deleted");loadRecords()}};
+window.viewRecord=id=>{
+ const r=records.find(x=>x.taskId===id);if(!r)return;
+ const f=[["Task ID",r.taskId],["Client",`${r.clientName||""} (${r.clientId||""})`],["Return",r.taskName],["Period",r.taskPeriod],["Due Date",ind(r.taskDueDate)],["Branch",r.branchName||r.branchId],["Priority",r.taskPriority],["GSTIN",r.gstin],["Portal ID",r.portalId],["Username",r.portalUserName],["Password",r.portalPassword],["Task Status",r.taskStatus],["Stage 1",r.stage1],["GSTR-1",r.stage2],["GSTR-3B",r.stage3],["Invoice","₹ "+inr(r.invoiceAmount)],["Received","₹ "+inr(r.receivedAmount)],["Balance","₹ "+inr(r.balanceDue)],["Payment",r.paymentStatus],["Narration",r.narration]];
+ $("details").innerHTML=f.map(x=>`<div class="detail"><small>${esc(x[0])}</small><strong>${esc(x[1]||"—")}</strong></div>`).join("");$("viewModal").classList.add("open");
+};
+$("closeModal").onclick=()=>$("viewModal").classList.remove("open");
+$("viewModal").onclick=e=>{if(e.target.id==="viewModal")$("viewModal").classList.remove("open")};
+
+const csvHeaders=["taskId","taskDate","taskName","taskPeriod","taskDueDate","branchId","taskPriority","clientId","clientName","whatsapp","gstin","filedAt","acknowledgementNo","portalLinkUrl","portalId","portalUserName","portalPassword","proformaInvoiceNo","invoiceAmount","receivedAmount","balanceDue","taskStatus","paymentStatus","stage1","stage2","stage3","taskFolderUrl","narration"];
+function downloadCSV(name,rows){const csv=[csvHeaders,...rows].map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));a.download=name;a.click()}
+function exportCSV(){downloadCSV("BizOdit_GST_Return_Compliance.csv",filtered().map(r=>csvHeaders.map(h=>r[h]??"")));toast("CSV exported")}
+function sampleCSV(){downloadCSV("BizOdit_GST_Return_Compliance_Sample.csv",[["T/GST/2608001","2026-08-20","GST Return Regular","Aug-2026","2026-09-20","BR001","Low","C40001","Sample Client","9946151111","32ABCDE1234F1Z5","","","https://services.gst.gov.in/services/login","GSTIN","username","password","PI0001","2000.00","0.00","2000.00","Pending","NotPaid","Pending","Pending","Pending","","Sample narration"]]);toast("Sample CSV downloaded")}
+$("exportBtn").onclick=exportCSV;$("listExportBtn").onclick=exportCSV;$("sampleBtn").onclick=sampleCSV;
+$("importBtn").onclick=()=>$("fileInput").click();$("listImportBtn").onclick=()=>$("fileInput").click();
+$("fileInput").onchange=async e=>{
+ const file=e.target.files?.[0];if(!file||!firebase)return;
+ try{
+  const lines=(await file.text()).split(/\r?\n/).filter(Boolean),headers=lines.shift().split(",").map(x=>x.replace(/^"|"$/g,""));
+  let added=0;
+  for(const line of lines){
+   const vals=line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)?.map(x=>x.replace(/^"|"$/g,"").replaceAll('""','"'))||[],r={};headers.forEach((h,i)=>r[h]=vals[i]||"");
+   if(!r.clientId||!r.taskPeriod||!r.taskDueDate||!r.invoiceAmount)continue;
+   const id=nextId();const c=clients.find(x=>x.clientId===r.clientId);if(!c)continue;
+   const data={...r,taskId:id,clientName:c.clientName,companyId:activeCompany.CompanyID,invoiceAmount:num(r.invoiceAmount),receivedAmount:num(r.receivedAmount),balanceDue:num(r.invoiceAmount)-num(r.receivedAmount),createdAt:firebase.serverTimestamp(),updatedAt:firebase.serverTimestamp()};
+   await firebase.setDoc(firebase.doc(firebase.db,"gstCompliance",id),data);added++;
+  }
+  e.target.value="";await loadRecords();toast(`${added} imported`);
+ }catch(err){toast("Invalid CSV")}
+};
+loadFirebase();
+</script>
+</body>
+</html>

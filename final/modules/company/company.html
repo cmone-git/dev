@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Company Setup — CM | BIZODIT</title>
+
+  <style>
+    .form-page-container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 18px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e2e8f0;
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logo-uploader-box {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #fafbfc;
+      border: 1px dashed #cbd5e1;
+      padding: 14px;
+      border-radius: 10px;
+    }
+
+    .logo-preview-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .logo-preview-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .logo-upload-controls {
+      flex: 1;
+    }
+
+    .logo-upload-controls p {
+      font-size: 12px;
+      color: #64748b;
+      margin: 0 0 8px;
+    }
+
+    .file-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .file-btn:hover {
+      background: #f8fafc;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .form-message.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page form-page-container">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" onclick="history.back()" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Company Setup</h1>
+            <p>Manage firm profile, tax identification & banking for invoices</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong> | Time : <strong id="presentTime">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <form class="form-section entry-panel" id="companyForm">
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <!-- Logo Attachment -->
+          <div class="logo-uploader-box">
+            <div class="logo-preview-wrap" id="logoPreviewWrap">
+              <i data-lucide="image" id="logoPlaceholderIcon" style="color:#94a3b8; width:28px; height:28px;"></i>
+              <img id="logoPreview" style="display:none;" alt="Company Logo">
+            </div>
+            <div class="logo-upload-controls">
+              <p>Upload company logo to display on invoices & reports (PNG, JPG, SVG up to 500KB)</p>
+              <input type="file" id="logoFileInput" accept="image/png, image/jpeg, image/svg+xml" style="display:none">
+              <button type="button" class="file-btn" id="uploadLogoBtn"><i data-lucide="upload"></i> Attach Logo</button>
+              <button type="button" class="file-btn" id="removeLogoBtn" style="display:none; color:#b42318; border-color:#fecaca;"><i data-lucide="trash-2"></i> Remove</button>
+            </div>
+          </div>
+
+          <!-- Basic Firm Profile -->
+          <div class="section-title"><i data-lucide="building-2"></i> Business Profile</div>
+
+          <div class="field">
+            <label>Company / Firm Name <span class="required">*</span></label>
+            <input id="companyName" type="text" required placeholder="e.g. BIZODIT Financial Services">
+          </div>
+
+          <div class="field">
+            <label>Legal / Registered Name</label>
+            <input id="legalName" type="text" placeholder="e.g. Bizodit Solutions LLP">
+          </div>
+
+          <div class="field">
+            <label>Constitution</label>
+            <select id="constitution">
+              <option value="">Select Constitution...</option>
+              <option>Proprietorship</option>
+              <option>Partnership</option>
+              <option>LLP</option>
+              <option>Private Limited</option>
+              <option>Public Limited</option>
+              <option>OPC</option>
+              <option>Individual</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Currency</label>
+            <input id="currency" type="text" value="₹ INR (Indian Rupee)" readonly style="background:#f8fafc; color:#475569;">
+          </div>
+
+          <div class="field">
+            <label>Contact Mobile <span class="required">*</span></label>
+            <input id="mobile" type="tel" inputmode="numeric" maxlength="10" required placeholder="10 digit mobile number">
+          </div>
+
+          <div class="field">
+            <label>Email Address</label>
+            <input id="email" type="email" placeholder="billing@bizodit.com">
+          </div>
+
+          <div class="field">
+            <label>Website</label>
+            <input id="website" type="url" placeholder="https://bizodit.com">
+          </div>
+
+          <div class="field">
+            <label>Branch ID / Code</label>
+            <input id="branchId" type="text" placeholder="e.g. HO-01">
+          </div>
+
+          <div class="field full">
+            <label>Registered Office Address <span class="required">*</span></label>
+            <textarea id="address" rows="3" required placeholder="Complete building, street, pincode, state..."></textarea>
+          </div>
+
+          <!-- Tax & Regulatory Identifiers -->
+          <div class="section-title"><i data-lucide="file-check"></i> Statutory & Tax Identifiers</div>
+
+          <div class="field">
+            <label>GSTIN</label>
+            <input id="gstin" type="text" maxlength="15" placeholder="15 digit GSTIN" style="text-transform:uppercase">
+          </div>
+
+          <div class="field">
+            <label>PAN</label>
+            <input id="pan" type="text" maxlength="10" placeholder="ABCDE1234F" style="text-transform:uppercase">
+          </div>
+
+          <div class="field">
+            <label>MSME / Udyam Reg. No.</label>
+            <input id="msmeNo" type="text" placeholder="UDYAM-XX-00-0000000" style="text-transform:uppercase">
+          </div>
+
+          <div class="field">
+            <label>CIN / LLPIN</label>
+            <input id="cin" type="text" placeholder="Corporate Identification Number" style="text-transform:uppercase">
+          </div>
+
+          <!-- Banking & UPI Details -->
+          <div class="section-title"><i data-lucide="wallet"></i> Bank & Payment QR Setup (Invoice Link)</div>
+
+          <div class="field">
+            <label>UPI ID / VPA <span class="required">*</span></label>
+            <input id="upiId" type="text" required placeholder="example@okhdfcbank or merchant@upi">
+          </div>
+
+          <div class="field">
+            <label>UPI Payee Name</label>
+            <input id="upiPayeeName" type="text" placeholder="Name registered on UPI">
+          </div>
+
+          <div class="field">
+            <label>Bank Name</label>
+            <input id="bankName" type="text" placeholder="e.g. HDFC Bank, SBI">
+          </div>
+
+          <div class="field">
+            <label>Account Number</label>
+            <input id="accountNo" type="text" placeholder="Bank Account Number">
+          </div>
+
+          <div class="field">
+            <label>Account Type</label>
+            <select id="accountType">
+              <option value="Current">Current Account</option>
+              <option value="Savings">Savings Account</option>
+              <option value="Overdraft">Overdraft (OD)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>IFSC Code</label>
+            <input id="ifscCode" type="text" maxlength="11" placeholder="e.g. HDFC0001234" style="text-transform:uppercase">
+          </div>
+
+          <div class="field">
+            <label>Branch Name</label>
+            <input id="bankBranch" type="text" placeholder="Branch name & City">
+          </div>
+
+          <div class="field full">
+            <label>Default Invoice Terms & Conditions / Notes</label>
+            <textarea id="invoiceTerms" rows="3" placeholder="1. Payment due within 15 days&#10;2. Interest @18% p.a. applicable on overdue invoices."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="saveBtn" class="btn btn-primary" type="submit" style="width: 100%; justify-content: center; height: 42px;">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Company Profile</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item active" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { db } from "../../../js/firebase-config.js";
+  import {
+    doc,
+    getDoc,
+    setDoc
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("companyForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const logoFileInput = document.getElementById("logoFileInput");
+  const uploadLogoBtn = document.getElementById("uploadLogoBtn");
+  const removeLogoBtn = document.getElementById("removeLogoBtn");
+  const logoPreview = document.getElementById("logoPreview");
+  const logoPlaceholderIcon = document.getElementById("logoPlaceholderIcon");
+
+  let logoBase64 = "";
+
+  /* Realtime Date & Time in IST */
+  function updateDateTime() {
+    const now = new Date();
+    document.getElementById("presentDate").textContent = new Intl.DateTimeFormat("en-IN", {
+      day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Kolkata"
+    }).format(now);
+
+    document.getElementById("presentTime").textContent = new Intl.DateTimeFormat("en-IN", {
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true, timeZone: "Asia/Kolkata"
+    }).format(now);
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+
+  const clean = v => String(v || "").trim();
+  const upper = v => clean(v).toUpperCase();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  /* Logo Image Handling */
+  uploadLogoBtn.addEventListener("click", () => logoFileInput.click());
+
+  logoFileInput.addEventListener("change", (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 500 * 1024) {
+      showMessage("Logo file size must be less than 500 KB.");
+      logoFileInput.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      logoBase64 = event.target.result;
+      setLogoPreview(logoBase64);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  removeLogoBtn.addEventListener("click", () => {
+    logoBase64 = "";
+    logoFileInput.value = "";
+    setLogoPreview("");
+  });
+
+  function setLogoPreview(src) {
+    if (src) {
+      logoPreview.src = src;
+      logoPreview.style.display = "block";
+      logoPlaceholderIcon.style.display = "none";
+      removeLogoBtn.style.display = "inline-flex";
+    } else {
+      logoPreview.src = "";
+      logoPreview.style.display = "none";
+      logoPlaceholderIcon.style.display = "block";
+      removeLogoBtn.style.display = "none";
+    }
+  }
+
+  /* Load Company Profile from Firestore (doc: settings/companyProfile) */
+  async function loadCompanyProfile() {
+    try {
+      const snap = await getDoc(doc(db, "settings", "companyProfile"));
+      if (snap.exists()) {
+        const d = snap.data();
+        document.getElementById("companyName").value = d.companyName || "";
+        document.getElementById("legalName").value = d.legalName || "";
+        document.getElementById("constitution").value = d.constitution || "";
+        document.getElementById("mobile").value = d.mobile || "";
+        document.getElementById("email").value = d.email || "";
+        document.getElementById("website").value = d.website || "";
+        document.getElementById("branchId").value = d.branchId || "";
+        document.getElementById("address").value = d.address || "";
+
+        document.getElementById("gstin").value = d.gstin || "";
+        document.getElementById("pan").value = d.pan || "";
+        document.getElementById("msmeNo").value = d.msmeNo || "";
+        document.getElementById("cin").value = d.cin || "";
+
+        document.getElementById("upiId").value = d.upiId || "";
+        document.getElementById("upiPayeeName").value = d.upiPayeeName || "";
+        document.getElementById("bankName").value = d.bankName || "";
+        document.getElementById("accountNo").value = d.accountNo || "";
+        document.getElementById("accountType").value = d.accountType || "Current";
+        document.getElementById("ifscCode").value = d.ifscCode || "";
+        document.getElementById("bankBranch").value = d.bankBranch || "";
+        document.getElementById("invoiceTerms").value = d.invoiceTerms || "";
+
+        if (d.logo) {
+          logoBase64 = d.logo;
+          setLogoPreview(logoBase64);
+        }
+      }
+    } catch (err) {
+      console.error("Unable to load company profile:", err);
+      showMessage("Failed to load existing company details. " + (err.message || ""));
+    }
+  }
+
+  /* Save / Update Company Setup */
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessage();
+
+    const companyName = clean(document.getElementById("companyName").value);
+    const mobile = clean(document.getElementById("mobile").value);
+    const address = clean(document.getElementById("address").value);
+    const upiId = clean(document.getElementById("upiId").value);
+    const gstin = upper(document.getElementById("gstin").value);
+    const pan = upper(document.getElementById("pan").value);
+    const ifscCode = upper(document.getElementById("ifscCode").value);
+
+    if (!companyName) { showMessage("Company Name is required."); return; }
+    if (!mobile || !/^[0-9]{10}$/.test(mobile)) { showMessage("Enter a valid 10-digit mobile number."); return; }
+    if (!address) { showMessage("Address is required."); return; }
+    if (!upiId) { showMessage("UPI ID is required for invoice integration."); return; }
+
+    if (pan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) { showMessage("Enter a valid PAN."); return; }
+    if (gstin && !/^[0-9A-Z]{15}$/.test(gstin)) { showMessage("Enter a valid 15-digit GSTIN."); return; }
+    if (ifscCode && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode)) { showMessage("Enter a valid 11-character IFSC code."); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving Profile...";
+
+    const payload = {
+      companyName,
+      legalName: clean(document.getElementById("legalName").value),
+      constitution: clean(document.getElementById("constitution").value),
+      currency: "INR",
+      mobile,
+      email: clean(document.getElementById("email").value).toLowerCase(),
+      website: clean(document.getElementById("website").value),
+      branchId: clean(document.getElementById("branchId").value),
+      address,
+
+      gstin,
+      pan,
+      msmeNo: upper(document.getElementById("msmeNo").value),
+      cin: upper(document.getElementById("cin").value),
+
+      upiId,
+      upiPayeeName: clean(document.getElementById("upiPayeeName").value),
+      bankName: clean(document.getElementById("bankName").value),
+      accountNo: clean(document.getElementById("accountNo").value),
+      accountType: clean(document.getElementById("accountType").value),
+      ifscCode,
+      bankBranch: clean(document.getElementById("bankBranch").value),
+      invoiceTerms: clean(document.getElementById("invoiceTerms").value),
+      logo: logoBase64 || "",
+
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      await setDoc(doc(db, "settings", "companyProfile"), payload, { merge: true });
+      showMessage("Company profile & invoice setup saved successfully!", "success");
+    } catch (err) {
+      console.error(err);
+      showMessage("Unable to save company profile: " + (err.message || ""));
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Company Profile";
+    }
+  });
+
+  document.getElementById("mobile").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10));
+  document.getElementById("pan").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("gstin").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("ifscCode").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("msmeNo").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("cin").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadCompanyProfile();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Ledgers — CM | BIZODIT</title>
+
+  <style>
+    .id-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .id-box input {
+      flex: 1;
+    }
+
+    .id-status {
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Toolbar matching all other modules */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .add-form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .list-panel {
+      display: block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display: none;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Item */
+    .data-row {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .data-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .data-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .data-row-sub {
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .data-row-meta {
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .ledger-balance {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .category-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Card Action Toolbar */
+    .ledger-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .ledger-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .ledger-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .ledger-action-btn.call {
+      color: #0b3b66;
+    }
+
+    .ledger-action-btn.whatsapp {
+      color: #15803d;
+    }
+
+    .ledger-action-btn.open-btn {
+      color: #334155;
+    }
+
+    .balance-input-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .balance-input-group input {
+      flex: 1;
+    }
+
+    .balance-input-group select {
+      width: 80px;
+      flex-shrink: 0;
+    }
+
+    /* Dynamic Category Specific Blocks */
+    .dynamic-category-block {
+      display: none;
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      background: #fafbfc;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 4px;
+    }
+
+    .dynamic-category-block.active {
+      display: grid;
+    }
+
+    .category-block-title {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 2px;
+    }
+
+    /* View / Edit Mode Form Actions */
+    .form-view-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      width: auto;
+      height: auto;
+      border: 0;
+      background: transparent;
+      margin: -4px 0 10px;
+    }
+
+    .form-view-action.delete {
+      color: #b42318;
+    }
+
+    .form-view-action.hidden {
+      display: none;
+    }
+
+    .view-mode input:not([readonly]),
+    .view-mode select,
+    .view-mode textarea {
+      background: #f7f8f9;
+      color: #33404c;
+      pointer-events: none;
+    }
+
+    .view-mode .form-actions {
+      display: none;
+    }
+
+    .form-mode-label {
+      display: none;
+      margin: -7px 0 14px;
+      font-size: 11px;
+      color: #7b8791;
+    }
+
+    .view-mode .form-mode-label {
+      display: block;
+    }
+
+    .empty-list {
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show {
+      display: block;
+    }
+
+    .filter-panel .field {
+      margin-bottom: 8px;
+    }
+
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .form-message.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" id="pageBackBtn" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Ledgers</h1>
+            <p>Manage chart of accounts, banking, debtors & creditors</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="ledgerListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="ledgerSearch" class="list-search" type="search" placeholder="Search ledgers..." autocomplete="off">
+          <button id="ledgerSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="ledgerFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="ledgerRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportLedgerBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importLedgerBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+          <button id="addLedgerBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+
+        <div id="ledgerSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="name">Name A–Z</button>
+            <button class="sort-option" data-sort="name-desc">Name Z–A</button>
+            <button class="sort-option" data-sort="id">Ledger ID (L-001)</button>
+            <button class="sort-option" data-sort="category">Category</button>
+            <button class="sort-option" data-sort="newest">Newest</button>
+          </div>
+        </div>
+
+        <div id="ledgerFilterPanel" class="filter-panel">
+          <div class="field">
+            <label>Filter by Category</label>
+            <select id="ledgerCategoryFilter">
+              <option value="">All Categories</option>
+              <option value="Bank Accounts">Bank Accounts</option>
+              <option value="Cash-in-Hand">Cash-in-Hand</option>
+              <option value="Sundry Debtors (Customers)">Sundry Debtors (Customers)</option>
+              <option value="Sundry Creditors (Suppliers)">Sundry Creditors (Suppliers)</option>
+              <option value="Direct Income">Direct Income</option>
+              <option value="Indirect Income">Indirect Income</option>
+              <option value="Direct Expenses">Direct Expenses</option>
+              <option value="Indirect Expenses">Indirect Expenses</option>
+              <option value="Fixed Assets">Fixed Assets</option>
+              <option value="Current Assets">Current Assets</option>
+              <option value="Duties & Taxes">Duties & Taxes</option>
+              <option value="Capital Account">Capital Account</option>
+              <option value="Loans & Liabilities">Loans & Liabilities</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="ledgerList" class="data-list"><div class="empty-list">Loading ledgers...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="ledgerForm">
+        <div class="form-view-actions">
+          <button id="editLedgerBtn" class="form-view-action" type="button" title="Edit ledger"><i data-lucide="pencil"></i></button>
+          <button id="deleteLedgerBtn" class="form-view-action delete" type="button" title="Delete ledger"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <h2 id="ledgerFormTitle">Ledger Entry</h2>
+        <div id="formModeLabel" class="form-mode-label">View mode — tap Edit to modify this ledger.</div>
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Ledger ID</label>
+            <div class="id-box">
+              <input id="ledgerId" type="text" readonly placeholder="Generating on save (L-001)...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Ledger Name <span class="required">*</span></label>
+            <input id="ledgerName" type="text" required placeholder="e.g. HDFC Current A/c / Acme Corp">
+          </div>
+
+          <div class="field">
+            <label>Category <span class="required">*</span></label>
+            <select id="category" required>
+              <option value="">Select Category...</option>
+              <option value="Bank Accounts">Bank Accounts</option>
+              <option value="Cash-in-Hand">Cash-in-Hand</option>
+              <option value="Sundry Debtors (Customers)">Sundry Debtors (Customers)</option>
+              <option value="Sundry Creditors (Suppliers)">Sundry Creditors (Suppliers)</option>
+              <option value="Direct Income">Direct Income</option>
+              <option value="Indirect Income">Indirect Income</option>
+              <option value="Direct Expenses">Direct Expenses</option>
+              <option value="Indirect Expenses">Indirect Expenses</option>
+              <option value="Fixed Assets">Fixed Assets</option>
+              <option value="Current Assets">Current Assets</option>
+              <option value="Duties & Taxes">Duties & Taxes</option>
+              <option value="Capital Account">Capital Account</option>
+              <option value="Loans & Liabilities">Loans & Liabilities</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Opening Balance</label>
+            <div class="balance-input-group">
+              <input id="openingBalance" type="number" min="0" step="0.01" placeholder="0.00">
+              <select id="balanceType">
+                <option value="Dr">Dr</option>
+                <option value="Cr">Cr</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Section for Bank Accounts -->
+          <div id="bankFields" class="dynamic-category-block">
+            <div class="category-block-title"><i data-lucide="building-2"></i> Bank Account Information</div>
+            <div class="field">
+              <label>Bank Name</label>
+              <input id="bankName" type="text" placeholder="e.g. HDFC Bank, SBI">
+            </div>
+            <div class="field">
+              <label>Account Number</label>
+              <input id="accountNo" type="text" placeholder="Bank Account Number">
+            </div>
+            <div class="field">
+              <label>IFSC Code</label>
+              <input id="ifscCode" type="text" maxlength="11" placeholder="e.g. HDFC0001234" style="text-transform:uppercase">
+            </div>
+            <div class="field">
+              <label>Branch Name & UPI ID</label>
+              <input id="bankBranch" type="text" placeholder="Branch location / UPI VPA">
+            </div>
+          </div>
+
+          <!-- Dynamic Section for Debtors & Creditors (Party info) -->
+          <div id="partyFields" class="dynamic-category-block">
+            <div class="category-block-title"><i data-lucide="contact"></i> Party, Tax & Contact Details</div>
+            <div class="field">
+              <label>GSTIN</label>
+              <input id="gstin" type="text" maxlength="15" placeholder="15 digit GSTIN" style="text-transform:uppercase">
+            </div>
+            <div class="field">
+              <label>PAN</label>
+              <input id="pan" type="text" maxlength="10" placeholder="ABCDE1234F" style="text-transform:uppercase">
+            </div>
+            <div class="field">
+              <label>Contact Phone / Mobile</label>
+              <input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digit phone number">
+            </div>
+            <div class="field">
+              <label>Email Address</label>
+              <input id="email" type="email" placeholder="billing@party.com">
+            </div>
+            <div class="field full">
+              <label>Billing / Registered Address</label>
+              <textarea id="address" rows="2" placeholder="Full address, State, PIN code..."></textarea>
+            </div>
+          </div>
+
+          <!-- Dynamic Section for Duties & Taxes -->
+          <div id="taxFields" class="dynamic-category-block">
+            <div class="category-block-title"><i data-lucide="receipt-percent"></i> Tax Details</div>
+            <div class="field">
+              <label>Tax Type</label>
+              <select id="taxType">
+                <option value="GST (CGST/SGST/IGST)">GST (CGST/SGST/IGST)</option>
+                <option value="TDS Payable / Receivable">TDS Payable / Receivable</option>
+                <option value="TCS">TCS</option>
+                <option value="Other Statutory Levy">Other Statutory Levy</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Default Rate (%)</label>
+              <input id="taxRate" type="number" min="0" max="100" step="0.01" placeholder="e.g. 18.00">
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>Description / Notes</label>
+            <textarea id="notes" rows="2" placeholder="Additional ledger details, cost center notes..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Ledger</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item active" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { formatIndianDate } from "../../../js/date.js";
+  import { db } from "../../../js/firebase-config.js";
+  import {
+    doc,
+    runTransaction,
+    updateDoc,
+    deleteDoc,
+    collection,
+    getDocs,
+    getDoc,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("ledgerForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const idInput = document.getElementById("ledgerId");
+  const idStatus = document.getElementById("idStatus");
+  const categorySelect = document.getElementById("category");
+  const editLedgerBtn = document.getElementById("editLedgerBtn");
+  const deleteLedgerBtn = document.getElementById("deleteLedgerBtn");
+  const cancelFormBtn = document.getElementById("cancelFormBtn");
+
+  const bankFields = document.getElementById("bankFields");
+  const partyFields = document.getElementById("partyFields");
+  const taxFields = document.getElementById("taxFields");
+
+  const CACHE = "bizodit_ledgers_cache_v1";
+  let ledgers = [];
+  let currentId = null;
+  let mode = "new"; // "new", "view", "edit"
+  let ledgerSort = "name";
+
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
+
+  const clean = value => String(value || "").trim();
+  const upper = value => clean(value).toUpperCase();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
+  /* Dynamic Category Form Switcher */
+  categorySelect.addEventListener("change", () => {
+    updateDynamicFields(categorySelect.value);
+  });
+
+  function updateDynamicFields(category) {
+    bankFields.classList.remove("active");
+    partyFields.classList.remove("active");
+    taxFields.classList.remove("active");
+
+    if (category === "Bank Accounts") {
+      bankFields.classList.add("active");
+    } else if (category === "Sundry Debtors (Customers)" || category === "Sundry Creditors (Suppliers)") {
+      partyFields.classList.add("active");
+    } else if (category === "Duties & Taxes") {
+      taxFields.classList.add("active");
+    }
+  }
+
+  /* Auto ID Generator: L-001, L-002, ... */
+  async function getNextLedgerId(transaction) {
+    const counterRef = doc(db, "counters", "ledgerCounter");
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) {
+        nextNumber = lastNumber + 1;
+      }
+    }
+
+    while (true) {
+      const candidateId = `L-${String(nextNumber).padStart(3, "0")}`;
+      const candidateRef = doc(db, "ledgers", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
+
+      if (!candidateSnap.exists()) {
+        return { id: candidateId, counterRef, nextNumber };
+      }
+      nextNumber++;
+    }
+  }
+
+  function formData() {
+    return {
+      ledgerId: clean(idInput.value),
+      ledgerName: clean(document.getElementById("ledgerName").value),
+      category: clean(categorySelect.value),
+      openingBalance: Number(document.getElementById("openingBalance").value) || 0,
+      balanceType: clean(document.getElementById("balanceType").value) || "Dr",
+
+      // Bank specific
+      bankName: clean(document.getElementById("bankName").value),
+      accountNo: clean(document.getElementById("accountNo").value),
+      ifscCode: upper(document.getElementById("ifscCode").value),
+      bankBranch: clean(document.getElementById("bankBranch").value),
+
+      // Party specific
+      gstin: upper(document.getElementById("gstin").value),
+      pan: upper(document.getElementById("pan").value),
+      phone: clean(document.getElementById("phone").value),
+      email: clean(document.getElementById("email").value).toLowerCase(),
+      address: clean(document.getElementById("address").value),
+
+      // Tax specific
+      taxType: clean(document.getElementById("taxType").value),
+      taxRate: Number(document.getElementById("taxRate").value) || 0,
+
+      notes: clean(document.getElementById("notes").value)
+    };
+  }
+
+  function fillForm(l) {
+    currentId = l.ledgerId || l.id;
+    idInput.value = currentId || "";
+    document.getElementById("ledgerName").value = l.ledgerName || "";
+    categorySelect.value = l.category || "";
+    document.getElementById("openingBalance").value = l.openingBalance ?? "";
+    document.getElementById("balanceType").value = l.balanceType || "Dr";
+
+    document.getElementById("bankName").value = l.bankName || "";
+    document.getElementById("accountNo").value = l.accountNo || "";
+    document.getElementById("ifscCode").value = l.ifscCode || "";
+    document.getElementById("bankBranch").value = l.bankBranch || "";
+
+    document.getElementById("gstin").value = l.gstin || "";
+    document.getElementById("pan").value = l.pan || "";
+    document.getElementById("phone").value = l.phone || "";
+    document.getElementById("email").value = l.email || "";
+    document.getElementById("address").value = l.address || "";
+
+    document.getElementById("taxType").value = l.taxType || "GST (CGST/SGST/IGST)";
+    document.getElementById("taxRate").value = l.taxRate ?? "";
+
+    document.getElementById("notes").value = l.notes || "";
+
+    updateDynamicFields(l.category);
+  }
+
+  function setInputs(disabled) {
+    form.querySelectorAll("input,select,textarea").forEach(x => x.disabled = disabled);
+    idInput.readOnly = true;
+    saveBtn.disabled = disabled;
+  }
+
+  function viewMode() {
+    mode = "view";
+    form.classList.add("view-mode");
+    document.getElementById("ledgerFormTitle").textContent = "Ledger Details";
+    editLedgerBtn.classList.remove("hidden");
+    deleteLedgerBtn.classList.remove("hidden");
+    setInputs(true);
+    cancelFormBtn.textContent = "Back";
+    clearMessage();
+  }
+
+  function editMode() {
+    mode = "edit";
+    form.classList.remove("view-mode");
+    document.getElementById("ledgerFormTitle").textContent = "Edit Ledger";
+    editLedgerBtn.classList.add("hidden");
+    deleteLedgerBtn.classList.remove("hidden");
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  function newMode() {
+    mode = "new";
+    currentId = null;
+    form.classList.remove("view-mode");
+    document.getElementById("ledgerFormTitle").textContent = "Ledger Entry";
+    editLedgerBtn.classList.add("hidden");
+    deleteLedgerBtn.classList.add("hidden");
+    form.reset();
+    document.getElementById("balanceType").value = "Dr";
+    idInput.value = "";
+    idStatus.textContent = "";
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    updateDynamicFields("");
+    clearMessage();
+  }
+
+  const ledgerListPanel = document.getElementById("ledgerListPanel");
+  const addLedgerBtn = document.getElementById("addLedgerBtn");
+  const ledgerSearch = document.getElementById("ledgerSearch");
+  const ledgerSortBtn = document.getElementById("ledgerSortBtn");
+  const ledgerFilterBtn = document.getElementById("ledgerFilterBtn");
+  const ledgerSortMenu = document.getElementById("ledgerSortMenu");
+  const ledgerFilterPanel = document.getElementById("ledgerFilterPanel");
+  const ledgerCategoryFilter = document.getElementById("ledgerCategoryFilter");
+  const ledgerRefreshBtn = document.getElementById("ledgerRefreshBtn");
+  const ledgerList = document.getElementById("ledgerList");
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadLedgerList() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        ledgers = cached;
+        renderLedgerList();
+      }
+    } catch (error) {
+      console.warn("Ledger cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "ledgers"), limit(500)));
+      ledgers = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE, JSON.stringify(ledgers));
+      renderLedgerList();
+    } catch (error) {
+      console.error("Ledger list load failed:", error);
+      if (!ledgers.length) {
+        ledgerList.innerHTML = '<div class="empty-list">Unable to load ledgers. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function formatRupees(num) {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+  }
+
+  function renderLedgerList() {
+    const term = clean(ledgerSearch.value).toLowerCase();
+    const cat = clean(ledgerCategoryFilter.value);
+
+    let rows = ledgers.filter(row => {
+      const idVal = row.ledgerId || row.id || "";
+      const text = `${idVal} ${row.ledgerName || ""} ${row.category || ""} ${row.gstin || ""} ${row.phone || ""}`.toLowerCase();
+      return (!term || text.includes(term)) && (!cat || row.category === cat);
+    });
+
+    rows.sort((a, b) => {
+      if (ledgerSort === "name") return String(a.ledgerName || "").localeCompare(String(b.ledgerName || ""));
+      if (ledgerSort === "name-desc") return String(b.ledgerName || "").localeCompare(String(a.ledgerName || ""));
+      if (ledgerSort === "id") return String(a.ledgerId || a.id || "").localeCompare(String(b.ledgerId || b.id || ""), undefined, { numeric: true });
+      if (ledgerSort === "category") return String(a.category || "").localeCompare(String(b.category || ""));
+      if (ledgerSort === "newest") return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+      return 0;
+    });
+
+    if (!rows.length) {
+      ledgerList.innerHTML = '<div class="empty-list">No ledgers found.</div>';
+      return;
+    }
+
+    ledgerList.innerHTML = rows.map(row => {
+      const id = String(row.ledgerId || row.id);
+      const name = row.ledgerName || "Unnamed Ledger";
+      const catLabel = row.category || "General";
+      const opBal = formatRupees(row.openingBalance || 0);
+      const balType = row.balanceType || "Dr";
+      const phone = clean(row.phone || "");
+      const wa = whatsappClean(phone);
+
+      return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${escapeHtml(id)}">
+            <div class="data-row-title">${escapeHtml(name)}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · ${escapeHtml(catLabel)} ${row.accountNo ? `· A/c: ${escapeHtml(row.accountNo)}` : ''} ${row.gstin ? `· GSTIN: ${escapeHtml(row.gstin)}` : ''}</div>
+          </div>
+          <div class="data-row-meta">
+            <span class="ledger-balance">${escapeHtml(opBal)} ${escapeHtml(balType)}</span>
+            <span class="category-badge">${escapeHtml(catLabel)}</span>
+          </div>
+        </div>
+        <div class="ledger-row-actions">
+          ${phone ? `<a class="ledger-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Party"><i data-lucide="phone"></i></a>` : ""}
+          ${phone ? `<a class="ledger-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
+          <button class="ledger-action-btn open-btn" data-open="${escapeHtml(id)}" type="button" title="View Details"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    ledgerList.querySelectorAll("[data-open]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        openView(b.dataset.open);
+      });
+    });
+  }
+
+  function findLedger(id) {
+    return ledgers.find(c => String(c.ledgerId || c.id) === String(id));
+  }
+
+  async function openView(id) {
+    const cached = findLedger(id);
+    if (cached) {
+      fillForm(cached);
+      ledgerListPanel.classList.add("hidden");
+      form.classList.remove("hidden");
+      viewMode();
+      window.scrollTo(0, 0);
+    }
+    try {
+      const s = await getDoc(doc(db, "ledgers", id));
+      if (!s.exists()) throw new Error("Ledger record no longer exists.");
+      fillForm({ id: s.id, ...s.data() });
+      viewMode();
+    } catch (e) {
+      if (!cached) showMessage(e.message || "Unable to open ledger.");
+    }
+  }
+
+  function openList() {
+    form.classList.add("hidden");
+    ledgerListPanel.classList.remove("hidden");
+    newMode();
+    renderLedgerList();
+    window.scrollTo(0, 0);
+  }
+
+  function openNew() {
+    newMode();
+    ledgerListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Ledger Name,Category,Opening Balance,Balance Type,Bank Name,Account No,IFSC Code,Bank Branch,GSTIN,PAN,Phone,Email,Address,Tax Type,Tax Rate,Notes\n" +
+                     "\"HDFC Current A/c\",\"Bank Accounts\",50000,Dr,\"HDFC Bank\",50200012345678,HDFC0001234,\"MG Road Branch\",,,,,,,,Primary operational account\n" +
+                     "\"Acme Corp\",\"Sundry Debtors (Customers)\",15000,Dr,,,,,27ABCDE1234F1Z5,ABCDE1234F,9876543210,billing@acme.com,\"Industrial Area\",,,Key client";
+    downloadBlob(template, "ledgers_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportLedgerBtn").addEventListener("click", () => {
+    if (!ledgers.length) { alert("No ledgers to export."); return; }
+    const headers = ["Ledger ID","Ledger Name","Category","Opening Balance","Balance Type","Bank Name","Account No","IFSC Code","Bank Branch","GSTIN","PAN","Phone","Email","Address","Tax Type","Tax Rate","Notes","Created At"];
+    const rows = ledgers.map(c => [
+      `"${c.ledgerId||c.id||""}"`, `"${(c.ledgerName||"").replace(/"/g,'""')}"`, `"${c.category||""}"`,
+      `"${c.openingBalance||0}"`, `"${c.balanceType||"Dr"}"`, `"${(c.bankName||"").replace(/"/g,'""')}"`,
+      `"${c.accountNo||""}"`, `"${c.ifscCode||""}"`, `"${(c.bankBranch||"").replace(/"/g,'""')}"`,
+      `"${c.gstin||""}"`, `"${c.pan||""}"`, `"${c.phone||""}"`, `"${c.email||""}"`,
+      `"${(c.address||"").replace(/"/g,'""')}"`, `"${c.taxType||""}"`, `"${c.taxRate||0}"`,
+      `"${(c.notes||"").replace(/"/g,'""')}"`, `"${c.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `ledgers_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importLedgerBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} ledger record(s)?`)) { e.target.value = ""; return; }
+
+    ledgerRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const name = clean(r[0]), cat = clean(r[1]);
+        if (!name || !cat) continue;
+
+        await runTransaction(db, async tx => {
+          const result = await getNextLedgerId(tx);
+          const ledgerRef = doc(db, "ledgers", result.id);
+          const record = {
+            ledgerId: result.id,
+            ledgerName: name,
+            category: cat,
+            openingBalance: Number(r[2]) || 0,
+            balanceType: clean(r[3]) || "Dr",
+            bankName: clean(r[4]),
+            accountNo: clean(r[5]),
+            ifscCode: upper(r[6]),
+            bankBranch: clean(r[7]),
+            gstin: upper(r[8]),
+            pan: upper(r[9]),
+            phone: clean(r[10]),
+            email: clean(r[11]).toLowerCase(),
+            address: clean(r[12]),
+            taxType: clean(r[13]),
+            taxRate: Number(r[14]) || 0,
+            notes: clean(r[15]),
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+          tx.set(ledgerRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem(CACHE);
+      await loadLedgerList();
+      alert(`Successfully imported ${imported} ledger(s).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during ledger import: " + err.message);
+    } finally {
+      ledgerRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addLedgerBtn.addEventListener("click", openNew);
+  cancelFormBtn.addEventListener("click", openList);
+  editLedgerBtn.addEventListener("click", editMode);
+
+  deleteLedgerBtn.addEventListener("click", async () => {
+    if (!currentId) return;
+    if (!confirm(`Delete ledger (${currentId})?\n\nThis action cannot be undone.`)) return;
+    deleteLedgerBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "ledgers", currentId));
+      ledgers = ledgers.filter(x => String(x.ledgerId || x.id) !== String(currentId));
+      localStorage.setItem(CACHE, JSON.stringify(ledgers));
+      showMessage("Ledger deleted successfully.", "success");
+      setTimeout(openList, 450);
+    } catch (e) {
+      showMessage(e.message || "Unable to delete ledger.");
+    } finally {
+      deleteLedgerBtn.disabled = false;
+    }
+  });
+
+  ledgerSearch.addEventListener("input", renderLedgerList);
+  ledgerCategoryFilter.addEventListener("change", renderLedgerList);
+
+  ledgerRefreshBtn.addEventListener("click", async () => {
+    ledgerRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE);
+      await loadLedgerList();
+    } finally {
+      ledgerRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  ledgerSortBtn.addEventListener("click", () => ledgerSortMenu.classList.toggle("show"));
+  ledgerFilterBtn.addEventListener("click", () => ledgerFilterPanel.classList.toggle("show"));
+
+  ledgerSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      ledgerSort = option.dataset.sort;
+      ledgerSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      ledgerSortMenu.classList.remove("show");
+      renderLedgerList();
+    });
+  });
+
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openList();
+    } else {
+      history.back();
+    }
+  });
+
+  /* Create new ledger entry via atomic transaction */
+  async function createLedger() {
+    const d = formData();
+    if (!d.ledgerName) { showMessage("Ledger Name is required."); document.getElementById("ledgerName").focus(); return; }
+    if (!d.category) { showMessage("Category is required."); categorySelect.focus(); return; }
+
+    if (d.phone && !/^[0-9]{10}$/.test(d.phone)) { showMessage("Enter a valid 10-digit phone number."); return; }
+    if (d.pan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(d.pan)) { showMessage("Enter a valid PAN."); return; }
+    if (d.gstin && !/^[0-9A-Z]{15}$/.test(d.gstin)) { showMessage("Enter a valid 15-digit GSTIN."); return; }
+    if (d.ifscCode && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(d.ifscCode)) { showMessage("Enter a valid 11-character IFSC code."); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextLedgerId(transaction);
+        generatedId = result.id;
+        const ledgerRef = doc(db, "ledgers", generatedId);
+        const data = {
+          ...d,
+          ledgerId: generatedId,
+          createdAt: now,
+          updatedAt: now
+        };
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+        transaction.set(ledgerRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Ledger ${generatedId} saved successfully.`, "success");
+      localStorage.removeItem(CACHE);
+
+      setTimeout(() => {
+        openList();
+        loadLedgerList();
+      }, 450);
+    } catch (error) {
+      console.error("Ledger save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save ledger. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Ledger";
+    }
+  }
+
+  /* Update existing ledger without duplicating */
+  async function updateLedger() {
+    if (!currentId) return;
+    const d = formData();
+    if (!d.ledgerName || !d.category) {
+      showMessage("Ledger Name and Category are required.");
+      return;
+    }
+    if (d.phone && !/^[0-9]{10}$/.test(d.phone)) { showMessage("Enter a valid 10-digit phone number."); return; }
+    if (d.pan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(d.pan)) { showMessage("Enter a valid PAN."); return; }
+    if (d.gstin && !/^[0-9A-Z]{15}$/.test(d.gstin)) { showMessage("Enter a valid 15-digit GSTIN."); return; }
+    if (d.ifscCode && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(d.ifscCode)) { showMessage("Enter a valid 11-character IFSC code."); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Updating...";
+
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "ledgers", currentId), {
+        ledgerName: d.ledgerName,
+        category: d.category,
+        openingBalance: d.openingBalance,
+        balanceType: d.balanceType,
+        bankName: d.bankName,
+        accountNo: d.accountNo,
+        ifscCode: d.ifscCode,
+        bankBranch: d.bankBranch,
+        gstin: d.gstin,
+        pan: d.pan,
+        phone: d.phone,
+        email: d.email,
+        address: d.address,
+        taxType: d.taxType,
+        taxRate: d.taxRate,
+        notes: d.notes,
+        updatedAt: now
+      });
+
+      const idx = ledgers.findIndex(c => String(c.ledgerId || c.id) === String(currentId));
+      if (idx >= 0) {
+        ledgers[idx] = { ...ledgers[idx], ...d, ledgerId: currentId, updatedAt: now };
+        localStorage.setItem(CACHE, JSON.stringify(ledgers));
+      }
+
+      showMessage("Ledger updated successfully.", "success");
+      setTimeout(() => {
+        openList();
+      }, 450);
+    } catch (error) {
+      console.error("Ledger update error:", error);
+      showMessage(error?.message || "Unable to update ledger.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Ledger";
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    if (mode === "edit") {
+      await updateLedger();
+    } else {
+      await createLedger();
+    }
+  });
+
+  document.getElementById("phone").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10));
+  document.getElementById("pan").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("gstin").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("ifscCode").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadLedgerList();
+</script>
+
+</body>
+</html>

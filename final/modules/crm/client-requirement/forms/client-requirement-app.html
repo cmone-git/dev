@@ -1,0 +1,1512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link rel="icon" type="image/png" href="../../assets/logo.png">
+<link rel="apple-touch-icon" href="../../assets/logo.png">
+
+<link rel="stylesheet" href="../../css/cm.css">
+<link rel="stylesheet" href="../../css/forms.css">
+<link rel="stylesheet" href="../../css/responsive.css">
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+<title>Client Requirements — CM | BIZODIT</title>
+
+<style>
+*{box-sizing:border-box}
+.client-id-box{display:flex;align-items:center;gap:8px}
+.client-id-box input{flex:1}
+.id-status{min-width:24px;text-align:center}
+
+.list-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.list-search{
+  flex:1 1 180px;min-width:150px;height:40px;
+  border:1px solid #d7dce2;border-radius:8px;background:#fff;
+  padding:0 12px;font-size:14px;outline:none
+}
+.list-search:focus{border-color:#b9c3cd}
+.refresh-btn,.list-icon-btn,.client-action-btn,.form-view-action{
+  width:40px;height:40px;border:1px solid #d7dce2;background:#fff;
+  border-radius:8px;display:inline-flex;align-items:center;
+  justify-content:center;cursor:pointer;flex:0 0 auto
+}
+.refresh-btn.spinning svg{animation:spin .8s linear infinite}
+.list-icon-btn.active{background:#f1f4f7}
+.add-form-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:72px;height:40px;padding:0 12px}
+
+.list-panel{display:block}
+.list-panel.hidden,.entry-panel.hidden{display:none}
+.data-list{display:flex;flex-direction:column;gap:8px}
+.data-row{border:1px solid #e0e3e7;border-radius:10px;padding:10px 14px;background:#fff}
+.data-row-main{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.data-row-content{min-width:0;flex:1;cursor:pointer}
+.data-row-title{font-weight:600;font-size:15px;color:#25313d}
+.data-row-sub{margin-top:3px;color:#727983;font-size:12px;line-height:1.4}
+.data-row-meta{text-align:right;font-size:12px;white-space:nowrap}
+.client-row-actions{
+  display:flex;align-items:center;justify-content:flex-end;gap:5px;
+  margin-top:7px;padding-top:6px;border-top:1px solid #edf0f2
+}
+.client-action-btn{width:34px;height:34px;color:#5c6975;text-decoration:none}
+.client-action-btn.whatsapp{color:#238b55}
+.client-action-btn.call{color:#0b3b66}
+.client-action-btn.contact{color:#0b3b66}
+.client-action-btn.delete{color:#b42318}
+.client-action-btn.pdf{color:#687583}
+.empty-list{padding:28px 12px;text-align:center;color:#777;font-size:13px}
+
+.filter-panel{
+  display:none;margin-bottom:12px;padding:12px;
+  border:1px solid #e0e3e7;border-radius:10px;background:#fafbfc
+}
+.filter-panel.show{display:block}
+.filter-panel .field{margin-bottom:8px}
+.date-range{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-top:8px}
+.date-range .field{flex:1 1 140px;min-width:130px;margin-bottom:0}
+.date-range .field label{display:block;margin-bottom:5px}
+
+.sort-menu{display:none}
+.sort-menu.show{display:block;margin-bottom:10px}
+.sort-options{display:flex;gap:6px;flex-wrap:wrap}
+.sort-option{
+  border:1px solid #d7dce2;background:#fff;border-radius:7px;
+  padding:7px 10px;font-size:12px;cursor:pointer
+}
+.sort-option.active{background:#eef2f5;font-weight:600}
+
+.import-tools{
+  display:none;margin-bottom:12px;padding:10px;
+  border:1px solid #e0e3e7;border-radius:10px;background:#fafbfc;
+  gap:6px;flex-wrap:wrap
+}
+.import-tools.show{display:flex}
+.tool-btn{
+  height:36px;padding:0 10px;border:1px solid #d7dce2;background:#fff;
+  border-radius:7px;display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;cursor:pointer;color:#25313d
+}
+.tool-btn:hover{background:#f4f6f8}
+.file-input{display:none}
+
+.form-message{
+  display:none;margin:0 0 14px;padding:10px 12px;border-radius:8px;
+  font-size:13px;line-height:1.4
+}
+.form-message.show{display:block}
+.form-message.error{background:#fff1f1;color:#b42318;border:1px solid #f3c2c2}
+.form-message.success{background:#effaf3;color:#16723a;border:1px solid #b9e4c7}
+
+.form-view-actions{
+  display:flex;justify-content:flex-end;gap:6px;width:auto;height:auto;
+  border:0;background:transparent;margin:-4px 0 10px
+}
+.form-view-action{width:38px;height:38px}
+.form-view-action.delete{color:#b42318}
+.form-view-action.hidden{display:none}
+.form-view-action.pdf{color:#687583}
+
+.view-mode input:not([readonly]),.view-mode select,.view-mode textarea{
+  background:#f7f8f9;color:#33404c;pointer-events:none
+}
+.view-mode .form-actions{display:none}
+.form-mode-label{display:none;margin:-7px 0 14px;font-size:11px;color:#7b8791}
+.view-mode .form-mode-label{display:block}
+
+.section-title{
+  grid-column:1/-1;margin:7px 0 -2px;padding:8px 0 5px;
+  border-bottom:1px solid #e5e9ed;color:#263442;font-size:13px;font-weight:700
+}
+.checkbox-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:7px
+}
+.check-item{
+  display:flex;align-items:center;gap:7px;min-height:34px;
+  border:1px solid #e0e3e7;border-radius:7px;padding:6px 8px;
+  font-size:12px;background:#fff
+}
+.check-item input{width:15px;height:15px}
+.field-help{font-size:10px;color:#7b8791;margin-top:4px}
+.priority-urgent{color:#b42318!important;background:#fff5f5!important}
+.priority-high{color:#8a5a00!important;background:#fffaf0!important}
+.priority-normal{color:#315d85!important;background:#f5f8fb!important}
+
+.badge{
+  display:inline-flex;align-items:center;padding:3px 7px;border-radius:5px;
+  font-size:10px;font-weight:700
+}
+.badge-urgent{background:#fff1f1;color:#b42318}
+.badge-high{background:#fff8e8;color:#8a5a00}
+.badge-normal{background:#f1f5f9;color:#536170}
+
+.form-actions{display:flex;justify-content:flex-end;gap:8px}
+.saving .save-icon{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:640px){
+  .data-row{padding:9px 12px}
+  .data-row-title{font-size:14px}
+  .checkbox-grid{grid-template-columns:1fr 1fr}
+  .section-title{font-size:12px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div>
+          <div class="cm-brand-title">CM | BIZODIT</div>
+          <div class="cm-brand-subtitle">Business Management</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+<div class="page">
+<div class="form-page">
+
+<section class="module-header">
+  <div class="module-header-left">
+    <button class="back-btn" id="pageBackBtn" type="button">
+      <i data-lucide="arrow-left"></i>
+    </button>
+    <div class="module-title">
+      <h1>Client Requirements</h1>
+      <p>Capture and manage application requirements</p>
+      <div class="report-as-on">
+        Date : <strong id="presentDate">--</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="requirementListPanel" class="form-section list-panel">
+
+  <div class="list-toolbar">
+    <input id="requirementSearch" class="list-search" type="search"
+           placeholder="Search company, contact, ref no..." autocomplete="off">
+
+    <button id="requirementSortBtn" class="list-icon-btn" type="button" title="Sort">
+      <i data-lucide="arrow-up-down"></i>
+    </button>
+
+    <button id="requirementFilterBtn" class="list-icon-btn" type="button" title="Filter">
+      <i data-lucide="list-filter"></i>
+    </button>
+
+    <button id="requirementToolsBtn" class="list-icon-btn" type="button" title="Import / Export">
+      <i data-lucide="file-spreadsheet"></i>
+    </button>
+
+    <button id="requirementRefreshBtn" class="refresh-btn" type="button" title="Refresh">
+      <i data-lucide="refresh-cw"></i>
+    </button>
+
+    <button id="addRequirementBtn" class="btn btn-primary add-form-btn" type="button">
+      <i data-lucide="plus"></i>Add
+    </button>
+  </div>
+
+  <div id="requirementSortMenu" class="sort-menu">
+    <div class="sort-options">
+      <button class="sort-option active" data-sort="company">Company A–Z</button>
+      <button class="sort-option" data-sort="company-desc">Company Z–A</button>
+      <button class="sort-option" data-sort="ref">Ref No</button>
+      <button class="sort-option" data-sort="newest">Newest</button>
+      <button class="sort-option" data-sort="priority">Priority</button>
+    </div>
+  </div>
+
+  <div id="requirementFilterPanel" class="filter-panel">
+    <div class="field">
+      <label>Priority</label>
+      <select id="requirementPriorityFilter">
+        <option value="">All Priority</option>
+        <option value="Urgent">Urgent</option>
+        <option value="High">High</option>
+        <option value="Normal">Normal</option>
+      </select>
+    </div>
+    <div class="date-range">
+      <div class="field">
+        <label>From Date</label>
+        <input id="requirementFromDate" type="date">
+      </div>
+      <div class="field">
+        <label>To Date</label>
+        <input id="requirementToDate" type="date">
+      </div>
+    </div>
+  </div>
+
+  <div id="importTools" class="import-tools">
+    <button id="downloadTemplateBtn" class="tool-btn" type="button">
+      <i data-lucide="download"></i>Format
+    </button>
+    <button id="importBtn" class="tool-btn" type="button">
+      <i data-lucide="upload"></i>Import
+    </button>
+    <button id="exportBtn" class="tool-btn" type="button">
+      <i data-lucide="file-down"></i>Export
+    </button>
+    <input id="importFile" class="file-input" type="file" accept=".csv,text/csv">
+  </div>
+
+  <div id="requirementList" class="data-list">
+    <div class="empty-list">Loading requirements...</div>
+  </div>
+</div>
+
+<form class="form-section entry-panel hidden" id="requirementForm">
+
+  <div class="form-view-actions">
+    <button id="pdfRequirementBtn" class="form-view-action pdf" type="button"
+            title="Download PDF">
+      <i data-lucide="file-down"></i>
+    </button>
+    <button id="editRequirementBtn" class="form-view-action hidden" type="button"
+            title="Edit requirement">
+      <i data-lucide="pencil"></i>
+    </button>
+    <button id="deleteRequirementBtn" class="form-view-action delete hidden"
+            type="button" title="Delete requirement">
+      <i data-lucide="trash-2"></i>
+    </button>
+  </div>
+
+  <h2 id="requirementFormTitle">Requirement Entry</h2>
+  <div id="formModeLabel" class="form-mode-label">
+    View mode — tap Edit to modify this requirement.
+  </div>
+
+  <div id="formMessage" class="form-message"></div>
+
+  <div class="form-grid">
+
+    <div class="section-title">Reference & Business Information</div>
+
+    <div class="field">
+      <label>Doc No / Ref No</label>
+      <div class="client-id-box">
+        <input id="referenceId" type="text" readonly
+               placeholder="Auto generated on save">
+        <span id="idStatus" class="id-status"></span>
+      </div>
+      <div class="field-help">Format: CF/REF/YYMMDD/0001</div>
+    </div>
+
+    <div class="field">
+      <label>Company / Business Name <span class="required">*</span></label>
+      <input id="companyName" type="text" required
+             placeholder="Enter company or business name"
+             autocomplete="organization">
+    </div>
+
+    <div class="field">
+      <label>Business Type</label>
+      <input id="businessType" type="text" placeholder="Proprietorship / LLP / Company...">
+    </div>
+
+    <div class="field">
+      <label>Industry</label>
+      <input id="industry" type="text" placeholder="Industry / business sector">
+    </div>
+
+    <div class="field">
+      <label>Contact Person <span class="required">*</span></label>
+      <input id="contactPerson" type="text" placeholder="Contact person">
+    </div>
+
+    <div class="field">
+      <label>Designation</label>
+      <input id="designation" type="text" placeholder="Owner / Director / Manager">
+    </div>
+
+    <div class="field">
+      <label>Mobile</label>
+      <div style="display:flex;gap:6px">
+        <input id="mobile" type="tel" inputmode="numeric" maxlength="10"
+               placeholder="10 digit mobile number" style="flex:1">
+        <button id="contactPickerBtn" class="list-icon-btn" type="button"
+                title="Add from phone contacts">
+          <i data-lucide="contact-round"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>WhatsApp</label>
+      <input id="whatsapp" type="tel" inputmode="numeric" maxlength="10"
+             placeholder="WhatsApp number">
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="email" type="email" placeholder="client@example.com">
+    </div>
+
+    <div class="field full">
+      <label>Business Description</label>
+      <textarea id="businessDescription" rows="3"
+                placeholder="Briefly describe the business"></textarea>
+    </div>
+
+    <div class="section-title">Workflow & Automation</div>
+
+    <div class="field full">
+      <label>Current Workflow</label>
+      <textarea id="currentWorkflow" rows="3"
+                placeholder="How is the current work handled?"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Problems / Pain Points</label>
+      <textarea id="problems" rows="3"
+                placeholder="Current problems, delays or manual work"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Automation Requirement</label>
+      <textarea id="automation" rows="3"
+                placeholder="What should be automated?"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Current Software</label>
+      <input id="currentSoftware" type="text" placeholder="Software currently used">
+    </div>
+
+    <div class="field">
+      <label>Data Source</label>
+      <input id="dataSource" type="text" placeholder="Excel / Google Sheets / ERP...">
+    </div>
+
+    <div class="section-title">Modules & System Setup</div>
+
+    <div class="field full">
+      <label>Modules</label>
+      <div class="checkbox-grid" id="modulesGrid">
+        <label class="check-item"><input type="checkbox" value="CRM"> CRM</label>
+        <label class="check-item"><input type="checkbox" value="Accounts"> Accounts</label>
+        <label class="check-item"><input type="checkbox" value="GST"> GST</label>
+        <label class="check-item"><input type="checkbox" value="Income Tax"> Income Tax</label>
+        <label class="check-item"><input type="checkbox" value="Payroll"> Payroll</label>
+        <label class="check-item"><input type="checkbox" value="HR"> HR</label>
+        <label class="check-item"><input type="checkbox" value="Inventory"> Inventory</label>
+        <label class="check-item"><input type="checkbox" value="Projects"> Projects</label>
+        <label class="check-item"><input type="checkbox" value="Reports"> Reports</label>
+        <label class="check-item"><input type="checkbox" value="Client App"> Client App</label>
+        <label class="check-item"><input type="checkbox" value="Documents"> Documents</label>
+        <label class="check-item"><input type="checkbox" value="Other"> Other</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Total Users</label>
+      <input id="totalUsers" type="number" min="1" placeholder="Number of users">
+    </div>
+
+    <div class="field">
+      <label>User Access Roles</label>
+      <input id="users" type="text" placeholder="Admin, Manager, Staff...">
+      <div class="field-help">Separate multiple roles with commas.</div>
+    </div>
+
+    <div class="field full">
+      <label>Admin Features</label>
+      <textarea id="adminFeatures" rows="2"
+                placeholder="Required admin controls and features"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Client App Features</label>
+      <textarea id="clientFeatures" rows="2"
+                placeholder="Required client-side features"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Integrations</label>
+      <input id="integrations" type="text"
+             placeholder="WhatsApp, GST, Payment, Google Drive...">
+      <div class="field-help">Separate multiple integrations with commas.</div>
+    </div>
+
+    <div class="section-title">Design & Target</div>
+
+    <div class="field">
+      <label>Primary Colour</label>
+      <input id="primaryColor" type="text" placeholder="#0B3B66">
+    </div>
+
+    <div class="field">
+      <label>Secondary Colour</label>
+      <input id="secondaryColor" type="text" placeholder="#FFFFFF">
+    </div>
+
+    <div class="field">
+      <label>Theme Preference</label>
+      <select id="themePreference">
+        <option value="">Select...</option>
+        <option>Light</option>
+        <option>Dark</option>
+        <option>System</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Font Preference</label>
+      <input id="fontPreference" type="text" placeholder="Inter / DM Sans...">
+    </div>
+
+    <div class="field">
+      <label>Launch Date</label>
+      <input id="launchDate" type="date">
+    </div>
+
+    <div class="field">
+      <label>Priority</label>
+      <select id="priorityLevel">
+        <option value="Normal">Normal</option>
+        <option value="High">High</option>
+        <option value="Urgent">Urgent</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label>Additional Notes</label>
+      <textarea id="notes" rows="3"
+                placeholder="Any additional requirement or discussion notes"></textarea>
+    </div>
+
+  </div>
+
+  <div class="form-actions">
+    <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+    <button id="saveBtn" class="btn btn-primary" type="submit">
+      <i class="save-icon" data-lucide="save"></i>
+      <span class="save-text">Save Requirement</span>
+    </button>
+  </div>
+</form>
+
+</div>
+</div>
+</main>
+
+<nav class="bottom-nav">
+<div class="bottom-nav-inner">
+  <a class="bottom-item" href="../../index.html">
+    <i data-lucide="house"></i><span>HOME</span>
+  </a>
+  <a class="bottom-item active" href="crm.html">
+    <i data-lucide="users-round"></i><span>CRM</span>
+  </a>
+  <a class="bottom-item" href="../accounts/accounts.html">
+    <i data-lucide="wallet"></i><span>ACCOUNTS</span>
+  </a>
+  <a class="bottom-item" href="../settings/settings.html">
+    <i data-lucide="settings-2"></i><span>SETTINGS</span>
+  </a>
+</div>
+</nav>
+
+<script type="module">
+import { db } from "../../js/firebase-config.js";
+import {
+  doc,getDoc,getDocs,updateDoc,deleteDoc,collection,query,where,
+  limit,runTransaction
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const $ = id => document.getElementById(id);
+const form = $("requirementForm");
+const listPanel = $("requirementListPanel");
+const list = $("requirementList");
+const msg = $("formMessage");
+const save = $("saveBtn");
+const CACHE = "bizodit_client_requirements_cache_v1";
+
+let records = [];
+let sortMode = "company";
+let currentId = null;
+let mode = "new";
+
+$("presentDate").textContent =
+  new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"}).format(new Date());
+
+const clean = v => String(v ?? "").trim();
+const esc = v => String(v ?? "")
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+
+function showMessage(text,type="error"){
+  msg.textContent=text;
+  msg.className=`form-message show ${type}`;
+}
+function clearMessage(){
+  msg.textContent="";
+  msg.className="form-message";
+}
+function splitList(value){
+  return clean(value).split(",").map(x=>x.trim()).filter(Boolean);
+}
+function joinList(value){
+  return Array.isArray(value) ? value.join(", ") : clean(value);
+}
+function selectedModules(){
+  return [...document.querySelectorAll("#modulesGrid input:checked")].map(x=>x.value);
+}
+function setModules(values){
+  const arr=Array.isArray(values)?values:splitList(values);
+  document.querySelectorAll("#modulesGrid input").forEach(x=>{
+    x.checked=arr.includes(x.value);
+  });
+}
+
+function data(){
+  return {
+    referenceId:clean($("referenceId").value),
+    companyName:clean($("companyName").value),
+    businessType:clean($("businessType").value),
+    industry:clean($("industry").value),
+    contactPerson:clean($("contactPerson").value),
+    designation:clean($("designation").value),
+    mobile:clean($("mobile").value),
+    whatsapp:clean($("whatsapp").value),
+    email:clean($("email").value).toLowerCase(),
+    businessDescription:clean($("businessDescription").value),
+
+    currentWorkflow:clean($("currentWorkflow").value),
+    problems:clean($("problems").value),
+    automation:clean($("automation").value),
+    currentSoftware:clean($("currentSoftware").value),
+    dataSource:clean($("dataSource").value),
+
+    modules:selectedModules(),
+    users:splitList($("users").value),
+    totalUsers:Number($("totalUsers").value)||0,
+    adminFeatures:splitList($("adminFeatures").value),
+    clientFeatures:splitList($("clientFeatures").value),
+    integrations:splitList($("integrations").value),
+
+    primaryColor:clean($("primaryColor").value),
+    secondaryColor:clean($("secondaryColor").value),
+    themePreference:clean($("themePreference").value),
+    fontPreference:clean($("fontPreference").value),
+    launchDate:clean($("launchDate").value),
+    priorityLevel:clean($("priorityLevel").value)||"Normal",
+    notes:clean($("notes").value)
+  };
+}
+
+function fill(r){
+  currentId=r.referenceId||r.id||"";
+
+  $("referenceId").value=r.referenceId||r.id||"";
+  $("companyName").value=r.companyName||"";
+  $("businessType").value=r.businessType||"";
+  $("industry").value=r.industry||"";
+  $("contactPerson").value=r.contactPerson||"";
+  $("designation").value=r.designation||"";
+  $("mobile").value=r.mobile||"";
+  $("whatsapp").value=r.whatsapp||"";
+  $("email").value=r.email||"";
+  $("businessDescription").value=r.businessDescription||"";
+
+  $("currentWorkflow").value=r.currentWorkflow||"";
+  $("problems").value=r.problems||"";
+  $("automation").value=r.automation||"";
+  $("currentSoftware").value=r.currentSoftware||"";
+  $("dataSource").value=r.dataSource||"";
+
+  setModules(r.modules||[]);
+  $("users").value=joinList(r.users);
+  $("totalUsers").value=r.totalUsers||"";
+  $("adminFeatures").value=joinList(r.adminFeatures);
+  $("clientFeatures").value=joinList(r.clientFeatures);
+  $("integrations").value=joinList(r.integrations);
+
+  $("primaryColor").value=r.primaryColor||"";
+  $("secondaryColor").value=r.secondaryColor||"";
+  $("themePreference").value=r.themePreference||"";
+  $("fontPreference").value=r.fontPreference||"";
+  $("launchDate").value=r.launchDate||"";
+  $("priorityLevel").value=r.priorityLevel||"Normal";
+  $("notes").value=r.notes||"";
+}
+
+function setInputs(disabled){
+  form.querySelectorAll("input,select,textarea").forEach(x=>x.disabled=disabled);
+  $("referenceId").readOnly=true;
+  save.disabled=disabled;
+}
+
+function viewMode(){
+  mode="view";
+  form.classList.add("view-mode");
+  $("requirementFormTitle").textContent="Requirement Details";
+  $("editRequirementBtn").classList.remove("hidden");
+  $("deleteRequirementBtn").classList.remove("hidden");
+  setInputs(true);
+  $("cancelFormBtn").textContent="Back";
+  clearMessage();
+}
+
+function editMode(){
+  mode="edit";
+  form.classList.remove("view-mode");
+  $("requirementFormTitle").textContent="Edit Requirement";
+  $("editRequirementBtn").classList.add("hidden");
+  $("deleteRequirementBtn").classList.remove("hidden");
+  setInputs(false);
+  $("cancelFormBtn").textContent="Cancel";
+  clearMessage();
+}
+
+function newMode(){
+  mode="new";
+  currentId=null;
+  form.classList.remove("view-mode");
+  $("requirementFormTitle").textContent="Requirement Entry";
+  $("editRequirementBtn").classList.add("hidden");
+  $("deleteRequirementBtn").classList.add("hidden");
+  form.reset();
+  setModules([]);
+  $("priorityLevel").value="Normal";
+  $("referenceId").value="";
+  $("idStatus").textContent="";
+  setInputs(false);
+  $("cancelFormBtn").textContent="Cancel";
+  clearMessage();
+}
+
+async function load(){
+  try{
+    const cached=JSON.parse(localStorage.getItem(CACHE)||"[]");
+    if(Array.isArray(cached)&&cached.length){
+      records=cached;
+      render();
+    }
+  }catch{}
+
+  try{
+    const snap=await getDocs(query(collection(db,"client_requirements"),limit(500)));
+    records=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(r=>r.referenceId&&r.companyName);
+
+    records.sort((a,b)=>String(a.companyName||"").localeCompare(String(b.companyName||"")));
+    localStorage.setItem(CACHE,JSON.stringify(records));
+    render();
+  }catch(e){
+    console.error(e);
+    if(!records.length)
+      list.innerHTML='<div class="empty-list">Unable to load requirements. Tap Refresh to try again.</div>';
+  }
+}
+
+function normalizePhone(n){
+  let x=String(n||"").replace(/\D/g,"");
+  if(x.length===10)x="91"+x;
+  if(x.length===11&&x.startsWith("0"))x="91"+x.slice(1);
+  return x;
+}
+function callNumber(n){
+  const x=String(n||"").replace(/\D/g,"");
+  return x.length?`tel:${x}`:"";
+}
+
+function priorityBadge(p){
+  const x=String(p||"Normal");
+  const cls=x==="Urgent"?"badge-urgent":x==="High"?"badge-high":"badge-normal";
+  return `<span class="badge ${cls}">${esc(x)}</span>`;
+}
+
+function render(){
+  const term=clean($("requirementSearch").value).toLowerCase();
+  const priority=clean($("requirementPriorityFilter").value);
+
+  let rows=records.filter(r=>{
+    const search=!term||[
+      r.referenceId,r.companyName,r.contactPerson,r.mobile,r.email,r.industry
+    ].some(v=>String(v||"").toLowerCase().includes(term));
+
+    const p=!priority||String(r.priorityLevel||"Normal")===priority;
+    const created=String(r.createdAt||r.submittedAt||"").slice(0,10);
+    const from=!$("requirementFromDate").value||created>=$("requirementFromDate").value;
+    const to=!$("requirementToDate").value||created<=$("requirementToDate").value;
+
+    return search&&p&&from&&to;
+  });
+
+  rows.sort((a,b)=>{
+    if(sortMode==="company")
+      return String(a.companyName||"").localeCompare(String(b.companyName||""));
+    if(sortMode==="company-desc")
+      return String(b.companyName||"").localeCompare(String(a.companyName||""));
+    if(sortMode==="ref")
+      return String(a.referenceId||"").localeCompare(String(b.referenceId||""));
+    if(sortMode==="priority"){
+      const rank={Urgent:0,High:1,Normal:2};
+      return (rank[a.priorityLevel]??2)-(rank[b.priorityLevel]??2);
+    }
+    return String(b.createdAt||b.submittedAt||"").localeCompare(String(a.createdAt||a.submittedAt||""));
+  });
+
+  if(!rows.length){
+    list.innerHTML='<div class="empty-list">No requirements found.</div>';
+    return;
+  }
+
+  list.innerHTML=rows.map(r=>{
+    const id=String(r.referenceId||r.id||"");
+    const phone=clean(r.mobile);
+    const wa=normalizePhone(r.whatsapp||r.mobile);
+    const submitted=r.submittedAt?.toDate
+      ? r.submittedAt.toDate().toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"})
+      : (r.createdAt?new Date(r.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"}):"");
+
+    return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${esc(id)}">
+            <div class="data-row-title">${esc(r.companyName||"Unnamed Client")}</div>
+            <div class="data-row-sub">
+              ${esc(id)} · ${esc(r.contactPerson||"No contact")}
+              ${phone?` · ${esc(phone)}`:""}
+            </div>
+          </div>
+          <div class="data-row-meta">
+            ${priorityBadge(r.priorityLevel)}
+            <div style="margin-top:4px;color:#727983">${esc(submitted)}</div>
+          </div>
+        </div>
+
+        <div class="client-row-actions">
+          ${phone?`<a class="client-action-btn call" href="${callNumber(phone)}" title="Call"><i data-lucide="phone"></i></a>`:""}
+          ${wa?`<a class="client-action-btn whatsapp" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>`:""}
+          <button class="client-action-btn pdf" data-pdf="${esc(id)}" type="button" title="Download PDF">
+            <i data-lucide="file-down"></i>
+          </button>
+          <button class="client-action-btn" data-open="${esc(id)}" type="button" title="Open full requirement">
+            <i data-lucide="arrow-up-right"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  window.lucide?.createIcons();
+
+  list.querySelectorAll("[data-open]").forEach(b=>{
+    b.addEventListener("click",e=>{
+      e.stopPropagation();
+      openView(b.dataset.open);
+    });
+  });
+
+  list.querySelectorAll("[data-pdf]").forEach(b=>{
+    b.addEventListener("click",e=>{
+      e.stopPropagation();
+      const r=find(b.dataset.pdf);
+      if(r)generatePDF(r);
+    });
+  });
+}
+
+function find(id){
+  return records.find(r=>String(r.referenceId||r.id||"")===String(id));
+}
+
+async function openView(id){
+  const cached=find(id);
+  if(cached){
+    fill(cached);
+    listPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    viewMode();
+    scrollTo(0,0);
+  }
+
+  try{
+    const s=await getDoc(doc(db,"client_requirements",id));
+    if(!s.exists())throw Error("Requirement record no longer exists.");
+    fill({id:s.id,...s.data()});
+    viewMode();
+  }catch(e){
+    if(!cached)showMessage(e.message||"Unable to open requirement.");
+  }
+}
+
+function openList(){
+  form.classList.add("hidden");
+  listPanel.classList.remove("hidden");
+  newMode();
+  render();
+  scrollTo(0,0);
+}
+function openNew(){
+  newMode();
+  listPanel.classList.add("hidden");
+  form.classList.remove("hidden");
+  scrollTo(0,0);
+}
+
+function contactSupported(){
+  return "contacts" in navigator && "ContactsManager" in window;
+}
+
+async function pickContact(){
+  if(!contactSupported()){
+    showMessage("Phone contact selection is not supported by this browser. Enter the number manually.");
+    return;
+  }
+
+  try{
+    const a=await navigator.contacts.select(["name","tel"],{multiple:false});
+    if(!a?.length)return;
+    const phone=(a[0].tel||[])[0];
+    if(!phone){
+      showMessage("The selected contact has no phone number.");
+      return;
+    }
+
+    let n=String(phone).replace(/\D/g,"");
+    if(n.startsWith("91")&&n.length===12)n=n.slice(2);
+    if(n.startsWith("0")&&n.length===11)n=n.slice(1);
+
+    if(n.length!==10){
+      showMessage("Please select an Indian 10 digit mobile number.");
+      return;
+    }
+
+    $("mobile").value=n;
+    if(!clean($("contactPerson").value)&&a[0].name?.[0])
+      $("contactPerson").value=a[0].name[0];
+
+    if(!clean($("whatsapp").value))
+      $("whatsapp").value=n;
+
+    showMessage("Contact details added.","success");
+  }catch(e){
+    if(e?.name!=="AbortError")
+      showMessage("Unable to access phone contacts. Enter the number manually.");
+  }
+}
+
+async function duplicate(field,value,exclude){
+  if(!value)return false;
+  const s=await getDocs(query(collection(db,"client_requirements"),where(field,"==",value),limit(5)));
+  return s.docs.some(d=>String(d.id)!==String(exclude||""));
+}
+
+async function validate(exclude=null){
+  const d=data();
+
+  if(!d.companyName)return"Company / Business Name is required.";
+  if(!d.contactPerson)return"Contact Person is required.";
+
+  if(d.mobile&&!/^[0-9]{10}$/.test(d.mobile))
+    return"Enter a valid 10 digit mobile number.";
+
+  if(d.whatsapp&&!/^[0-9]{10}$/.test(d.whatsapp))
+    return"Enter a valid 10 digit WhatsApp number.";
+
+  if(d.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email))
+    return"Enter a valid email address.";
+
+  if(d.totalUsers<0)return"Total Users cannot be negative.";
+
+  if(await duplicate("mobile",d.mobile,exclude))
+    return"A requirement with this mobile number already exists.";
+
+  if(await duplicate("email",d.email,exclude))
+    return"A requirement with this email already exists.";
+
+  return"";
+}
+
+/*
+ * Generates:
+ * CF/REF/YYMMDD/0001
+ * CF/REF/YYMMDD/0002
+ *
+ * The sequence restarts each day.
+ */
+function dateKey(){
+  const d=new Date();
+  const yy=String(d.getFullYear()).slice(-2);
+  const mm=String(d.getMonth()+1).padStart(2,"0");
+  const dd=String(d.getDate()).padStart(2,"0");
+  return yy+mm+dd;
+}
+
+async function nextReference(tx){
+  const key=dateKey();
+  const counterRef=doc(db,"counters","clientRequirementCounter");
+  const snap=await tx.get(counterRef);
+
+  let next=1;
+  if(snap.exists()){
+    const d=snap.data();
+    if(d.dateKey===key){
+      const last=Number(d.lastNumber);
+      if(Number.isFinite(last)&&last>=0)next=last+1;
+    }
+  }
+
+  while(true){
+    const ref=`CF/REF/${key}/${String(next).padStart(4,"0")}`;
+    const candidate=doc(db,"client_requirements",ref);
+    const candidateSnap=await tx.get(candidate);
+
+    if(!candidateSnap.exists()){
+      return {counterRef,ref,next,key};
+    }
+    next++;
+  }
+}
+
+async function createRequirement(){
+  const err=await validate();
+  if(err){showMessage(err);return;}
+
+  save.disabled=true;
+  form.classList.add("saving");
+  $("saveBtn").querySelector(".save-text").textContent="Saving...";
+  $("idStatus").textContent="…";
+
+  try{
+    const d=data();
+    const now=new Date().toISOString();
+    let made="";
+
+    await runTransaction(db,async tx=>{
+      const r=await nextReference(tx);
+      made=r.ref;
+
+      const requirement={
+        ...d,
+        referenceId:made,
+        submittedAt:now,
+        createdAt:now,
+        updatedAt:now,
+        status:"Open"
+      };
+
+      tx.set(
+        r.counterRef,
+        {dateKey:r.key,lastNumber:r.next,updatedAt:now},
+        {merge:true}
+      );
+
+      tx.set(
+        doc(db,"client_requirements",made),
+        requirement
+      );
+    });
+
+    $("referenceId").value=made;
+    $("idStatus").textContent="✓";
+    showMessage(`Requirement ${made} saved successfully.`,"success");
+
+    localStorage.removeItem(CACHE);
+
+    setTimeout(()=>{
+      openList();
+      load();
+    },450);
+
+  }catch(e){
+    console.error(e);
+    showMessage(e.message||"Unable to save requirement. Please try again.");
+    $("idStatus").textContent="";
+  }finally{
+    save.disabled=false;
+    form.classList.remove("saving");
+    $("saveBtn").querySelector(".save-text").textContent="Save Requirement";
+  }
+}
+
+async function updateRequirement(silent=false){
+  if(!currentId)return false;
+
+  const err=await validate(currentId);
+  if(err){
+    if(!silent)showMessage(err);
+    return false;
+  }
+
+  const d=data();
+  const updatedAt=new Date().toISOString();
+
+  save.disabled=true;
+  form.classList.add("saving");
+
+  try{
+    await updateDoc(doc(db,"client_requirements",currentId),{
+      ...d,
+      referenceId:currentId,
+      updatedAt
+    });
+
+    const i=records.findIndex(r=>String(r.referenceId||r.id)===String(currentId));
+    if(i>=0)
+      records[i]={...records[i],...d,referenceId:currentId,updatedAt};
+
+    localStorage.setItem(CACHE,JSON.stringify(records));
+
+    if(!silent)showMessage("Requirement updated successfully.","success");
+    return true;
+
+  }catch(e){
+    console.error(e);
+    if(!silent)showMessage(e.message||"Unable to update requirement.");
+    return false;
+  }finally{
+    save.disabled=false;
+    form.classList.remove("saving");
+  }
+}
+
+$("editRequirementBtn").addEventListener("click",editMode);
+
+$("deleteRequirementBtn").addEventListener("click",async()=>{
+  if(!currentId)return;
+
+  const r=find(currentId);
+  if(!confirm(
+    `Delete requirement "${r?.companyName||currentId}" (${currentId})?\n\nThis action cannot be undone.`
+  ))return;
+
+  $("deleteRequirementBtn").disabled=true;
+
+  try{
+    await deleteDoc(doc(db,"client_requirements",currentId));
+
+    records=records.filter(
+      x=>String(x.referenceId||x.id)!==String(currentId)
+    );
+
+    localStorage.setItem(CACHE,JSON.stringify(records));
+    showMessage("Requirement deleted successfully.","success");
+
+    setTimeout(openList,450);
+
+  }catch(e){
+    showMessage(e.message||"Unable to delete requirement.");
+  }finally{
+    $("deleteRequirementBtn").disabled=false;
+  }
+});
+
+form.addEventListener("submit",async e=>{
+  e.preventDefault();
+
+  if(mode==="new"){
+    await createRequirement();
+  }else if(mode==="edit"){
+    if(await updateRequirement())
+      setTimeout(openList,450);
+  }
+});
+
+$("addRequirementBtn").addEventListener("click",openNew);
+$("cancelFormBtn").addEventListener("click",openList);
+
+$("pageBackBtn").addEventListener("click",()=>{
+  form.classList.contains("hidden")?history.back():openList();
+});
+
+$("requirementSearch").addEventListener("input",render);
+$("requirementPriorityFilter").addEventListener("change",render);
+$("requirementFromDate").addEventListener("change",render);
+$("requirementToDate").addEventListener("change",render);
+
+$("requirementSortBtn").addEventListener("click",()=>{
+  $("requirementSortMenu").classList.toggle("show");
+});
+$("requirementFilterBtn").addEventListener("click",()=>{
+  $("requirementFilterPanel").classList.toggle("show");
+});
+$("requirementToolsBtn").addEventListener("click",()=>{
+  $("importTools").classList.toggle("show");
+});
+
+document.querySelectorAll(".sort-option").forEach(b=>{
+  b.addEventListener("click",()=>{
+    sortMode=b.dataset.sort;
+    document.querySelectorAll(".sort-option")
+      .forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    $("requirementSortMenu").classList.remove("show");
+    render();
+  });
+});
+
+$("requirementRefreshBtn").addEventListener("click",async()=>{
+  $("requirementRefreshBtn").classList.add("spinning");
+  try{
+    localStorage.removeItem(CACHE);
+    await load();
+  }finally{
+    $("requirementRefreshBtn").classList.remove("spinning");
+  }
+});
+
+$("contactPickerBtn").addEventListener("click",pickContact);
+
+$("mobile").addEventListener("input",e=>{
+  e.target.value=e.target.value.replace(/\D/g,"").slice(0,10);
+  if(!clean($("whatsapp").value))$("whatsapp").value=e.target.value;
+});
+$("whatsapp").addEventListener("input",e=>{
+  e.target.value=e.target.value.replace(/\D/g,"").slice(0,10);
+});
+
+$("downloadTemplateBtn").addEventListener("click",()=>{
+  const headers=[
+    "Company Name","Business Type","Industry","Contact Person","Designation",
+    "Mobile","WhatsApp","Email","Business Description","Current Workflow",
+    "Problems","Automation","Current Software","Data Source","Modules",
+    "User Access Roles","Total Users","Admin Features","Client App Features",
+    "Integrations","Primary Colour","Secondary Colour","Theme Preference",
+    "Font Preference","Launch Date","Priority","Notes"
+  ];
+
+  const example=[
+    "ABC Business","Proprietorship","Retail","John","Owner",
+    "9876543210","9876543210","john@example.com","Business description",
+    "Current workflow","Pain points","Automation target","Excel","Excel / Sheets",
+    "CRM | Accounts","Admin | Staff","5","Dashboard | Reports",
+    "Client App | Notifications","WhatsApp | Payment",
+    "#0B3B66","#FFFFFF","Light","Inter","2026-09-30","Normal",""
+  ];
+
+  const csv=[headers,example]
+    .map(row=>row.map(csvEscape).join(",")).join("\r\n");
+
+  downloadBlob(
+    csv,
+    "CM_Client_Requirement_Import_Format.csv",
+    "text/csv;charset=utf-8"
+  );
+});
+
+$("importBtn").addEventListener("click",()=>$("importFile").click());
+
+$("importFile").addEventListener("change",async e=>{
+  const file=e.target.files?.[0];
+  if(!file)return;
+
+  try{
+    const text=await file.text();
+    const rows=parseCSV(text);
+
+    if(rows.length<2)
+      throw Error("The import file contains no records.");
+
+    const headers=rows[0].map(x=>clean(x));
+    const headerIndex={};
+    headers.forEach((h,i)=>headerIndex[h]=i);
+
+    const required=["Company Name","Contact Person"];
+    for(const h of required){
+      if(!(h in headerIndex))
+        throw Error(`Missing required column: ${h}`);
+    }
+
+    let imported=0;
+    let skipped=0;
+
+    for(let i=1;i<rows.length;i++){
+      const row=rows[i];
+      if(!row.length||row.every(x=>!clean(x)))continue;
+
+      const value=h=>clean(row[headerIndex[h]]);
+
+      const company=value("Company Name");
+      const contact=value("Contact Person");
+
+      if(!company||!contact){
+        skipped++;
+        continue;
+      }
+
+      const now=new Date().toISOString();
+      const ref=`CF/REF/${dateKey()}/IMP${String(i).padStart(3,"0")}`;
+
+      const record={
+        referenceId:ref,
+        companyName:company,
+        businessType:value("Business Type"),
+        industry:value("Industry"),
+        contactPerson:contact,
+        designation:value("Designation"),
+        mobile:value("Mobile"),
+        whatsapp:value("WhatsApp"),
+        email:value("Email").toLowerCase(),
+        businessDescription:value("Business Description"),
+        currentWorkflow:value("Current Workflow"),
+        problems:value("Problems"),
+        automation:value("Automation"),
+        currentSoftware:value("Current Software"),
+        dataSource:value("Data Source"),
+        modules:splitPipe(value("Modules")),
+        users:splitPipe(value("User Access Roles")),
+        totalUsers:Number(value("Total Users"))||0,
+        adminFeatures:splitPipe(value("Admin Features")),
+        clientFeatures:splitPipe(value("Client App Features")),
+        integrations:splitPipe(value("Integrations")),
+        primaryColor:value("Primary Colour"),
+        secondaryColor:value("Secondary Colour"),
+        themePreference:value("Theme Preference"),
+        fontPreference:value("Font Preference"),
+        launchDate:value("Launch Date"),
+        priorityLevel:value("Priority")||"Normal",
+        notes:value("Notes"),
+        status:"Open",
+        submittedAt:now,
+        createdAt:now,
+        updatedAt:now,
+        imported:true
+      };
+
+      await runTransaction(db,async tx=>{
+        tx.set(doc(db,"client_requirements",ref),record);
+      });
+
+      imported++;
+    }
+
+    localStorage.removeItem(CACHE);
+    await load();
+
+    showMessage(
+      `Import completed: ${imported} imported${skipped?`, ${skipped} skipped`:""}.`,
+      "success"
+    );
+
+  }catch(err){
+    console.error(err);
+    showMessage(err.message||"Unable to import the CSV file.");
+  }finally{
+    e.target.value="";
+  }
+});
+
+$("exportBtn").addEventListener("click",()=>{
+  if(!records.length){
+    showMessage("No requirements available to export.");
+    return;
+  }
+
+  const headers=[
+    "Ref No","Company Name","Business Type","Industry","Contact Person",
+    "Designation","Mobile","WhatsApp","Email","Business Description",
+    "Current Workflow","Problems","Automation","Current Software","Data Source",
+    "Modules","User Access Roles","Total Users","Admin Features",
+    "Client App Features","Integrations","Primary Colour","Secondary Colour",
+    "Theme Preference","Font Preference","Launch Date","Priority","Notes",
+    "Created At","Updated At"
+  ];
+
+  const rows=records.map(r=>[
+    r.referenceId,r.companyName,r.businessType,r.industry,r.contactPerson,
+    r.designation,r.mobile,r.whatsapp,r.email,r.businessDescription,
+    r.currentWorkflow,r.problems,r.automation,r.currentSoftware,r.dataSource,
+    joinPipe(r.modules),joinPipe(r.users),r.totalUsers,joinPipe(r.adminFeatures),
+    joinPipe(r.clientFeatures),joinPipe(r.integrations),r.primaryColor,
+    r.secondaryColor,r.themePreference,r.fontPreference,r.launchDate,
+    r.priorityLevel,r.notes,r.createdAt,r.updatedAt
+  ]);
+
+  const csv=[headers,...rows]
+    .map(row=>row.map(csvEscape).join(",")).join("\r\n");
+
+  downloadBlob(
+    csv,
+    `CM_Client_Requirements_${dateKey()}.csv`,
+    "text/csv;charset=utf-8"
+  );
+});
+
+function csvEscape(value){
+  const s=String(value??"");
+  return `"${s.replace(/"/g,'""')}"`;
+}
+function splitPipe(value){
+  return clean(value).split("|").map(x=>x.trim()).filter(Boolean);
+}
+function joinPipe(value){
+  return Array.isArray(value)?value.join(" | "):clean(value);
+}
+function downloadBlob(content,name,type){
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+
+function safeDate(value){
+  if(!value)return"—";
+  if(value?.toDate)return value.toDate().toLocaleDateString("en-IN");
+  const d=new Date(value);
+  return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("en-IN");
+}
+
+async function getBase64Image(src){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.crossOrigin="Anonymous";
+    img.onload=()=>{
+      try{
+        const canvas=document.createElement("canvas");
+        canvas.width=img.naturalWidth||img.width;
+        canvas.height=img.naturalHeight||img.height;
+        canvas.getContext("2d").drawImage(img,0,0);
+        resolve(canvas.toDataURL("image/png"));
+      }catch{resolve(null)}
+    };
+    img.onerror=()=>resolve(null);
+    img.src=src;
+  });
+}
+
+async function generatePDF(r){
+  const jsPDFConstructor=window.jspdf?.jsPDF||window.jsPDF;
+  if(!jsPDFConstructor){
+    showMessage("PDF library is not available.");
+    return;
+  }
+
+  const pdf=new jsPDFConstructor({unit:"pt",format:"a4"});
+  const margin=40;
+  let y=38;
+
+  const logo=await getBase64Image("../../assets/logo.png");
+  const name=await getBase64Image("../../assets/name.png");
+
+  if(logo){
+    try{pdf.addImage(logo,"PNG",margin,y,30,30)}catch{}
+  }
+  if(name){
+    try{pdf.addImage(name,"PNG",margin+38,y+4,105,22)}catch{}
+  }else{
+    pdf.setFont("helvetica","bold");
+    pdf.setFontSize(16);
+    pdf.setTextColor(22,38,63);
+    pdf.text("CM | BIZODIT",margin+38,y+20);
+  }
+
+  y+=45;
+  pdf.setFont("helvetica","normal");
+  pdf.setFontSize(9);
+  pdf.setTextColor(112,121,133);
+  pdf.text(`Client Requirement Document · ${r.referenceId||"N/A"}`,margin,y);
+  y+=22;
+
+  function header(title){
+    if(y>760){pdf.addPage();y=45}
+    pdf.setFont("helvetica","bold");
+    pdf.setFontSize(11);
+    pdf.setTextColor(22,38,63);
+    pdf.text(title,margin,y);
+    y+=5;
+    pdf.setDrawColor(225,229,234);
+    pdf.line(margin,y,555,y);
+    y+=15;
+  }
+
+  function row(label,value){
+    if(value===undefined||value===null||value===""||
+       (Array.isArray(value)&&!value.length))return;
+
+    if(y>770){pdf.addPage();y=45}
+    const text=Array.isArray(value)?value.join(", "):String(value);
+
+    pdf.setFont("helvetica","normal");
+    pdf.setFontSize(8.5);
+    pdf.setTextColor(112,121,133);
+    pdf.text(label,margin,y);
+
+    pdf.setFont("helvetica","bold");
+    pdf.setTextColor(23,32,45);
+
+    const split=pdf.splitTextToSize(text,350);
+    pdf.text(split,margin+130,y);
+    y+=split.length*11+5;
+  }
+
+  header("1. Business & Contact Information");
+  row("Company:",r.companyName);
+  row("Business Type:",r.businessType);
+  row("Industry:",r.industry);
+  row("Contact:",`${r.contactPerson||""}${r.designation?` (${r.designation})`:""}`);
+  row("Mobile:",r.mobile);
+  row("WhatsApp:",r.whatsapp);
+  row("Email:",r.email);
+  row("Description:",r.businessDescription);
+  y+=7;
+
+  header("2. Workflow & Automation");
+  row("Current Workflow:",r.currentWorkflow);
+  row("Problems:",r.problems);
+  row("Automation:",r.automation);
+  row("Current Software:",r.currentSoftware);
+  row("Data Source:",r.dataSource);
+  y+=7;
+
+  header("3. Modules & System Setup");
+  row("Modules:",r.modules);
+  row("User Roles:",r.users);
+  row("Total Users:",r.totalUsers);
+  row("Admin Features:",r.adminFeatures);
+  row("Client Features:",r.clientFeatures);
+  row("Integrations:",r.integrations);
+  y+=7;
+
+  header("4. Design & Target");
+  row("Primary Colour:",r.primaryColor);
+  row("Secondary Colour:",r.secondaryColor);
+  row("Theme:",r.themePreference);
+  row("Font:",r.fontPreference);
+  row("Launch Date:",r.launchDate);
+  row("Priority:",r.priorityLevel);
+  row("Notes:",r.notes);
+
+  const fileName=(r.companyName||"Client_Requirement")
+    .replace(/[^a-z0-9]/gi,"_");
+
+  pdf.save(`${r.referenceId||fileName}_Requirement.pdf`);
+}
+
+$("pdfRequirementBtn").addEventListener("click",()=>{
+  const r=find(currentId);
+  if(r)generatePDF(r);
+});
+
+$("menuToggle")?.addEventListener("click",()=>{
+  document.body.classList.toggle("sidebar-open");
+});
+
+window.lucide?.createIcons();
+load();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Branches — CM | BIZODIT</title>
+
+  <style>
+    .id-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .id-box input {
+      flex: 1;
+    }
+
+    .id-status {
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Toolbar */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .add-form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .list-panel {
+      display: block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display: none;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Item */
+    .data-row {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .data-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .data-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .data-row-sub {
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .data-row-meta {
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .branch-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Card Action Toolbar */
+    .branch-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .branch-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .branch-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .branch-action-btn.call {
+      color: #0b3b66;
+    }
+
+    .branch-action-btn.whatsapp {
+      color: #15803d;
+    }
+
+    .branch-action-btn.map {
+      color: #b45309;
+    }
+
+    .branch-action-btn.open-btn {
+      color: #334155;
+    }
+
+    .input-with-btn {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .input-with-btn input {
+      flex: 1;
+    }
+
+    .form-view-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      width: auto;
+      height: auto;
+      border: 0;
+      background: transparent;
+      margin: -4px 0 10px;
+    }
+
+    .form-view-action.delete {
+      color: #b42318;
+    }
+
+    .form-view-action.hidden {
+      display: none;
+    }
+
+    .view-mode input:not([readonly]),
+    .view-mode select,
+    .view-mode textarea {
+      background: #f7f8f9;
+      color: #33404c;
+      pointer-events: none;
+    }
+
+    .view-mode .form-actions {
+      display: none;
+    }
+
+    .form-mode-label {
+      display: none;
+      margin: -7px 0 14px;
+      font-size: 11px;
+      color: #7b8791;
+    }
+
+    .view-mode .form-mode-label {
+      display: block;
+    }
+
+    .empty-list {
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .form-message.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" id="pageBackBtn" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Branches</h1>
+            <p>Manage office locations, contact points & map coordinates</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="branchListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="branchSearch" class="list-search" type="search" placeholder="Search branches..." autocomplete="off">
+          <button id="branchSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="branchRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportBranchBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importBranchBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+          <button id="addBranchBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+
+        <div id="branchSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="id">Branch ID (BR-001)</button>
+            <button class="sort-option" data-sort="name">Name A–Z</button>
+            <button class="sort-option" data-sort="name-desc">Name Z–A</button>
+            <button class="sort-option" data-sort="newest">Newest</button>
+          </div>
+        </div>
+
+        <div id="branchList" class="data-list"><div class="empty-list">Loading branches...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="branchForm">
+        <div class="form-view-actions">
+          <button id="editBranchBtn" class="form-view-action" type="button" title="Edit branch"><i data-lucide="pencil"></i></button>
+          <button id="deleteBranchBtn" class="form-view-action delete" type="button" title="Delete branch"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <h2 id="branchFormTitle">Branch Entry</h2>
+        <div id="formModeLabel" class="form-mode-label">View mode — tap Edit to modify this branch.</div>
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Branch ID</label>
+            <div class="id-box">
+              <input id="branchId" type="text" readonly placeholder="Generating on save (BR-001)...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Branch Name <span class="required">*</span></label>
+            <input id="branchName" type="text" required placeholder="e.g. Head Office / Kochi Branch">
+          </div>
+
+          <div class="field">
+            <label>Phone / Mobile <span class="required">*</span></label>
+            <input id="phone" type="tel" inputmode="numeric" maxlength="10" required placeholder="10 digit contact number">
+          </div>
+
+          <div class="field">
+            <label>Email Address</label>
+            <input id="email" type="email" placeholder="branch@bizodit.com">
+          </div>
+
+          <div class="field full">
+            <label>Address <span class="required">*</span></label>
+            <textarea id="address" rows="3" required placeholder="Complete physical address, landmark, PIN code..."></textarea>
+          </div>
+
+          <div class="field full">
+            <label>Google Maps Link / Coordinates</label>
+            <div class="input-with-btn">
+              <input id="mapUrl" type="text" placeholder="https://maps.google.com/?q=lat,lng or paste location link">
+              <button id="currentLocationBtn" class="list-icon-btn" type="button" title="Fetch Current GPS Location"><i data-lucide="map-pin"></i></button>
+              <button id="openMapBtn" class="list-icon-btn" type="button" title="Open Map Link in New Tab"><i data-lucide="external-link"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Branch</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item active" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { formatIndianDate } from "../../../js/date.js";
+  import { db } from "../../../js/firebase-config.js";
+  import {
+    doc,
+    runTransaction,
+    updateDoc,
+    deleteDoc,
+    collection,
+    getDocs,
+    getDoc,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("branchForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const idInput = document.getElementById("branchId");
+  const idStatus = document.getElementById("idStatus");
+  const editBranchBtn = document.getElementById("editBranchBtn");
+  const deleteBranchBtn = document.getElementById("deleteBranchBtn");
+  const cancelFormBtn = document.getElementById("cancelFormBtn");
+  const currentLocationBtn = document.getElementById("currentLocationBtn");
+  const openMapBtn = document.getElementById("openMapBtn");
+
+  const CACHE = "bizodit_branches_cache_v1";
+  let branches = [];
+  let currentId = null;
+  let mode = "new"; // "new", "view", "edit"
+
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
+
+  const clean = value => String(value || "").trim();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
+  /* Current GPS location fetch */
+  currentLocationBtn.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      showMessage("Geolocation is not supported by your browser.", "error");
+      return;
+    }
+
+    currentLocationBtn.classList.add("spinning");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        currentLocationBtn.classList.remove("spinning");
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const gmapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+        document.getElementById("mapUrl").value = gmapLink;
+        showMessage("Fetched current GPS location successfully.", "success");
+      },
+      (error) => {
+        currentLocationBtn.classList.remove("spinning");
+        showMessage("Unable to access location: " + error.message, "error");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+
+  /* Open map link in new tab */
+  openMapBtn.addEventListener("click", () => {
+    const url = clean(document.getElementById("mapUrl").value);
+    if (!url) {
+      showMessage("No map URL or coordinates provided.", "error");
+      return;
+    }
+    const target = url.startsWith("http") ? url : `https://www.google.com/maps?q=${encodeURIComponent(url)}`;
+    window.open(target, "_blank", "noopener");
+  });
+
+  /* Auto ID Generator: BR-001, BR-002, ... */
+  async function getNextBranchId(transaction) {
+    const counterRef = doc(db, "counters", "branchCounter");
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) {
+        nextNumber = lastNumber + 1;
+      }
+    }
+
+    while (true) {
+      const candidateId = `BR-${String(nextNumber).padStart(3, "0")}`;
+      const candidateRef = doc(db, "branches", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
+
+      if (!candidateSnap.exists()) {
+        return { id: candidateId, counterRef, nextNumber };
+      }
+      nextNumber++;
+    }
+  }
+
+  function formData() {
+    return {
+      branchId: clean(idInput.value),
+      branchName: clean(document.getElementById("branchName").value),
+      phone: clean(document.getElementById("phone").value),
+      email: clean(document.getElementById("email").value).toLowerCase(),
+      address: clean(document.getElementById("address").value),
+      mapUrl: clean(document.getElementById("mapUrl").value)
+    };
+  }
+
+  function fillForm(b) {
+    currentId = b.branchId || b.id;
+    idInput.value = currentId || "";
+    document.getElementById("branchName").value = b.branchName || "";
+    document.getElementById("phone").value = b.phone || "";
+    document.getElementById("email").value = b.email || "";
+    document.getElementById("address").value = b.address || "";
+    document.getElementById("mapUrl").value = b.mapUrl || "";
+  }
+
+  function setInputs(disabled) {
+    form.querySelectorAll("input,select,textarea").forEach(x => x.disabled = disabled);
+    idInput.readOnly = true;
+    saveBtn.disabled = disabled;
+  }
+
+  function viewMode() {
+    mode = "view";
+    form.classList.add("view-mode");
+    document.getElementById("branchFormTitle").textContent = "Branch Details";
+    editBranchBtn.classList.remove("hidden");
+    deleteBranchBtn.classList.remove("hidden");
+    setInputs(true);
+    cancelFormBtn.textContent = "Back";
+    clearMessage();
+  }
+
+  function editMode() {
+    mode = "edit";
+    form.classList.remove("view-mode");
+    document.getElementById("branchFormTitle").textContent = "Edit Branch";
+    editBranchBtn.classList.add("hidden");
+    deleteBranchBtn.classList.remove("hidden");
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  function newMode() {
+    mode = "new";
+    currentId = null;
+    form.classList.remove("view-mode");
+    document.getElementById("branchFormTitle").textContent = "Branch Entry";
+    editBranchBtn.classList.add("hidden");
+    deleteBranchBtn.classList.add("hidden");
+    form.reset();
+    idInput.value = "";
+    idStatus.textContent = "";
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  const branchListPanel = document.getElementById("branchListPanel");
+  const addBranchBtn = document.getElementById("addBranchBtn");
+  const branchSearch = document.getElementById("branchSearch");
+  const branchSortBtn = document.getElementById("branchSortBtn");
+  const branchSortMenu = document.getElementById("branchSortMenu");
+  const branchRefreshBtn = document.getElementById("branchRefreshBtn");
+  const branchList = document.getElementById("branchList");
+
+  let branchSort = "id";
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadBranchList() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        branches = cached;
+        renderBranchList();
+      }
+    } catch (error) {
+      console.warn("Branch cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "branches"), limit(500)));
+      branches = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE, JSON.stringify(branches));
+      renderBranchList();
+    } catch (error) {
+      console.error("Branch list load failed:", error);
+      if (!branches.length) {
+        branchList.innerHTML = '<div class="empty-list">Unable to load branches. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function renderBranchList() {
+    const term = clean(branchSearch.value).toLowerCase();
+
+    let rows = branches.filter(row => {
+      const idVal = row.branchId || row.id || "";
+      const text = `${idVal} ${row.branchName || ""} ${row.phone || ""} ${row.email || ""} ${row.address || ""}`.toLowerCase();
+      return (!term || text.includes(term));
+    });
+
+    rows.sort((a, b) => {
+      if (branchSort === "id") return String(a.branchId || a.id || "").localeCompare(String(b.branchId || b.id || ""), undefined, { numeric: true });
+      if (branchSort === "name") return String(a.branchName || "").localeCompare(String(b.branchName || ""));
+      if (branchSort === "name-desc") return String(b.branchName || "").localeCompare(String(a.branchName || ""));
+      if (branchSort === "newest") return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+      return 0;
+    });
+
+    if (!rows.length) {
+      branchList.innerHTML = '<div class="empty-list">No branch records found.</div>';
+      return;
+    }
+
+    branchList.innerHTML = rows.map(row => {
+      const id = String(row.branchId || row.id);
+      const phone = clean(row.phone || "");
+      const wa = whatsappClean(phone);
+      const mapLink = clean(row.mapUrl || "");
+
+      return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${escapeHtml(id)}">
+            <div class="data-row-title">${escapeHtml(row.branchName || "Branch")}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · ${phone ? escapeHtml(phone) : 'No phone'} ${row.email ? `· ${escapeHtml(row.email)}` : ''}</div>
+          </div>
+          <div class="data-row-meta">
+            <span class="branch-badge">Active</span>
+          </div>
+        </div>
+        <div class="branch-row-actions">
+          ${phone ? `<a class="branch-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Branch"><i data-lucide="phone"></i></a>` : ""}
+          ${phone ? `<a class="branch-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
+          ${mapLink ? `<a class="branch-action-btn map" href="${escapeHtml(mapLink)}" target="_blank" rel="noopener" title="View on Google Maps"><i data-lucide="map-pin"></i></a>` : ""}
+          <button class="branch-action-btn open-btn" data-open="${escapeHtml(id)}" type="button" title="View Details"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    branchList.querySelectorAll("[data-open]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        openView(b.dataset.open);
+      });
+    });
+  }
+
+  function findBranch(id) {
+    return branches.find(c => String(c.branchId || c.id) === String(id));
+  }
+
+  async function openView(id) {
+    const cached = findBranch(id);
+    if (cached) {
+      fillForm(cached);
+      branchListPanel.classList.add("hidden");
+      form.classList.remove("hidden");
+      viewMode();
+      window.scrollTo(0, 0);
+    }
+    try {
+      const s = await getDoc(doc(db, "branches", id));
+      if (!s.exists()) throw new Error("Branch record no longer exists.");
+      fillForm({ id: s.id, ...s.data() });
+      viewMode();
+    } catch (e) {
+      if (!cached) showMessage(e.message || "Unable to open branch.");
+    }
+  }
+
+  function openList() {
+    form.classList.add("hidden");
+    branchListPanel.classList.remove("hidden");
+    newMode();
+    renderBranchList();
+    window.scrollTo(0, 0);
+  }
+
+  function openNew() {
+    newMode();
+    branchListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Branch Name,Phone,Email,Address,Google Maps Link\n" +
+                     "\"Head Office\",9876543210,ho@bizodit.com,\"123 MG Road, Kochi\",https://maps.google.com/?q=9.9312,76.2673";
+    downloadBlob(template, "branches_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportBranchBtn").addEventListener("click", () => {
+    if (!branches.length) { alert("No branches to export."); return; }
+    const headers = ["Branch ID","Branch Name","Phone","Email","Address","Google Maps Link","Created At"];
+    const rows = branches.map(b => [
+      `"${b.branchId||b.id||""}"`, `"${(b.branchName||"").replace(/"/g,'""')}"`,
+      `"${b.phone||""}"`, `"${b.email||""}"`,
+      `"${(b.address||"").replace(/"/g,'""')}"`, `"${b.mapUrl||""}"`, `"${b.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `branches_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importBranchBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} branch record(s)?`)) { e.target.value = ""; return; }
+
+    branchRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const name = clean(r[0]), phone = clean(r[1]), address = clean(r[3]);
+        if (!name || !phone || !address) continue;
+
+        await runTransaction(db, async tx => {
+          const result = await getNextBranchId(tx);
+          const branchRef = doc(db, "branches", result.id);
+          const record = {
+            branchId: result.id,
+            branchName: name,
+            phone: phone,
+            email: clean(r[2]).toLowerCase(),
+            address: address,
+            mapUrl: clean(r[4]),
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+          tx.set(branchRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem(CACHE);
+      await loadBranchList();
+      alert(`Successfully imported ${imported} branch(es).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during branch import: " + err.message);
+    } finally {
+      branchRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addBranchBtn.addEventListener("click", openNew);
+  cancelFormBtn.addEventListener("click", openList);
+  editBranchBtn.addEventListener("click", editMode);
+
+  deleteBranchBtn.addEventListener("click", async () => {
+    if (!currentId) return;
+    if (!confirm(`Delete branch (${currentId})?\n\nThis action cannot be undone.`)) return;
+    deleteBranchBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "branches", currentId));
+      branches = branches.filter(x => String(x.branchId || x.id) !== String(currentId));
+      localStorage.setItem(CACHE, JSON.stringify(branches));
+      showMessage("Branch deleted successfully.", "success");
+      setTimeout(openList, 450);
+    } catch (e) {
+      showMessage(e.message || "Unable to delete branch.");
+    } finally {
+      deleteBranchBtn.disabled = false;
+    }
+  });
+
+  branchSearch.addEventListener("input", renderBranchList);
+
+  branchRefreshBtn.addEventListener("click", async () => {
+    branchRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE);
+      await loadBranchList();
+    } finally {
+      branchRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  branchSortBtn.addEventListener("click", () => branchSortMenu.classList.toggle("show"));
+
+  branchSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      branchSort = option.dataset.sort;
+      branchSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      branchSortMenu.classList.remove("show");
+      renderBranchList();
+    });
+  });
+
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openList();
+    } else {
+      history.back();
+    }
+  });
+
+  /* Create new branch entry */
+  async function createBranch() {
+    const d = formData();
+    if (!d.branchName) { showMessage("Branch Name is required."); return; }
+    if (!d.phone || !/^[0-9]{10}$/.test(d.phone)) { showMessage("Enter a valid 10 digit phone number."); return; }
+    if (!d.address) { showMessage("Address is required."); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextBranchId(transaction);
+        generatedId = result.id;
+        const branchRef = doc(db, "branches", generatedId);
+        const data = {
+          ...d,
+          branchId: generatedId,
+          createdAt: now,
+          updatedAt: now
+        };
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+        transaction.set(branchRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Branch ${generatedId} saved successfully.`, "success");
+      localStorage.removeItem(CACHE);
+
+      setTimeout(() => {
+        openList();
+        loadBranchList();
+      }, 450);
+    } catch (error) {
+      console.error("Branch save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save branch. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Branch";
+    }
+  }
+
+  /* Update existing branch entry */
+  async function updateBranch() {
+    if (!currentId) return;
+    const d = formData();
+    if (!d.branchName || !d.phone || !d.address) {
+      showMessage("Branch Name, Phone, and Address are required.");
+      return;
+    }
+    if (!/^[0-9]{10}$/.test(d.phone)) {
+      showMessage("Enter a valid 10 digit phone number.");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Updating...";
+
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "branches", currentId), {
+        branchName: d.branchName,
+        phone: d.phone,
+        email: d.email,
+        address: d.address,
+        mapUrl: d.mapUrl,
+        updatedAt: now
+      });
+
+      const idx = branches.findIndex(c => String(c.branchId || c.id) === String(currentId));
+      if (idx >= 0) {
+        branches[idx] = { ...branches[idx], ...d, branchId: currentId, updatedAt: now };
+        localStorage.setItem(CACHE, JSON.stringify(branches));
+      }
+
+      showMessage("Branch updated successfully.", "success");
+      setTimeout(() => {
+        openList();
+      }, 450);
+    } catch (error) {
+      console.error("Branch update error:", error);
+      showMessage(error?.message || "Unable to update branch.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Branch";
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    if (mode === "edit") {
+      await updateBranch();
+    } else {
+      await createBranch();
+    }
+  });
+
+  document.getElementById("phone").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10));
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadBranchList();
+</script>
+
+</body>
+</html>

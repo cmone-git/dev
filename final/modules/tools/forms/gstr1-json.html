@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizOdit GSTR-1 JSON Tool</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for in-browser JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .animation-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // --- ICON COMPONENTS (Inline SVGs representing Lucide Icons) ---
+        const IconBuilding2 = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        );
+        const IconFileJson = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12a1 1 0 0 0-1 1v1a1 1 0 0 1-1 1 1 1 0 0 1 1 1v1a1 1 0 0 0 1 1"/><path d="M14 18a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-1a1 1 0 0 0-1-1"/></svg>
+        );
+        const IconFileText = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        );
+        const IconUploadCloud = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+        );
+        const IconSettings = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        );
+        const IconLayoutDashboard = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        );
+        const IconUsers = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        );
+        const IconFileSpreadsheet = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+        );
+        const IconDownload = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        );
+        const IconMenu = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        );
+        const IconX = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        );
+        const IconClipboard = ({ className }) => (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+        );
+
+        // --- UTILS & PARSERS ---
+
+        // Strict number formatting based on GST offline tool standards
+        const formatNum = (val) => {
+            if (!val || isNaN(val)) return 0;
+            return Number(parseFloat(val).toFixed(2));
+        };
+
+        // Robust CSV Parser taking into account quoted strings with commas
+        const parseCSV = (csvText, expectedHeaders = []) => {
+            const lines = csvText.split(/\r?\n/);
+            let headerLineIdx = -1;
+            let headers = [];
+
+            // Find the header row
+            for (let i = 0; i < Math.min(20, lines.length); i++) {
+                const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(s => s.replace(/(^"|"$)/g, '').trim());
+                
+                // Check if it's the header row by matching expected columns
+                if (expectedHeaders.length > 0) {
+                    const matchCount = expectedHeaders.filter(eh => cols.includes(eh)).length;
+                    if (matchCount >= expectedHeaders.length * 0.5) { 
+                        headerLineIdx = i;
+                        headers = cols;
+                        break;
+                    }
+                } else if (cols.length > 3 && cols[0] !== '') {
+                    headerLineIdx = i;
+                    headers = cols;
+                    break;
+                }
+            }
+
+            if (headerLineIdx === -1) return [];
+
+            const data = [];
+            for (let i = headerLineIdx + 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
+                
+                const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(s => s.replace(/(^"|"$)/g, '').trim());
+                const rowObj = {};
+                let hasData = false;
+                
+                headers.forEach((h, idx) => {
+                    if (h) {
+                        rowObj[h] = cols[idx] || '';
+                        if (rowObj[h] !== '') hasData = true;
+                    }
+                });
+                
+                if (hasData) data.push(rowObj);
+            }
+            return data;
+        };
+
+        // Robust Excel Paste Parser (TSV format)
+        const parsePastedExcel = (text, expectedHeaders = []) => {
+            const lines = text.split(/\r?\n/);
+            let headerLineIdx = -1;
+            let headers = [];
+
+            // Find the header row
+            for (let i = 0; i < Math.min(20, lines.length); i++) {
+                const cols = lines[i].split('\t').map(s => s.replace(/(^"|"$)/g, '').trim());
+                
+                if (expectedHeaders.length > 0) {
+                    const matchCount = expectedHeaders.filter(eh => cols.includes(eh)).length;
+                    if (matchCount >= expectedHeaders.length * 0.5) { 
+                        headerLineIdx = i;
+                        headers = cols;
+                        break;
+                    }
+                } else if (cols.length > 3 && cols[0] !== '') {
+                    headerLineIdx = i;
+                    headers = cols;
+                    break;
+                }
+            }
+
+            if (headerLineIdx === -1) return [];
+
+            const data = [];
+            for (let i = headerLineIdx + 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
+                
+                const cols = line.split('\t').map(s => s.replace(/(^"|"$)/g, '').trim());
+                const rowObj = {};
+                let hasData = false;
+                
+                headers.forEach((h, idx) => {
+                    if (h) {
+                        rowObj[h] = cols[idx] || '';
+                        if (rowObj[h] !== '') hasData = true;
+                    }
+                });
+                
+                if (hasData) data.push(rowObj);
+            }
+            return data;
+        };
+
+        const formatToGSTDate = (dateStr) => {
+            if (!dateStr) return '';
+            dateStr = dateStr.trim();
+            
+            // Format: DD-MM-YYYY or DD/MM/YYYY
+            if (/^\d{2}[-\/]\d{2}[-\/]\d{4}$/.test(dateStr)) return dateStr.replace(/\//g, '-');
+            
+            // Format: YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                const [y, m, d] = dateStr.split('-');
+                return `${d}-${m}-${y}`;
+            }
+
+            // Format: DD-Mmm-YY or DD-Mmm-YYYY (e.g., 02-Feb-26, 11-Apr-2026, 1/2/26)
+            const parts = dateStr.split(/[-\/ ]/);
+            if (parts.length === 3) {
+                let [d, m, y] = parts;
+                
+                // Add leading zero to day
+                if (d.length === 1) d = '0' + d;
+                
+                // Convert text month to number
+                const monthMap = {
+                    'jan':'01','feb':'02','mar':'03','apr':'04','may':'05','jun':'06',
+                    'jul':'07','aug':'08','sep':'09','oct':'10','nov':'11','dec':'12'
+                };
+                const lowerM = m.toLowerCase().substring(0, 3);
+                
+                if (isNaN(m) && monthMap[lowerM]) {
+                    m = monthMap[lowerM];
+                } else if (m.length === 1) {
+                    m = '0' + m;
+                }
+                
+                // Convert 2-digit year to 4-digit year (assumes 2000s)
+                if (y.length === 2) {
+                    y = '20' + y;
+                }
+                
+                return `${d}-${m}-${y}`;
+            }
+
+            return dateStr;
+        };
+
+        // Document Nature Mapping to standard doc_num
+        const DOC_NATURE_MAP = {
+            "Invoices for outward supply": 1,
+            "Invoices for inward supply from unregistered person": 2,
+            "Revised Invoice": 3,
+            "Debit Note": 4,
+            "Credit Note": 5,
+            "Receipt voucher": 6,
+            "Payment Voucher": 7,
+            "Refund voucher": 8,
+            "Delivery Challan for job work": 9,
+            "Delivery Challan for supply on approval": 10,
+            "Delivery Challan in case of liquid gas": 11,
+            "Delivery Challan in cases other than by way of supply": 12
+        };
+
+        const MONTHS = [
+            { value: "01", label: "January" }, { value: "02", label: "February" },
+            { value: "03", label: "March" }, { value: "04", label: "April" },
+            { value: "05", label: "May" }, { value: "06", label: "June" },
+            { value: "07", label: "July" }, { value: "08", label: "August" },
+            { value: "09", label: "September" }, { value: "10", label: "October" },
+            { value: "11", label: "November" }, { value: "12", label: "December" }
+        ];
+
+        const SectionHeader = ({ title, description, uploadId, expectedHeaders, onUpload, onPaste, showUpload = true }) => {
+            const [isPasting, setIsPasting] = useState(false);
+            const [pasteText, setPasteText] = useState('');
+
+            const handlePasteSubmit = () => {
+                onPaste(pasteText, uploadId, expectedHeaders);
+                setPasteText('');
+                setIsPasting(false);
+            };
+
+            return (
+                <div className="flex flex-col mb-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
+                        <div className="mb-4 lg:mb-0 pr-4">
+                            <h2 className="text-xl font-bold text-slate-800">{title}</h2>
+                            <p className="text-slate-500 text-sm mt-1">{description}</p>
+                        </div>
+                        {showUpload && (
+                            <div className="flex space-x-3 mt-2 lg:mt-0 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+                                <button
+                                    onClick={() => setIsPasting(!isPasting)}
+                                    className="flex whitespace-nowrap items-center cursor-pointer bg-slate-50 border-2 border-dashed border-slate-300 hover:border-blue-500 hover:bg-blue-50 text-slate-700 font-medium py-2 px-4 rounded-lg transition-colors"
+                                >
+                                    <IconClipboard className="w-5 h-5 mr-2 text-slate-500" />
+                                    Paste Excel Data
+                                </button>
+                                <div>
+                                    <input
+                                        type="file"
+                                        id={uploadId}
+                                        accept=".csv"
+                                        className="hidden"
+                                        onChange={(e) => onUpload(e, uploadId, expectedHeaders)}
+                                    />
+                                    <label 
+                                        htmlFor={uploadId}
+                                        className="flex whitespace-nowrap items-center cursor-pointer bg-slate-50 border-2 border-dashed border-slate-300 hover:border-blue-500 hover:bg-blue-50 text-slate-700 font-medium py-2 px-4 rounded-lg transition-colors"
+                                    >
+                                        <IconUploadCloud className="w-5 h-5 mr-2 text-slate-500" />
+                                        Upload CSV File
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    {isPasting && (
+                        <div className="mt-4 w-full animation-fade-in border-t border-slate-100 pt-4">
+                            <textarea
+                                className="w-full h-40 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm font-mono whitespace-pre overflow-auto bg-slate-50"
+                                placeholder="Click here and press Ctrl+V / Cmd+V to paste your Excel data (including headers)..."
+                                value={pasteText}
+                                onChange={(e) => setPasteText(e.target.value)}
+                            />
+                            <div className="flex justify-end mt-3 space-x-2">
+                                <button 
+                                    onClick={() => setIsPasting(false)}
+                                    className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handlePasteSubmit}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                                >
+                                    Process Pasted Data
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // --- MAIN APP COMPONENT ---
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+            // App State
+            const [profile, setProfile] = useState({
+                gstin: '32BGPPH9604F1ZF',
+                fpMonth: '07',
+                fpYear: '2026',
+                tradeName: 'BizOdit Solutions'
+            });
+
+            const [b2bData, setB2BData] = useState([]);
+            const [b2csData, setB2CSData] = useState([]);
+            const [cdnrData, setCdnrData] = useState([]);
+            const [hsnData, setHsnData] = useState([]);
+            const [docsData, setDocsData] = useState([]);
+
+            // File Upload Handlers
+            const handleFileUpload = (e, type, expectedHeaders) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const text = event.target.result;
+                    const parsed = parseCSV(text, expectedHeaders);
+                    
+                    switch(type) {
+                        case 'b2b': setB2BData(parsed); break;
+                        case 'b2cs': setB2CSData(parsed); break;
+                        case 'cdnr': setCdnrData(parsed); break;
+                        case 'hsn': setHsnData(parsed); break;
+                        case 'docs': setDocsData(parsed); break;
+                        default: break;
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            const handlePasteData = (text, type, expectedHeaders) => {
+                if (!text || !text.trim()) return;
+                const parsed = parsePastedExcel(text, expectedHeaders);
+                
+                switch(type) {
+                    case 'b2b': setB2BData(parsed); break;
+                    case 'b2cs': setB2CSData(parsed); break;
+                    case 'cdnr': setCdnrData(parsed); break;
+                    case 'hsn': setHsnData(parsed); break;
+                    case 'docs': setDocsData(parsed); break;
+                    default: break;
+                }
+            };
+
+            // Generate Final JSON
+            const generateJSON = () => {
+                const supplierState = profile.gstin.substring(0, 2);
+                const fp = `${profile.fpMonth}${profile.fpYear}`;
+                
+                const finalJSON = {
+                    gstin: profile.gstin.toUpperCase(),
+                    fp: fp
+                };
+
+                // 1. Process B2B
+                if (b2bData.length > 0) {
+                    const ctinGroups = {};
+                    b2bData.forEach(row => {
+                        const ctin = String(row['GSTIN/UIN of Recipient'] || '').trim().toUpperCase();
+                        if (!ctin) return;
+                        
+                        if (!ctinGroups[ctin]) ctinGroups[ctin] = {};
+                        
+                        const inum = String(row['Invoice Number'] || '').trim();
+                        if (!ctinGroups[ctin][inum]) {
+                            const pos = String(row['Place Of Supply'] || '').substring(0, 2);
+                            ctinGroups[ctin][inum] = {
+                                inum: inum,
+                                idt: formatToGSTDate(row['Invoice date']),
+                                val: formatNum(row['Invoice Value']),
+                                pos: pos,
+                                rchrg: row['Reverse Charge'] === 'Y' ? 'Y' : 'N',
+                                inv_typ: row['Invoice Type'] === 'Regular B2B' ? 'R' : (row['Invoice Type'] || 'R').charAt(0).toUpperCase(),
+                                itms: []
+                            };
+                        }
+
+                        const txval = formatNum(row['Taxable Value']);
+                        const rt = formatNum(row['Rate']);
+                        const csamt = formatNum(row['Cess Amount']);
+                        
+                        const isIntra = supplierState === ctinGroups[ctin][inum].pos;
+                        const iamt = isIntra ? 0 : formatNum(txval * rt / 100);
+                        const camt = isIntra ? formatNum(txval * (rt / 2) / 100) : 0;
+                        const samt = isIntra ? formatNum(txval * (rt / 2) / 100) : 0;
+
+                        ctinGroups[ctin][inum].itms.push({
+                            num: ctinGroups[ctin][inum].itms.length + 1,
+                            itm_det: { txval, rt, iamt, camt, samt, csamt }
+                        });
+                    });
+
+                    finalJSON.b2b = Object.keys(ctinGroups).map(ctin => ({
+                        ctin: ctin,
+                        inv: Object.values(ctinGroups[ctin])
+                    }));
+                }
+
+                // 2. Process B2CS
+                if (b2csData.length > 0) {
+                    finalJSON.b2cs = b2csData.map(row => {
+                        const txval = formatNum(row['Taxable Value']);
+                        const rt = formatNum(row['Rate']);
+                        const pos = String(row['Place Of Supply'] || '').substring(0, 2);
+                        const sply_ty = supplierState === pos ? "INTRA" : "INTER";
+                        
+                        const iamt = sply_ty === "INTER" ? formatNum(txval * rt / 100) : 0;
+                        const camt = sply_ty === "INTRA" ? formatNum(txval * (rt / 2) / 100) : 0;
+                        const samt = sply_ty === "INTRA" ? formatNum(txval * (rt / 2) / 100) : 0;
+
+                        return {
+                            typ: row['Type'] || 'OE',
+                            sply_ty,
+                            rt,
+                            pos,
+                            txval,
+                            iamt,
+                            camt,
+                            samt,
+                            csamt: formatNum(row['Cess Amount'])
+                        };
+                    });
+                }
+
+                // 3. Process HSN
+                if (hsnData.length > 0) {
+                    finalJSON.hsn = {
+                        hsn_b2b: hsnData.map((row, idx) => ({
+                            num: idx + 1,
+                            hsn_sc: String(row['HSN'] || '').trim(),
+                            desc: String(row['Description'] || '').trim(),
+                            uqc: String(row['UQC'] || '').split('-')[0] || 'OTH',
+                            qty: formatNum(row['Total Quantity']),
+                            val: formatNum(row['Total Value']),
+                            txval: formatNum(row['Taxable Value']),
+                            iamt: formatNum(row['Integrated Tax Amount']),
+                            camt: formatNum(row['Central Tax Amount']),
+                            samt: formatNum(row['State/UT Tax Amount']),
+                            csamt: formatNum(row['Cess Amount'])
+                        }))
+                    };
+                }
+
+                // 4. Process CDNR
+                if (cdnrData.length > 0) {
+                    const cdnrGroups = {};
+                    cdnrData.forEach(row => {
+                        const ctin = String(row['GSTIN/UIN of Recipient'] || '').trim().toUpperCase();
+                        if (!ctin) return;
+                        if (!cdnrGroups[ctin]) cdnrGroups[ctin] = {};
+                        
+                        const nt_num = String(row['Note Number'] || '').trim();
+                        if (!cdnrGroups[ctin][nt_num]) {
+                            cdnrGroups[ctin][nt_num] = {
+                                nt_num: nt_num,
+                                nt_dt: formatToGSTDate(row['Note Date']),
+                                nt_ty: (row['Note Type'] || 'C').charAt(0).toUpperCase(),
+                                val: formatNum(row['Note Value']),
+                                p_gst: "N",
+                                itms: []
+                            };
+                        }
+
+                        const txval = formatNum(row['Taxable Value']);
+                        const rt = formatNum(row['Rate']);
+                        const csamt = formatNum(row['Cess Amount']);
+                        const pos = String(row['Place Of Supply'] || '').substring(0, 2) || supplierState;
+                        
+                        const isIntra = supplierState === pos;
+                        const iamt = isIntra ? 0 : formatNum(txval * rt / 100);
+                        const camt = isIntra ? formatNum(txval * (rt / 2) / 100) : 0;
+                        const samt = isIntra ? formatNum(txval * (rt / 2) / 100) : 0;
+
+                        cdnrGroups[ctin][nt_num].itms.push({
+                            num: cdnrGroups[ctin][nt_num].itms.length + 1,
+                            itm_det: { txval, rt, iamt, camt, samt, csamt }
+                        });
+                    });
+
+                    finalJSON.cdnr = Object.keys(cdnrGroups).map(ctin => ({
+                        ctin: ctin,
+                        nt: Object.values(cdnrGroups[ctin])
+                    }));
+                }
+
+                // 5. Process Docs
+                if (docsData.length > 0) {
+                    const docDetMap = {};
+                    docsData.forEach(row => {
+                        const nature = row['Nature of Document'];
+                        const docNum = DOC_NATURE_MAP[nature];
+                        if (!docNum) return;
+                        
+                        if (!docDetMap[docNum]) {
+                            docDetMap[docNum] = { doc_num: docNum, docs: [] };
+                        }
+                        
+                        const totnum = parseInt(row['Total Number'] || 0, 10);
+                        const cancel = parseInt(row['Cancelled'] || 0, 10);
+                        
+                        docDetMap[docNum].docs.push({
+                            num: docDetMap[docNum].docs.length + 1,
+                            from: String(row['Sr. No. From'] || ''),
+                            to: String(row['Sr. No. To'] || ''),
+                            totnum: totnum,
+                            cancel: cancel,
+                            net_issue: totnum - cancel
+                        });
+                    });
+
+                    finalJSON.doc_issue = {
+                        doc_det: Object.values(docDetMap)
+                    };
+                }
+
+                // Trigger Download
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(finalJSON, null, 2));
+                const dlAnchorElem = document.createElement('a');
+                dlAnchorElem.setAttribute("href", dataStr);
+                dlAnchorElem.setAttribute("download", `GSTR1_${profile.gstin}_${fp}.json`);
+                dlAnchorElem.click();
+            };
+
+
+            // --- UI COMPONENTS ---
+            const NavItem = ({ id, icon: Icon, label }) => (
+                <button
+                    onClick={() => { setActiveTab(id); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center px-4 py-3 mb-2 rounded-lg transition-colors duration-200 ${
+                        activeTab === id 
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                >
+                    <Icon className="w-5 h-5 mr-3" />
+                    <span className="font-medium text-sm">{label}</span>
+                </button>
+            );
+
+            const EmptyState = () => (
+                <div className="flex flex-col items-center justify-center p-12 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    <IconFileSpreadsheet className="w-12 h-12 text-slate-300 mb-3" />
+                    <h3 className="text-slate-600 font-medium">No Data Available</h3>
+                    <p className="text-slate-400 text-sm mt-1">Upload a valid CSV file to preview the data here.</p>
+                </div>
+            );
+
+            const TableView = ({ data, columns }) => {
+                if (!data || data.length === 0) return <EmptyState />;
+                
+                return (
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead className="text-xs text-slate-600 uppercase bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        {columns.map((col, idx) => (
+                                            <th key={idx} className="px-6 py-4 font-semibold whitespace-nowrap">{col.label}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.slice(0, 50).map((row, idx) => (
+                                        <tr key={idx} className="bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                            {columns.map((col, colIdx) => (
+                                                <td key={colIdx} className="px-6 py-3 text-slate-700 whitespace-nowrap">
+                                                    {row[col.key] || '-'}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {data.length > 50 && (
+                            <div className="p-4 text-center text-sm text-slate-500 bg-slate-50 border-t border-slate-200">
+                                Showing first 50 of {data.length} records.
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            return (
+                <div className="flex h-screen bg-slate-50 font-sans">
+                    {/* Mobile Sidebar Overlay */}
+                    {isMobileMenuOpen && (
+                        <div 
+                            className="fixed inset-0 bg-slate-900/50 z-40 md:hidden" 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        />
+                    )}
+
+                    {/* Sidebar */}
+                    <aside className={`fixed md:static inset-y-0 left-0 w-64 bg-slate-900 text-white z-50 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl md:shadow-none`}>
+                        <div className="flex items-center justify-between p-6 bg-slate-950/50">
+                            <div className="flex items-center">
+                                <div className="bg-blue-600 p-2 rounded-lg mr-3 shadow-lg shadow-blue-500/30">
+                                    <IconBuilding2 className="w-6 h-6 text-white" />
+                                </div>
+                                <h1 className="text-xl font-bold tracking-wide">BizOdit</h1>
+                            </div>
+                            <button className="md:hidden text-slate-400 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>
+                                <IconX className="w-6 h-6" />
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 px-4 pt-6 overflow-y-auto">
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 px-2">Main Menu</p>
+                            <NavItem id="dashboard" icon={IconLayoutDashboard} label="Dashboard & Profile" />
+                            <NavItem id="b2b" icon={IconUsers} label="B2B Invoices" />
+                            <NavItem id="b2cs" icon={IconUsers} label="B2C (Small)" />
+                            <NavItem id="cdnr" icon={IconFileText} label="Credit/Debit Notes" />
+                            <NavItem id="hsn" icon={IconFileJson} label="HSN Summary" />
+                            <NavItem id="docs" icon={IconFileSpreadsheet} label="Documents Issued" />
+                        </div>
+                        
+                        <div className="p-4 bg-slate-800/50 mt-auto border-t border-slate-700/50">
+                            <button 
+                                onClick={generateJSON}
+                                className="w-full flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-semibold transition-colors shadow-lg shadow-blue-600/20"
+                            >
+                                <IconDownload className="w-5 h-5 mr-2" />
+                                Export JSON
+                            </button>
+                        </div>
+                    </aside>
+
+                    {/* Main Content Area */}
+                    <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
+                        {/* Top Header */}
+                        <header className="bg-white h-16 shadow-sm border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
+                            <div className="flex items-center">
+                                <button 
+                                    className="md:hidden text-slate-600 mr-4 p-1 rounded-md hover:bg-slate-100"
+                                    onClick={() => setIsMobileMenuOpen(true)}
+                                >
+                                    <IconMenu className="w-6 h-6" />
+                                </button>
+                                <h2 className="text-lg font-semibold text-slate-800 capitalize">
+                                    {activeTab === 'dashboard' ? 'Profile Overview' : `${activeTab.toUpperCase()} Data Management`}
+                                </h2>
+                            </div>
+                            <div className="flex items-center space-x-3 text-sm font-medium text-slate-600">
+                                <div className="hidden sm:flex items-center bg-slate-100 px-3 py-1.5 rounded-full">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                    {profile.fpMonth}-{profile.fpYear}
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold border border-blue-200">
+                                    {profile.tradeName.charAt(0).toUpperCase()}
+                                </div>
+                            </div>
+                        </header>
+
+                        {/* Dynamic Content */}
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50">
+                            
+                            {/* TAB: DASHBOARD */}
+                            {activeTab === 'dashboard' && (
+                                <div className="max-w-5xl mx-auto space-y-6">
+                                    <div className="bg-gradient-to-br from-blue-700 to-blue-900 rounded-2xl p-8 text-white shadow-xl shadow-blue-900/10">
+                                        <h2 className="text-3xl font-bold mb-2">Welcome to BizOdit GSTR-1 Tool</h2>
+                                        <p className="text-blue-100 max-w-2xl text-sm leading-relaxed">
+                                            Streamline your GST Return 1 filing process. Setup your profile below and use the sidebar to upload corresponding CSV exports. The tool automatically handles tax processing and strict JSON structuring.
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                                        <div className="flex items-center mb-6 border-b border-slate-100 pb-4">
+                                            <IconSettings className="w-5 h-5 text-blue-600 mr-2" />
+                                            <h3 className="text-lg font-bold text-slate-800">Return Profile Settings</h3>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-sm font-semibold text-slate-700 mb-2">GSTIN</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={profile.gstin}
+                                                    onChange={(e) => setProfile({...profile, gstin: e.target.value.toUpperCase()})}
+                                                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-medium"
+                                                    placeholder="e.g. 32BGPPH9604F1ZF"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-semibold text-slate-700 mb-2">Trade Name</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={profile.tradeName}
+                                                    onChange={(e) => setProfile({...profile, tradeName: e.target.value})}
+                                                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-medium"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-semibold text-slate-700 mb-2">Filing Month</label>
+                                                <select
+                                                    value={profile.fpMonth}
+                                                    onChange={(e) => setProfile({...profile, fpMonth: e.target.value})}
+                                                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-medium"
+                                                >
+                                                    {MONTHS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-semibold text-slate-700 mb-2">Filing Year</label>
+                                                <input 
+                                                    type="number" 
+                                                    value={profile.fpYear}
+                                                    onChange={(e) => setProfile({...profile, fpYear: e.target.value})}
+                                                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-medium"
+                                                    placeholder="e.g. 2026"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {[
+                                            { label: 'B2B Records', count: b2bData.length, icon: IconUsers, color: 'blue' },
+                                            { label: 'B2CS Records', count: b2csData.length, icon: IconUsers, color: 'indigo' },
+                                            { label: 'HSN Items', count: hsnData.length, icon: IconFileJson, color: 'emerald' },
+                                            { label: 'Doc Categories', count: docsData.length, icon: IconFileText, color: 'orange' },
+                                        ].map((stat, i) => (
+                                            <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+                                                <div className={`p-3 rounded-full bg-${stat.color}-50 mb-3`}>
+                                                    <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
+                                                </div>
+                                                <span className="text-3xl font-bold text-slate-800">{stat.count}</span>
+                                                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">{stat.label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB: B2B */}
+                            {activeTab === 'b2b' && (
+                                <div className="max-w-6xl mx-auto animation-fade-in">
+                                    <SectionHeader 
+                                        title="B2B Invoices (b2b,sez,de.csv)" 
+                                        description="Upload standard GST offline tool CSV for B2B, SEZ, and DE transactions. Automatically calculates CGST/SGST/IGST."
+                                        uploadId="b2b"
+                                        expectedHeaders={['GSTIN/UIN of Recipient', 'Invoice Number', 'Invoice date', 'Invoice Value', 'Rate', 'Taxable Value']}
+                                        onUpload={handleFileUpload}
+                                        onPaste={handlePasteData}
+                                    />
+                                    <TableView 
+                                        data={b2bData} 
+                                        columns={[
+                                            { label: 'GSTIN', key: 'GSTIN/UIN of Recipient' },
+                                            { label: 'Receiver', key: 'Receiver Name' },
+                                            { label: 'Invoice No.', key: 'Invoice Number' },
+                                            { label: 'Date', key: 'Invoice date' },
+                                            { label: 'POS', key: 'Place Of Supply' },
+                                            { label: 'Taxable Val', key: 'Taxable Value' },
+                                            { label: 'Rate(%)', key: 'Rate' },
+                                        ]} 
+                                    />
+                                </div>
+                            )}
+
+                            {/* TAB: B2CS */}
+                            {activeTab === 'b2cs' && (
+                                <div className="max-w-6xl mx-auto animation-fade-in">
+                                    <SectionHeader 
+                                        title="B2C Small (b2cs.csv)" 
+                                        description="Upload unregistered intra/inter state sales summary."
+                                        uploadId="b2cs"
+                                        expectedHeaders={['Type', 'Place Of Supply', 'Rate', 'Taxable Value']}
+                                        onUpload={handleFileUpload}
+                                        onPaste={handlePasteData}
+                                    />
+                                    <TableView 
+                                        data={b2csData} 
+                                        columns={[
+                                            { label: 'Type', key: 'Type' },
+                                            { label: 'Place Of Supply', key: 'Place Of Supply' },
+                                            { label: 'Rate(%)', key: 'Rate' },
+                                            { label: 'Taxable Value', key: 'Taxable Value' },
+                                            { label: 'Cess', key: 'Cess Amount' },
+                                        ]} 
+                                    />
+                                </div>
+                            )}
+
+                            {/* TAB: CDNR */}
+                            {activeTab === 'cdnr' && (
+                                <div className="max-w-6xl mx-auto animation-fade-in">
+                                    <SectionHeader 
+                                        title="Credit/Debit Notes Reg. (cdnr.csv)" 
+                                        description="Upload registered credit and debit notes."
+                                        uploadId="cdnr"
+                                        expectedHeaders={['GSTIN/UIN of Recipient', 'Note Number', 'Note Date', 'Note Type', 'Taxable Value']}
+                                        onUpload={handleFileUpload}
+                                        onPaste={handlePasteData}
+                                    />
+                                    <TableView 
+                                        data={cdnrData} 
+                                        columns={[
+                                            { label: 'GSTIN', key: 'GSTIN/UIN of Recipient' },
+                                            { label: 'Note Number', key: 'Note Number' },
+                                            { label: 'Date', key: 'Note Date' },
+                                            { label: 'Type', key: 'Note Type' },
+                                            { label: 'Note Value', key: 'Note Value' },
+                                            { label: 'Taxable Val', key: 'Taxable Value' },
+                                            { label: 'Rate(%)', key: 'Rate' },
+                                        ]} 
+                                    />
+                                </div>
+                            )}
+
+                            {/* TAB: HSN */}
+                            {activeTab === 'hsn' && (
+                                <div className="max-w-6xl mx-auto animation-fade-in">
+                                    <SectionHeader 
+                                        title="HSN Summary (hsn.csv)" 
+                                        description="Upload HSN-wise summary of outward supplies."
+                                        uploadId="hsn"
+                                        expectedHeaders={['HSN', 'Description', 'UQC', 'Total Quantity', 'Total Value']}
+                                        onUpload={handleFileUpload}
+                                        onPaste={handlePasteData}
+                                    />
+                                    <TableView 
+                                        data={hsnData} 
+                                        columns={[
+                                            { label: 'HSN Code', key: 'HSN' },
+                                            { label: 'Description', key: 'Description' },
+                                            { label: 'UQC', key: 'UQC' },
+                                            { label: 'Quantity', key: 'Total Quantity' },
+                                            { label: 'Taxable Val', key: 'Taxable Value' },
+                                            { label: 'Rate(%)', key: 'Rate' },
+                                        ]} 
+                                    />
+                                </div>
+                            )}
+
+                            {/* TAB: DOCS */}
+                            {activeTab === 'docs' && (
+                                <div className="max-w-6xl mx-auto animation-fade-in">
+                                    <SectionHeader 
+                                        title="Documents Issued (docs.csv)" 
+                                        description="Upload details of documents issued during the tax period."
+                                        uploadId="docs"
+                                        expectedHeaders={['Nature of Document', 'Sr. No. From', 'Sr. No. To', 'Total Number', 'Cancelled']}
+                                        onUpload={handleFileUpload}
+                                        onPaste={handlePasteData}
+                                    />
+                                    <TableView 
+                                        data={docsData} 
+                                        columns={[
+                                            { label: 'Nature of Document', key: 'Nature of Document' },
+                                            { label: 'Sr. No. From', key: 'Sr. No. From' },
+                                            { label: 'Sr. No. To', key: 'Sr. No. To' },
+                                            { label: 'Total Number', key: 'Total Number' },
+                                            { label: 'Cancelled', key: 'Cancelled' },
+                                        ]} 
+                                    />
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

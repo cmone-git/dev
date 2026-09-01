@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../css/cm.css">
+  <link rel="stylesheet" href="../../../css/forms.css">
+  <link rel="stylesheet" href="../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Contra Voucher — CM | BIZODIT</title>
+
+  <style>
+    .id-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .id-box input {
+      flex: 1;
+    }
+
+    .id-status {
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Toolbar matching clients, compliance & credentials */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .add-form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .date-range {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .date-range .field {
+      flex: 1 1 140px;
+      min-width: 130px;
+      margin-bottom: 0;
+    }
+
+    .date-range .field label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .list-panel {
+      display: block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display: none;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Item */
+    .data-row {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .data-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .data-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .data-row-sub {
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .data-row-meta {
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .data-row-date {
+      font-size: 11px;
+      color: #727983;
+    }
+
+    .contra-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0b3b66;
+    }
+
+    .contra-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #dbeafe;
+    }
+
+    /* Card Action Toolbar */
+    .contra-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .contra-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .contra-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .contra-action-btn.open-btn {
+      color: #334155;
+    }
+
+    /* View / Edit Mode Form Actions */
+    .form-view-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      width: auto;
+      height: auto;
+      border: 0;
+      background: transparent;
+      margin: -4px 0 10px;
+    }
+
+    .form-view-action.delete {
+      color: #b42318;
+    }
+
+    .form-view-action.hidden {
+      display: none;
+    }
+
+    .view-mode input:not([readonly]),
+    .view-mode select,
+    .view-mode textarea {
+      background: #f7f8f9;
+      color: #33404c;
+      pointer-events: none;
+    }
+
+    .view-mode .form-actions {
+      display: none;
+    }
+
+    .form-mode-label {
+      display: none;
+      margin: -7px 0 14px;
+      font-size: 11px;
+      color: #7b8791;
+    }
+
+    .view-mode .form-mode-label {
+      display: block;
+    }
+
+    .empty-list {
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show {
+      display: block;
+    }
+
+    .filter-panel .field {
+      margin-bottom: 8px;
+    }
+
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .form-message.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">CM</div>
+        <div class="cm-brand-title">CM | BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" id="pageBackBtn" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Contra Voucher</h1>
+            <p>Bank deposit, withdrawal & internal funds transfer</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="contraListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="contraSearch" class="list-search" type="search" placeholder="Search contra vouchers..." autocomplete="off">
+          <button id="contraSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="contraFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="contraRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportContraBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importContraBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+          <button id="addContraBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+
+        <div id="contraSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="date">Date (Newest)</button>
+            <button class="sort-option" data-sort="date-asc">Date (Oldest)</button>
+            <button class="sort-option" data-sort="id">Voucher No.</button>
+            <button class="sort-option" data-sort="amount">Amount High–Low</button>
+          </div>
+        </div>
+
+        <div id="contraFilterPanel" class="filter-panel">
+          <div class="field">
+            <label>Transfer Type</label>
+            <select id="contraTypeFilter">
+              <option value="">All Types</option>
+              <option value="Cash Deposit">Cash Deposit (Cash to Bank)</option>
+              <option value="Cash Withdrawal">Cash Withdrawal (Bank to Cash)</option>
+              <option value="Bank Transfer">Bank to Bank Transfer</option>
+              <option value="Petty Cash Transfer">Petty Cash Transfer</option>
+            </select>
+          </div>
+          <div class="date-range">
+            <div class="field">
+              <label>From Date</label>
+              <input id="contraFromDate" type="date">
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input id="contraToDate" type="date">
+            </div>
+          </div>
+        </div>
+
+        <div id="contraList" class="data-list"><div class="empty-list">Loading contra vouchers...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="contraForm">
+        <div class="form-view-actions">
+          <button id="editContraBtn" class="form-view-action" type="button" title="Edit contra voucher"><i data-lucide="pencil"></i></button>
+          <button id="deleteContraBtn" class="form-view-action delete" type="button" title="Delete contra voucher"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <h2 id="contraFormTitle">Contra Entry</h2>
+        <div id="formModeLabel" class="form-mode-label">View mode — tap Edit to modify this voucher.</div>
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Voucher No.</label>
+            <div class="id-box">
+              <input id="voucherNo" type="text" readonly placeholder="Generating on save (CV26080001)...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Voucher Date <span class="required">*</span></label>
+            <input id="voucherDate" type="date" required>
+          </div>
+
+          <div class="field">
+            <label>Transfer Type <span class="required">*</span></label>
+            <select id="transferType" required>
+              <option value="Cash Deposit">Cash Deposit (Cash to Bank)</option>
+              <option value="Cash Withdrawal">Cash Withdrawal (Bank to Cash)</option>
+              <option value="Bank Transfer">Bank to Bank Transfer</option>
+              <option value="Petty Cash Transfer">Petty Cash Transfer</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Amount (₹) <span class="required">*</span></label>
+            <input id="amount" type="number" min="0.01" step="0.01" required placeholder="0.00">
+          </div>
+
+          <div class="field">
+            <label>From Account (Source / Cr) <span class="required">*</span></label>
+            <input id="fromAccount" type="text" required placeholder="e.g. Cash in Hand / HDFC Bank" list="accountSuggestions">
+          </div>
+
+          <div class="field">
+            <label>To Account (Destination / Dr) <span class="required">*</span></label>
+            <input id="toAccount" type="text" required placeholder="e.g. SBI Bank / Petty Cash" list="accountSuggestions">
+          </div>
+
+          <datalist id="accountSuggestions">
+            <option value="Cash in Hand">
+            <option value="Petty Cash">
+            <option value="HDFC Bank">
+            <option value="State Bank of India">
+            <option value="ICICI Bank">
+            <option value="Axis Bank">
+          </datalist>
+
+          <div class="field">
+            <label>Cheque / Reference / UTR No.</label>
+            <input id="referenceNo" type="text" placeholder="Cheque / Transfer Ref / UTR No.">
+          </div>
+
+          <div class="field">
+            <label>Created By</label>
+            <input id="createdBy" type="text" value="Admin" placeholder="Created by">
+          </div>
+
+          <div class="field full">
+            <label>Narration / Remarks</label>
+            <textarea id="narration" rows="3" placeholder="Being cash deposited into bank / internal funds transfer..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Contra Voucher</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item active" href="../../accounts/accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { formatIndianDate, todayISO } from "../../../js/date.js";
+  import { db } from "../../../js/firebase-config.js";
+  import {
+    doc,
+    runTransaction,
+    updateDoc,
+    deleteDoc,
+    collection,
+    getDocs,
+    getDoc,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("contraForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const idInput = document.getElementById("voucherNo");
+  const idStatus = document.getElementById("idStatus");
+  const voucherDateInput = document.getElementById("voucherDate");
+  const editContraBtn = document.getElementById("editContraBtn");
+  const deleteContraBtn = document.getElementById("deleteContraBtn");
+  const cancelFormBtn = document.getElementById("cancelFormBtn");
+
+  const CACHE = "bizodit_contra_cache_v1";
+  let contraRows = [];
+  let currentId = null;
+  let mode = "new"; // "new", "view", "edit"
+  let contraSort = "date";
+
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
+  voucherDateInput.value = todayISO();
+
+  const clean = value => String(value || "").trim();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  /* Monthly Auto Counter Format: CVYYMM0001 (e.g., CV26080001) */
+  function getPeriodFromDate(dateString) {
+    const date = new Date(`${dateString}T00:00:00`);
+    if (Number.isNaN(date.getTime())) throw new Error("Invalid voucher date.");
+    const year = String(date.getFullYear()).slice(-2);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return { year, month, period: `${year}${month}` };
+  }
+
+  async function getNextContraId(transaction, dateString) {
+    const { year, month, period } = getPeriodFromDate(dateString);
+    const counterRef = doc(db, "counters", `contra_${period}`);
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) nextNumber = lastNumber + 1;
+    }
+
+    while (true) {
+      const candidateId = `CV${year}${month}${String(nextNumber).padStart(4, "0")}`;
+      const candidateRef = doc(db, "contra_vouchers", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
+
+      if (!candidateSnap.exists()) {
+        return { id: candidateId, counterRef, nextNumber, period };
+      }
+      nextNumber++;
+    }
+  }
+
+  function formData() {
+    return {
+      voucherNo: clean(idInput.value),
+      voucherDate: clean(voucherDateInput.value),
+      transferType: clean(document.getElementById("transferType").value),
+      amount: Number(document.getElementById("amount").value) || 0,
+      fromAccount: clean(document.getElementById("fromAccount").value),
+      toAccount: clean(document.getElementById("toAccount").value),
+      referenceNo: clean(document.getElementById("referenceNo").value),
+      createdBy: clean(document.getElementById("createdBy").value) || "Admin",
+      narration: clean(document.getElementById("narration").value)
+    };
+  }
+
+  function fillForm(c) {
+    currentId = c.voucherNo || c.id;
+    idInput.value = currentId || "";
+    voucherDateInput.value = c.voucherDate || todayISO();
+    document.getElementById("transferType").value = c.transferType || "Cash Deposit";
+    document.getElementById("amount").value = c.amount ?? "";
+    document.getElementById("fromAccount").value = c.fromAccount || "";
+    document.getElementById("toAccount").value = c.toAccount || "";
+    document.getElementById("referenceNo").value = c.referenceNo || "";
+    document.getElementById("createdBy").value = c.createdBy || "Admin";
+    document.getElementById("narration").value = c.narration || "";
+  }
+
+  function setInputs(disabled) {
+    form.querySelectorAll("input,select,textarea").forEach(x => x.disabled = disabled);
+    idInput.readOnly = true;
+    saveBtn.disabled = disabled;
+  }
+
+  function viewMode() {
+    mode = "view";
+    form.classList.add("view-mode");
+    document.getElementById("contraFormTitle").textContent = "Contra Details";
+    editContraBtn.classList.remove("hidden");
+    deleteContraBtn.classList.remove("hidden");
+    setInputs(true);
+    cancelFormBtn.textContent = "Back";
+    clearMessage();
+  }
+
+  function editMode() {
+    mode = "edit";
+    form.classList.remove("view-mode");
+    document.getElementById("contraFormTitle").textContent = "Edit Contra Voucher";
+    editContraBtn.classList.add("hidden");
+    deleteContraBtn.classList.remove("hidden");
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  function newMode() {
+    mode = "new";
+    currentId = null;
+    form.classList.remove("view-mode");
+    document.getElementById("contraFormTitle").textContent = "Contra Entry";
+    editContraBtn.classList.add("hidden");
+    deleteContraBtn.classList.add("hidden");
+    form.reset();
+    document.getElementById("transferType").value = "Cash Deposit";
+    document.getElementById("createdBy").value = "Admin";
+    voucherDateInput.value = todayISO();
+    idInput.value = "";
+    idStatus.textContent = "";
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  const contraListPanel = document.getElementById("contraListPanel");
+  const addContraBtn = document.getElementById("addContraBtn");
+  const contraSearch = document.getElementById("contraSearch");
+  const contraSortBtn = document.getElementById("contraSortBtn");
+  const contraFilterBtn = document.getElementById("contraFilterBtn");
+  const contraSortMenu = document.getElementById("contraSortMenu");
+  const contraFilterPanel = document.getElementById("contraFilterPanel");
+  const contraTypeFilter = document.getElementById("contraTypeFilter");
+  const contraFromDate = document.getElementById("contraFromDate");
+  const contraToDate = document.getElementById("contraToDate");
+  const contraRefreshBtn = document.getElementById("contraRefreshBtn");
+  const contraList = document.getElementById("contraList");
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadContraList() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        contraRows = cached;
+        renderContraList();
+      }
+    } catch (error) {
+      console.warn("Contra cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "contra_vouchers"), limit(500)));
+      contraRows = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE, JSON.stringify(contraRows));
+      renderContraList();
+    } catch (error) {
+      console.error("Contra list load failed:", error);
+      if (!contraRows.length) {
+        contraList.innerHTML = '<div class="empty-list">Unable to load contra vouchers. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function formatRupees(num) {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+  }
+
+  function renderContraList() {
+    const term = clean(contraSearch.value).toLowerCase();
+    const type = clean(contraTypeFilter.value);
+
+    let rows = contraRows.filter(row => {
+      const vNo = row.voucherNo || row.id || "";
+      const text = `${vNo} ${row.transferType || ""} ${row.fromAccount || ""} ${row.toAccount || ""} ${row.referenceNo || ""}`.toLowerCase();
+      const vDate = String(row.voucherDate || "").slice(0, 10);
+      const matchesFrom = !contraFromDate.value || (vDate && vDate >= contraFromDate.value);
+      const matchesTo = !contraToDate.value || (vDate && vDate <= contraToDate.value);
+
+      return (!term || text.includes(term)) && (!type || row.transferType === type) && matchesFrom && matchesTo;
+    });
+
+    rows.sort((a, b) => {
+      if (contraSort === "date") return String(b.voucherDate || "").localeCompare(String(a.voucherDate || ""));
+      if (contraSort === "date-asc") return String(a.voucherDate || "").localeCompare(String(b.voucherDate || ""));
+      if (contraSort === "id") return String(b.voucherNo || b.id || "").localeCompare(String(a.voucherNo || a.id || ""), undefined, { numeric: true });
+      if (contraSort === "amount") return (Number(b.amount) || 0) - (Number(a.amount) || 0);
+      return 0;
+    });
+
+    if (!rows.length) {
+      contraList.innerHTML = '<div class="empty-list">No contra vouchers found.</div>';
+      return;
+    }
+
+    contraList.innerHTML = rows.map(row => {
+      const id = String(row.voucherNo || row.id);
+      const fromAcc = row.fromAccount || "Source";
+      const toAcc = row.toAccount || "Destination";
+      const transferType = row.transferType || "Contra Transfer";
+      const amt = formatRupees(row.amount);
+
+      return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${escapeHtml(id)}">
+            <div class="data-row-title">${escapeHtml(fromAcc)} ➔ ${escapeHtml(toAcc)}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · ${escapeHtml(transferType)} ${row.referenceNo ? `· Ref: ${escapeHtml(row.referenceNo)}` : ''}</div>
+          </div>
+          <div class="data-row-meta">
+            <span class="data-row-date">${escapeHtml(row.voucherDate || "")}</span>
+            <span class="contra-amount">${escapeHtml(amt)}</span>
+          </div>
+        </div>
+        <div class="contra-row-actions">
+          <button class="contra-action-btn open-btn" data-open="${escapeHtml(id)}" type="button" title="View Voucher"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    contraList.querySelectorAll("[data-open]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        openView(b.dataset.open);
+      });
+    });
+  }
+
+  function findContra(id) {
+    return contraRows.find(c => String(c.voucherNo || c.id) === String(id));
+  }
+
+  async function openView(id) {
+    const cached = findContra(id);
+    if (cached) {
+      fillForm(cached);
+      contraListPanel.classList.add("hidden");
+      form.classList.remove("hidden");
+      viewMode();
+      window.scrollTo(0, 0);
+    }
+    try {
+      const s = await getDoc(doc(db, "contra_vouchers", id));
+      if (!s.exists()) throw new Error("Contra voucher record no longer exists.");
+      fillForm({ id: s.id, ...s.data() });
+      viewMode();
+    } catch (e) {
+      if (!cached) showMessage(e.message || "Unable to open contra voucher.");
+    }
+  }
+
+  function openList() {
+    form.classList.add("hidden");
+    contraListPanel.classList.remove("hidden");
+    newMode();
+    renderContraList();
+    window.scrollTo(0, 0);
+  }
+
+  function openNew() {
+    newMode();
+    contraListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Voucher Date,Transfer Type,Amount,From Account,To Account,Reference No,Created By,Narration\n" +
+                     "2026-08-23,Cash Deposit,15000,Cash in Hand,HDFC Bank,CHQ-10492,Admin,Cash deposited into bank";
+    downloadBlob(template, "contra_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportContraBtn").addEventListener("click", () => {
+    if (!contraRows.length) { alert("No contra vouchers to export."); return; }
+    const headers = ["Voucher No","Voucher Date","Transfer Type","Amount","From Account","To Account","Reference No","Created By","Narration","Created At"];
+    const rows = contraRows.map(c => [
+      `"${c.voucherNo||c.id||""}"`, `"${c.voucherDate||""}"`, `"${c.transferType||""}"`,
+      `"${c.amount||0}"`, `"${(c.fromAccount||"").replace(/"/g,'""')}"`, `"${(c.toAccount||"").replace(/"/g,'""')}"`,
+      `"${c.referenceNo||""}"`, `"${c.createdBy||"Admin"}"`, `"${(c.narration||"").replace(/"/g,'""')}"`, `"${c.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `contra_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importContraBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} contra voucher(s)?`)) { e.target.value = ""; return; }
+
+    contraRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const vDate = clean(r[0]) || todayISO();
+        const tType = clean(r[1]) || "Cash Deposit";
+        const amt = Number(r[2]) || 0;
+        const fromAcc = clean(r[3]);
+        const toAcc = clean(r[4]);
+        if (!amt || !fromAcc || !toAcc) continue;
+
+        await runTransaction(db, async tx => {
+          const result = await getNextContraId(tx, vDate);
+          const contraRef = doc(db, "contra_vouchers", result.id);
+          const record = {
+            voucherNo: result.id,
+            voucherDate: vDate,
+            transferType: tType,
+            amount: amt,
+            fromAccount: fromAcc,
+            toAccount: toAcc,
+            referenceNo: clean(r[5]),
+            createdBy: clean(r[6]) || "Admin",
+            narration: clean(r[7]) || "",
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+          tx.set(contraRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem(CACHE);
+      await loadContraList();
+      alert(`Successfully imported ${imported} contra voucher(s).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during contra import: " + err.message);
+    } finally {
+      contraRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addContraBtn.addEventListener("click", openNew);
+  cancelFormBtn.addEventListener("click", openList);
+  editContraBtn.addEventListener("click", editMode);
+
+  deleteContraBtn.addEventListener("click", async () => {
+    if (!currentId) return;
+    if (!confirm(`Delete contra voucher (${currentId})?\n\nThis action cannot be undone.`)) return;
+    deleteContraBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "contra_vouchers", currentId));
+      contraRows = contraRows.filter(x => String(x.voucherNo || x.id) !== String(currentId));
+      localStorage.setItem(CACHE, JSON.stringify(contraRows));
+      showMessage("Contra voucher deleted successfully.", "success");
+      setTimeout(openList, 450);
+    } catch (e) {
+      showMessage(e.message || "Unable to delete contra voucher.");
+    } finally {
+      deleteContraBtn.disabled = false;
+    }
+  });
+
+  contraSearch.addEventListener("input", renderContraList);
+  contraTypeFilter.addEventListener("change", renderContraList);
+  contraFromDate.addEventListener("change", renderContraList);
+  contraToDate.addEventListener("change", renderContraList);
+
+  contraRefreshBtn.addEventListener("click", async () => {
+    contraRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE);
+      await loadContraList();
+    } finally {
+      contraRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  contraSortBtn.addEventListener("click", () => contraSortMenu.classList.toggle("show"));
+  contraFilterBtn.addEventListener("click", () => contraFilterPanel.classList.toggle("show"));
+
+  contraSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      contraSort = option.dataset.sort;
+      contraSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      contraSortMenu.classList.remove("show");
+      renderContraList();
+    });
+  });
+
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openList();
+    } else {
+      history.back();
+    }
+  });
+
+  /* Create new contra voucher via atomic transaction */
+  async function createContra() {
+    const d = formData();
+    if (!d.voucherDate) { showMessage("Voucher Date is required."); voucherDateInput.focus(); return; }
+    if (!d.amount || d.amount <= 0) { showMessage("Enter a valid amount greater than 0."); document.getElementById("amount").focus(); return; }
+    if (!d.fromAccount) { showMessage("From Account is required."); document.getElementById("fromAccount").focus(); return; }
+    if (!d.toAccount) { showMessage("To Account is required."); document.getElementById("toAccount").focus(); return; }
+    if (d.fromAccount.toLowerCase() === d.toAccount.toLowerCase()) {
+      showMessage("From Account and To Account cannot be the same.");
+      document.getElementById("toAccount").focus();
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextContraId(transaction, d.voucherDate);
+        generatedId = result.id;
+        const contraRef = doc(db, "contra_vouchers", generatedId);
+        const data = {
+          ...d,
+          voucherNo: generatedId,
+          createdAt: now,
+          updatedAt: now
+        };
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+        transaction.set(contraRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Contra voucher ${generatedId} saved successfully.`, "success");
+      localStorage.removeItem(CACHE);
+
+      setTimeout(() => {
+        openList();
+        loadContraList();
+      }, 450);
+    } catch (error) {
+      console.error("Contra save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save contra voucher. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Contra Voucher";
+    }
+  }
+
+  /* Update existing contra voucher without duplicating */
+  async function updateContra() {
+    if (!currentId) return;
+    const d = formData();
+    if (!d.amount || d.amount <= 0) {
+      showMessage("Enter a valid amount greater than 0.");
+      return;
+    }
+    if (!d.fromAccount || !d.toAccount) {
+      showMessage("From and To Accounts are required.");
+      return;
+    }
+    if (d.fromAccount.toLowerCase() === d.toAccount.toLowerCase()) {
+      showMessage("From Account and To Account cannot be the same.");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Updating...";
+
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "contra_vouchers", currentId), {
+        voucherDate: d.voucherDate,
+        transferType: d.transferType,
+        amount: d.amount,
+        fromAccount: d.fromAccount,
+        toAccount: d.toAccount,
+        referenceNo: d.referenceNo,
+        createdBy: d.createdBy,
+        narration: d.narration,
+        updatedAt: now
+      });
+
+      const idx = contraRows.findIndex(c => String(c.voucherNo || c.id) === String(currentId));
+      if (idx >= 0) {
+        contraRows[idx] = { ...contraRows[idx], ...d, voucherNo: currentId, updatedAt: now };
+        localStorage.setItem(CACHE, JSON.stringify(contraRows));
+      }
+
+      showMessage("Contra voucher updated successfully.", "success");
+      setTimeout(() => {
+        openList();
+      }, 450);
+    } catch (error) {
+      console.error("Contra update error:", error);
+      showMessage(error?.message || "Unable to update contra voucher.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Contra Voucher";
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    if (mode === "edit") {
+      await updateContra();
+    } else {
+      await createContra();
+    }
+  });
+
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadContraList();
+</script>
+
+</body>
+</html>
