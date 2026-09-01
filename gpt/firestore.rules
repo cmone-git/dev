@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function activeUser() {
+      return signedIn() && profile().status == "active";
+    }
+
+    function sameCompany(companyId) {
+      return activeUser() && profile().companyId == companyId;
+    }
+
+    function admin(companyId) {
+      return sameCompany(companyId) && profile().role == "admin";
+    }
+
+    function branchUser(companyId, branchId) {
+      return sameCompany(companyId)
+        && profile().role == "user"
+        && profile().branchId == branchId;
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && (
+        uid == request.auth.uid ||
+        (activeUser() && profile().role == "admin")
+      );
+
+      allow create: if signedIn() && admin(request.resource.data.companyId);
+
+      allow update: if signedIn() && (
+        (uid == request.auth.uid
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.companyId == resource.data.companyId
+          && request.resource.data.branchId == resource.data.branchId)
+        ||
+        admin(resource.data.companyId)
+      );
+
+      allow delete: if signedIn() && admin(resource.data.companyId);
+    }
+
+    match /companies/{companyId} {
+      allow read, write: if admin(companyId);
+
+      match /branches/{branchId} {
+        allow read: if admin(companyId) ||
+          branchUser(companyId, branchId);
+
+        allow create, update, delete: if admin(companyId);
+      }
+    }
+
+    // Generic branch-scoped collection pattern.
+    // Every business record should contain companyId and branchId.
+    match /{collection}/{docId} {
+      allow read: if resource.data.companyId != null &&
+        (admin(resource.data.companyId) ||
+         branchUser(resource.data.companyId, resource.data.branchId));
+
+      allow create: if request.resource.data.companyId != null &&
+        (admin(request.resource.data.companyId) ||
+         branchUser(request.resource.data.companyId, request.resource.data.branchId));
+
+      allow update: if resource.data.companyId == request.resource.data.companyId &&
+        (admin(resource.data.companyId) ||
+         (branchUser(resource.data.companyId, resource.data.branchId) &&
+          request.resource.data.branchId == resource.data.branchId));
+
+      allow delete: if admin(resource.data.companyId);
+    }
+  }
+}

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f8">
+
+<title>BizOdit</title>
+
+<style>
+:root {
+    --brand: #0b3b66;
+    --background: #f4f6f8;
+    --muted: #687583;
+    --track: #d8dee5;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background);
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+}
+
+/* Main splash */
+
+.splash {
+    width: min(320px, 82vw);
+    text-align: center;
+}
+
+/* Logo */
+
+.logo {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Fallback if logo is missing */
+
+.logo-fallback {
+    width: 76px;
+    height: 76px;
+
+    border-radius: 9px;
+
+    background: var(--brand);
+    color: #fff;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 26px;
+    font-weight: 800;
+}
+
+/* App name */
+
+.app-name {
+    color: var(--brand);
+
+    font-size: 27px;
+    line-height: 1.1;
+
+    font-weight: 750;
+
+    letter-spacing: -0.02em;
+}
+
+/* Tagline */
+
+.tagline {
+    margin-top: 7px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+    letter-spacing: 0.02em;
+}
+
+/* Loading bar */
+
+.progress {
+    width: 145px;
+    height: 3px;
+
+    margin: 30px auto 0;
+
+    background: var(--track);
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 34%;
+    height: 100%;
+
+    background: var(--brand);
+
+    border-radius: 20px;
+
+    animation:
+        progress 1.25s ease-in-out infinite;
+}
+
+@keyframes progress {
+
+    0% {
+        transform: translateX(-130%);
+    }
+
+    50% {
+        transform: translateX(180%);
+    }
+
+    100% {
+        transform: translateX(420%);
+    }
+
+}
+
+/* Continue button */
+
+.continue {
+    margin-top: 28px;
+
+    height: 40px;
+
+    padding: 0 18px;
+
+    border: 1px solid var(--brand);
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: var(--brand);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+    .logo {
+        width: 78px;
+        height: 78px;
+
+        margin-bottom: 20px;
+    }
+
+    .app-name {
+        font-size: 25px;
+    }
+
+    .tagline {
+        font-size: 11px;
+    }
+
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .progress-bar {
+        animation: none;
+        transform: translateX(190%);
+    }
+
+}
+</style>
+
+</head>
+
+<body>
+
+<main class="splash">
+
+    <!-- CM Logo -->
+
+    <div class="logo">
+
+        <img
+            src="../assets/logo.png"
+            alt="CM"
+            onerror="
+                this.style.display='none';
+                document.getElementById('logoFallback').style.display='flex';
+            "
+        >
+
+        <div
+            id="logoFallback"
+            class="logo-fallback"
+        >
+            CM
+        </div>
+
+    </div>
+
+
+    <!-- App Name -->
+
+    <div class="app-name">
+        BizOdit
+    </div>
+
+
+    <!-- Tagline -->
+
+    <div class="tagline">
+        Business Management
+    </div>
+
+
+    <!-- Loading -->
+
+    <div
+        class="progress"
+        aria-label="Loading"
+    >
+
+        <div class="progress-bar"></div>
+
+    </div>
+
+
+    <!-- Continue -->
+
+    <button
+        class="continue"
+        onclick="openApp()"
+    >
+        Continue
+    </button>
+
+</main>
+
+
+<script>
+
+function openApp() {
+
+    sessionStorage.setItem(
+        "bizoditSplashSeen",
+        "1"
+    );
+
+    window.location.href = "../index.html";
+
+}
+
+
+/*
+   Automatically open dashboard
+   after splash.
+*/
+
+setTimeout(function () {
+
+    if (
+        !sessionStorage.getItem(
+            "bizoditSplashSeen"
+        )
+    ) {
+
+        sessionStorage.setItem(
+            "bizoditSplashSeen",
+            "1"
+        );
+
+        window.location.href =
+            "../index.html";
+
+    }
+
+}, 1800);
+
+</script>
+
+</body>
+</html>

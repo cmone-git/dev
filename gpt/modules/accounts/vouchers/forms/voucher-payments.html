@@ -1,0 +1,1266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../../css/cm.css">
+  <link rel="stylesheet" href="../../../../css/forms.css">
+  <link rel="stylesheet" href="../../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Payment Voucher — BIZODIT</title>
+
+  <style>
+    .id-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .id-box input {
+      flex: 1;
+    }
+
+    .id-status {
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Toolbar matching other modules */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .add-form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .date-range {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .date-range .field {
+      flex: 1 1 140px;
+      min-width: 130px;
+      margin-bottom: 0;
+    }
+
+    .date-range .field label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .list-panel {
+      display: block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display: none;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Item */
+    .data-row {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .data-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .data-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .data-row-sub {
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .data-row-meta {
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .data-row-date {
+      font-size: 11px;
+      color: #727983;
+    }
+
+    .payment-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: #b42318;
+    }
+
+    .mode-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Card Action Toolbar */
+    .payment-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .payment-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .payment-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .payment-action-btn.call {
+      color: #0b3b66;
+    }
+
+    .payment-action-btn.whatsapp {
+      color: #15803d;
+    }
+
+    .payment-action-btn.open-btn {
+      color: #334155;
+    }
+
+    /* View / Edit Mode Elements */
+    .form-view-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      width: auto;
+      height: auto;
+      border: 0;
+      background: transparent;
+      margin: -4px 0 10px;
+    }
+
+    .form-view-action.delete {
+      color: #b42318;
+    }
+
+    .form-view-action.hidden {
+      display: none;
+    }
+
+    .view-mode input:not([readonly]),
+    .view-mode select,
+    .view-mode textarea {
+      background: #f7f8f9;
+      color: #33404c;
+      pointer-events: none;
+    }
+
+    .view-mode .form-actions {
+      display: none;
+    }
+
+    .form-mode-label {
+      display: none;
+      margin: -7px 0 14px;
+      font-size: 11px;
+      color: #7b8791;
+    }
+
+    .view-mode .form-mode-label {
+      display: block;
+    }
+
+    .empty-list {
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show {
+      display: block;
+    }
+
+    .filter-panel .field {
+      margin-bottom: 8px;
+    }
+
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .form-message.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .client-loading {
+      opacity: .65;
+    }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">BZ</div>
+        <div class="cm-brand-title">BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" id="pageBackBtn" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Payment Voucher</h1>
+            <p>Record vendor payments, expenses & outgoing funds</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="paymentListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="paymentSearch" class="list-search" type="search" placeholder="Search payment vouchers..." autocomplete="off">
+          <button id="paymentSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="paymentFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="paymentRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportPaymentBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importPaymentBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+          <button id="addPaymentBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+
+        <div id="paymentSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="date">Date (Newest)</button>
+            <button class="sort-option" data-sort="date-asc">Date (Oldest)</button>
+            <button class="sort-option" data-sort="id">Voucher No.</button>
+            <button class="sort-option" data-sort="payee">Payee Name</button>
+            <button class="sort-option" data-sort="amount">Amount High–Low</button>
+          </div>
+        </div>
+
+        <div id="paymentFilterPanel" class="filter-panel">
+          <div class="field">
+            <label>Payment Mode</label>
+            <select id="paymentModeFilter">
+              <option value="">All Modes</option>
+              <option value="Bank Transfer / NEFT / RTGS">Bank Transfer / NEFT / RTGS</option>
+              <option value="UPI / QR">UPI / QR</option>
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+            </select>
+          </div>
+          <div class="date-range">
+            <div class="field">
+              <label>From Date</label>
+              <input id="paymentFromDate" type="date">
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input id="paymentToDate" type="date">
+            </div>
+          </div>
+        </div>
+
+        <div id="paymentList" class="data-list"><div class="empty-list">Loading payment vouchers...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="paymentForm">
+        <div class="form-view-actions">
+          <button id="editPaymentBtn" class="form-view-action" type="button" title="Edit payment voucher"><i data-lucide="pencil"></i></button>
+          <button id="deletePaymentBtn" class="form-view-action delete" type="button" title="Delete payment voucher"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <h2 id="paymentFormTitle">Payment Entry</h2>
+        <div id="formModeLabel" class="form-mode-label">View mode — tap Edit to modify this voucher.</div>
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Voucher No.</label>
+            <div class="id-box">
+              <input id="voucherNo" type="text" readonly placeholder="Generating on save (PV26080001)...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Voucher Date <span class="required">*</span></label>
+            <input id="voucherDate" type="date" required>
+          </div>
+
+          <div class="field">
+            <label>Client / Vendor ID</label>
+            <input id="clientId" type="text" list="clientIdList" placeholder="Search / select ID (Optional)" autocomplete="off" style="text-transform:uppercase">
+            <datalist id="clientIdList"></datalist>
+          </div>
+
+          <div class="field">
+            <label>Paid To / Payee Name <span class="required">*</span></label>
+            <input id="payeeName" type="text" required list="clientNameList" placeholder="Payee / Vendor / Party name" autocomplete="off">
+            <datalist id="clientNameList"></datalist>
+          </div>
+
+          <div class="field">
+            <label>Expense / Debit Ledger <span class="required">*</span></label>
+            <input id="debitLedger" type="text" required placeholder="e.g. Office Rent, Vendor Payment" list="ledgerSuggestions">
+            <datalist id="ledgerSuggestions">
+              <option value="Office Rent">
+              <option value="Salaries & Wages">
+              <option value="Electricity & Water">
+              <option value="Printing & Stationery">
+              <option value="Professional Fees">
+              <option value="Vendor / Supplier Payment">
+              <option value="Audit & Legal Expenses">
+              <option value="Software & Subscriptions">
+              <option value="Travel & Conveyance">
+            </datalist>
+          </div>
+
+          <div class="field">
+            <label>Amount (₹) <span class="required">*</span></label>
+            <input id="amount" type="number" min="0.01" step="0.01" required placeholder="0.00">
+          </div>
+
+          <div class="field">
+            <label>Paid From (Payment Account) <span class="required">*</span></label>
+            <input id="paidFrom" type="text" required placeholder="e.g. HDFC Bank / Cash in Hand" list="bankSuggestions">
+            <datalist id="bankSuggestions">
+              <option value="Cash in Hand">
+              <option value="Petty Cash">
+              <option value="HDFC Bank">
+              <option value="State Bank of India">
+              <option value="ICICI Bank">
+              <option value="Axis Bank">
+            </datalist>
+          </div>
+
+          <div class="field">
+            <label>Payment Mode <span class="required">*</span></label>
+            <select id="paymentMode" required>
+              <option value="Bank Transfer / NEFT / RTGS">Bank Transfer / NEFT / RTGS</option>
+              <option value="UPI / QR">UPI / QR</option>
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Cheque / Transaction / UTR No.</label>
+            <input id="referenceNo" type="text" placeholder="Cheque / UTR / Transaction Ref">
+          </div>
+
+          <div class="field">
+            <label>Created By</label>
+            <input id="createdBy" type="text" value="Admin" placeholder="Created by">
+          </div>
+
+          <div class="field full">
+            <label>Narration / Remarks</label>
+            <textarea id="narration" rows="3" placeholder="Being payment made towards..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Payment Voucher</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item active" href="../../accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { formatIndianDate, todayISO } from "../../../../js/date.js";
+  import { db } from "../../../../js/firebase-config.js";
+  import {
+    doc,
+    runTransaction,
+    updateDoc,
+    deleteDoc,
+    collection,
+    getDocs,
+    getDoc,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("paymentForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const idInput = document.getElementById("voucherNo");
+  const idStatus = document.getElementById("idStatus");
+  const voucherDateInput = document.getElementById("voucherDate");
+  const editPaymentBtn = document.getElementById("editPaymentBtn");
+  const deletePaymentBtn = document.getElementById("deletePaymentBtn");
+  const cancelFormBtn = document.getElementById("cancelFormBtn");
+
+  const clientIdInput = document.getElementById("clientId");
+  const payeeNameInput = document.getElementById("payeeName");
+  const clientIdList = document.getElementById("clientIdList");
+  const clientNameList = document.getElementById("clientNameList");
+
+  const CACHE = "bizodit_payments_cache_v1";
+  let paymentRows = [];
+  let clientsCache = [];
+  let currentId = null;
+  let mode = "new"; // "new", "view", "edit"
+  let paymentSort = "date";
+
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
+  voucherDateInput.value = todayISO();
+
+  const clean = value => String(value || "").trim();
+  const upper = value => clean(value).toUpperCase();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  const normalize = value => String(value || "").trim().toLowerCase();
+
+  function findClientById(value) {
+    const id = upper(value);
+    return clientsCache.find(c => upper(c.clientId || c.id || "") === id);
+  }
+
+  function findClientByName(value) {
+    const name = normalize(value);
+    return clientsCache.find(c => normalize(c.clientName) === name);
+  }
+
+  async function loadClients() {
+    const cacheKey = "bizodit_clients_cache_v3";
+    try {
+      const cached = JSON.parse(localStorage.getItem(cacheKey) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        clientsCache = cached;
+        populateClientLists();
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "clients"), limit(500)));
+      clientsCache = snapshot.docs.map(item => ({ id: item.id, ...item.data() })).filter(c => c.clientId && c.clientName);
+      localStorage.setItem(cacheKey, JSON.stringify(clientsCache));
+      populateClientLists();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function populateClientLists() {
+    clientIdList.innerHTML = "";
+    clientNameList.innerHTML = "";
+    clientsCache.forEach(client => {
+      const optId = document.createElement("option");
+      optId.value = client.clientId || client.id;
+      clientIdList.appendChild(optId);
+
+      const optName = document.createElement("option");
+      optName.value = client.clientName;
+      clientNameList.appendChild(optName);
+    });
+  }
+
+  clientIdInput.addEventListener("input", () => {
+    const client = findClientById(clientIdInput.value);
+    if (client) payeeNameInput.value = client.clientName || "";
+  });
+
+  payeeNameInput.addEventListener("input", () => {
+    const client = findClientByName(payeeNameInput.value);
+    if (client) clientIdInput.value = client.clientId || client.id || "";
+  });
+
+  /* Monthly Auto Counter Format: PVYYMM0001 (e.g., PV26080001) */
+  function getPeriodFromDate(dateString) {
+    const date = new Date(`${dateString}T00:00:00`);
+    if (Number.isNaN(date.getTime())) throw new Error("Invalid voucher date.");
+    const year = String(date.getFullYear()).slice(-2);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return { year, month, period: `${year}${month}` };
+  }
+
+  async function getNextPaymentId(transaction, dateString) {
+    const { year, month, period } = getPeriodFromDate(dateString);
+    const counterRef = doc(db, "counters", `payment_${period}`);
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) nextNumber = lastNumber + 1;
+    }
+
+    while (true) {
+      const candidateId = `PV${year}${month}${String(nextNumber).padStart(4, "0")}`;
+      const candidateRef = doc(db, "payment_vouchers", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
+
+      if (!candidateSnap.exists()) {
+        return { id: candidateId, counterRef, nextNumber, period };
+      }
+      nextNumber++;
+    }
+  }
+
+  function formData() {
+    return {
+      voucherNo: clean(idInput.value),
+      voucherDate: clean(voucherDateInput.value),
+      clientId: upper(clientIdInput.value),
+      payeeName: clean(payeeNameInput.value),
+      debitLedger: clean(document.getElementById("debitLedger").value),
+      amount: Number(document.getElementById("amount").value) || 0,
+      paidFrom: clean(document.getElementById("paidFrom").value),
+      paymentMode: clean(document.getElementById("paymentMode").value),
+      referenceNo: clean(document.getElementById("referenceNo").value),
+      createdBy: clean(document.getElementById("createdBy").value) || "Admin",
+      narration: clean(document.getElementById("narration").value)
+    };
+  }
+
+  function fillForm(p) {
+    currentId = p.voucherNo || p.id;
+    idInput.value = currentId || "";
+    voucherDateInput.value = p.voucherDate || todayISO();
+    clientIdInput.value = p.clientId || "";
+    payeeNameInput.value = p.payeeName || "";
+    document.getElementById("debitLedger").value = p.debitLedger || "";
+    document.getElementById("amount").value = p.amount ?? "";
+    document.getElementById("paidFrom").value = p.paidFrom || "";
+    document.getElementById("paymentMode").value = p.paymentMode || "Bank Transfer / NEFT / RTGS";
+    document.getElementById("referenceNo").value = p.referenceNo || "";
+    document.getElementById("createdBy").value = p.createdBy || "Admin";
+    document.getElementById("narration").value = p.narration || "";
+  }
+
+  function setInputs(disabled) {
+    form.querySelectorAll("input,select,textarea").forEach(x => x.disabled = disabled);
+    idInput.readOnly = true;
+    saveBtn.disabled = disabled;
+  }
+
+  function viewMode() {
+    mode = "view";
+    form.classList.add("view-mode");
+    document.getElementById("paymentFormTitle").textContent = "Payment Voucher Details";
+    editPaymentBtn.classList.remove("hidden");
+    deletePaymentBtn.classList.remove("hidden");
+    setInputs(true);
+    cancelFormBtn.textContent = "Back";
+    clearMessage();
+  }
+
+  function editMode() {
+    mode = "edit";
+    form.classList.remove("view-mode");
+    document.getElementById("paymentFormTitle").textContent = "Edit Payment Voucher";
+    editPaymentBtn.classList.add("hidden");
+    deletePaymentBtn.classList.remove("hidden");
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  function newMode() {
+    mode = "new";
+    currentId = null;
+    form.classList.remove("view-mode");
+    document.getElementById("paymentFormTitle").textContent = "Payment Entry";
+    editPaymentBtn.classList.add("hidden");
+    deletePaymentBtn.classList.add("hidden");
+    form.reset();
+    document.getElementById("paymentMode").value = "Bank Transfer / NEFT / RTGS";
+    document.getElementById("createdBy").value = "Admin";
+    voucherDateInput.value = todayISO();
+    idInput.value = "";
+    idStatus.textContent = "";
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  const paymentListPanel = document.getElementById("paymentListPanel");
+  const addPaymentBtn = document.getElementById("addPaymentBtn");
+  const paymentSearch = document.getElementById("paymentSearch");
+  const paymentSortBtn = document.getElementById("paymentSortBtn");
+  const paymentFilterBtn = document.getElementById("paymentFilterBtn");
+  const paymentSortMenu = document.getElementById("paymentSortMenu");
+  const paymentFilterPanel = document.getElementById("paymentFilterPanel");
+  const paymentModeFilter = document.getElementById("paymentModeFilter");
+  const paymentFromDate = document.getElementById("paymentFromDate");
+  const paymentToDate = document.getElementById("paymentToDate");
+  const paymentRefreshBtn = document.getElementById("paymentRefreshBtn");
+  const paymentList = document.getElementById("paymentList");
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
+  async function loadPaymentList() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        paymentRows = cached;
+        renderPaymentList();
+      }
+    } catch (error) {
+      console.warn("Payment cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "payment_vouchers"), limit(500)));
+      paymentRows = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE, JSON.stringify(paymentRows));
+      renderPaymentList();
+    } catch (error) {
+      console.error("Payment list load failed:", error);
+      if (!paymentRows.length) {
+        paymentList.innerHTML = '<div class="empty-list">Unable to load payment vouchers. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function formatRupees(num) {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+  }
+
+  function renderPaymentList() {
+    const term = clean(paymentSearch.value).toLowerCase();
+    const modeVal = clean(paymentModeFilter.value);
+
+    let rows = paymentRows.filter(row => {
+      const vNo = row.voucherNo || row.id || "";
+      const text = `${vNo} ${row.payeeName || ""} ${row.debitLedger || ""} ${row.paidFrom || ""} ${row.referenceNo || ""}`.toLowerCase();
+      const vDate = String(row.voucherDate || "").slice(0, 10);
+      const matchesFrom = !paymentFromDate.value || (vDate && vDate >= paymentFromDate.value);
+      const matchesTo = !paymentToDate.value || (vDate && vDate <= paymentToDate.value);
+
+      return (!term || text.includes(term)) && (!modeVal || row.paymentMode === modeVal) && matchesFrom && matchesTo;
+    });
+
+    rows.sort((a, b) => {
+      if (paymentSort === "date") return String(b.voucherDate || "").localeCompare(String(a.voucherDate || ""));
+      if (paymentSort === "date-asc") return String(a.voucherDate || "").localeCompare(String(b.voucherDate || ""));
+      if (paymentSort === "id") return String(b.voucherNo || b.id || "").localeCompare(String(a.voucherNo || a.id || ""), undefined, { numeric: true });
+      if (paymentSort === "payee") return String(a.payeeName || "").localeCompare(String(b.payeeName || ""));
+      if (paymentSort === "amount") return (Number(b.amount) || 0) - (Number(a.amount) || 0);
+      return 0;
+    });
+
+    if (!rows.length) {
+      paymentList.innerHTML = '<div class="empty-list">No payment vouchers found.</div>';
+      return;
+    }
+
+    paymentList.innerHTML = rows.map(row => {
+      const id = String(row.voucherNo || row.id);
+      const payee = row.payeeName || "Unnamed Payee";
+      const ledger = row.debitLedger || "Payment";
+      const pMode = row.paymentMode || "Paid";
+      const amt = formatRupees(row.amount);
+      const client = findClientById(row.clientId) || findClientByName(row.payeeName);
+      const phone = clean(client?.mobile || "");
+      const wa = whatsappClean(phone);
+
+      return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${escapeHtml(id)}">
+            <div class="data-row-title">${escapeHtml(payee)}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · ${escapeHtml(ledger)} · Via ${escapeHtml(row.paidFrom || "Bank/Cash")} ${row.referenceNo ? `· Ref: ${escapeHtml(row.referenceNo)}` : ''}</div>
+          </div>
+          <div class="data-row-meta">
+            <span class="data-row-date">${escapeHtml(row.voucherDate || "")}</span>
+            <span class="payment-amount">${escapeHtml(amt)}</span>
+            <span class="mode-badge">${escapeHtml(pMode)}</span>
+          </div>
+        </div>
+        <div class="payment-row-actions">
+          ${phone ? `<a class="payment-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Payee"><i data-lucide="phone"></i></a>` : ""}
+          ${phone ? `<a class="payment-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
+          <button class="payment-action-btn open-btn" data-open="${escapeHtml(id)}" type="button" title="View Voucher"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    paymentList.querySelectorAll("[data-open]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        openView(b.dataset.open);
+      });
+    });
+  }
+
+  function findPayment(id) {
+    return paymentRows.find(c => String(c.voucherNo || c.id) === String(id));
+  }
+
+  async function openView(id) {
+    const cached = findPayment(id);
+    if (cached) {
+      fillForm(cached);
+      paymentListPanel.classList.add("hidden");
+      form.classList.remove("hidden");
+      viewMode();
+      window.scrollTo(0, 0);
+    }
+    try {
+      const s = await getDoc(doc(db, "payment_vouchers", id));
+      if (!s.exists()) throw new Error("Payment voucher record no longer exists.");
+      fillForm({ id: s.id, ...s.data() });
+      viewMode();
+    } catch (e) {
+      if (!cached) showMessage(e.message || "Unable to open payment voucher.");
+    }
+  }
+
+  function openList() {
+    form.classList.add("hidden");
+    paymentListPanel.classList.remove("hidden");
+    newMode();
+    renderPaymentList();
+    window.scrollTo(0, 0);
+  }
+
+  function openNew() {
+    newMode();
+    paymentListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Voucher Date,Client ID,Payee Name,Expense Ledger,Amount,Paid From,Payment Mode,Reference No,Created By,Narration\n" +
+                     "2026-08-23,C40001,Office Landlord,Office Rent,25000,HDFC Bank,Bank Transfer / NEFT / RTGS,NEFT-491029,Admin,Monthly office rent payment";
+    downloadBlob(template, "payment_voucher_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportPaymentBtn").addEventListener("click", () => {
+    if (!paymentRows.length) { alert("No payment vouchers to export."); return; }
+    const headers = ["Voucher No","Voucher Date","Client ID","Payee Name","Expense Ledger","Amount","Paid From","Payment Mode","Reference No","Created By","Narration","Created At"];
+    const rows = paymentRows.map(c => [
+      `"${c.voucherNo||c.id||""}"`, `"${c.voucherDate||""}"`, `"${c.clientId||""}"`,
+      `"${(c.payeeName||"").replace(/"/g,'""')}"`, `"${(c.debitLedger||"").replace(/"/g,'""')}"`,
+      `"${c.amount||0}"`, `"${(c.paidFrom||"").replace(/"/g,'""')}"`, `"${c.paymentMode||""}"`,
+      `"${c.referenceNo||""}"`, `"${c.createdBy||"Admin"}"`, `"${(c.narration||"").replace(/"/g,'""')}"`, `"${c.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `payments_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importPaymentBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} payment voucher(s)?`)) { e.target.value = ""; return; }
+
+    paymentRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const vDate = clean(r[0]) || todayISO();
+        const cId = upper(r[1]);
+        const pName = clean(r[2]);
+        const ledger = clean(r[3]);
+        const amt = Number(r[4]) || 0;
+        const pFrom = clean(r[5]);
+        const pMode = clean(r[6]) || "Bank Transfer / NEFT / RTGS";
+        if (!pName || !amt || !pFrom) continue;
+
+        await runTransaction(db, async tx => {
+          const result = await getNextPaymentId(tx, vDate);
+          const paymentRef = doc(db, "payment_vouchers", result.id);
+          const record = {
+            voucherNo: result.id,
+            voucherDate: vDate,
+            clientId: cId,
+            payeeName: pName,
+            debitLedger: ledger || "Payment",
+            amount: amt,
+            paidFrom: pFrom,
+            paymentMode: pMode,
+            referenceNo: clean(r[7]),
+            createdBy: clean(r[8]) || "Admin",
+            narration: clean(r[9]) || "",
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+          tx.set(paymentRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem(CACHE);
+      await loadPaymentList();
+      alert(`Successfully imported ${imported} payment voucher(s).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during payment import: " + err.message);
+    } finally {
+      paymentRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addPaymentBtn.addEventListener("click", openNew);
+  cancelFormBtn.addEventListener("click", openList);
+  editPaymentBtn.addEventListener("click", editMode);
+
+  deletePaymentBtn.addEventListener("click", async () => {
+    if (!currentId) return;
+    if (!confirm(`Delete payment voucher (${currentId})?\n\nThis action cannot be undone.`)) return;
+    deletePaymentBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "payment_vouchers", currentId));
+      paymentRows = paymentRows.filter(x => String(x.voucherNo || x.id) !== String(currentId));
+      localStorage.setItem(CACHE, JSON.stringify(paymentRows));
+      showMessage("Payment voucher deleted successfully.", "success");
+      setTimeout(openList, 450);
+    } catch (e) {
+      showMessage(e.message || "Unable to delete payment voucher.");
+    } finally {
+      deletePaymentBtn.disabled = false;
+    }
+  });
+
+  paymentSearch.addEventListener("input", renderPaymentList);
+  paymentModeFilter.addEventListener("change", renderPaymentList);
+  paymentFromDate.addEventListener("change", renderPaymentList);
+  paymentToDate.addEventListener("change", renderPaymentList);
+
+  paymentRefreshBtn.addEventListener("click", async () => {
+    paymentRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE);
+      await loadPaymentList();
+    } finally {
+      paymentRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  paymentSortBtn.addEventListener("click", () => paymentSortMenu.classList.toggle("show"));
+  paymentFilterBtn.addEventListener("click", () => paymentFilterPanel.classList.toggle("show"));
+
+  paymentSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      paymentSort = option.dataset.sort;
+      paymentSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      paymentSortMenu.classList.remove("show");
+      renderPaymentList();
+    });
+  });
+
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openList();
+    } else {
+      history.back();
+    }
+  });
+
+  /* Create new payment voucher via atomic transaction */
+  async function createPayment() {
+    const d = formData();
+    if (!d.voucherDate) { showMessage("Voucher Date is required."); voucherDateInput.focus(); return; }
+    if (!d.payeeName) { showMessage("Payee Name is required."); payeeNameInput.focus(); return; }
+    if (!d.debitLedger) { showMessage("Expense / Debit Ledger is required."); document.getElementById("debitLedger").focus(); return; }
+    if (!d.amount || d.amount <= 0) { showMessage("Enter a valid amount greater than 0."); document.getElementById("amount").focus(); return; }
+    if (!d.paidFrom) { showMessage("Paid From account is required."); document.getElementById("paidFrom").focus(); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextPaymentId(transaction, d.voucherDate);
+        generatedId = result.id;
+        const paymentRef = doc(db, "payment_vouchers", generatedId);
+        const data = {
+          ...d,
+          voucherNo: generatedId,
+          createdAt: now,
+          updatedAt: now
+        };
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+        transaction.set(paymentRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Payment voucher ${generatedId} saved successfully.`, "success");
+      localStorage.removeItem(CACHE);
+
+      setTimeout(() => {
+        openList();
+        loadPaymentList();
+      }, 450);
+    } catch (error) {
+      console.error("Payment save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save payment voucher. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Payment Voucher";
+    }
+  }
+
+  /* Update existing payment voucher without duplicating */
+  async function updatePayment() {
+    if (!currentId) return;
+    const d = formData();
+    if (!d.payeeName || !d.debitLedger || !d.paidFrom) {
+      showMessage("Payee Name, Debit Ledger, and Payment Account are required.");
+      return;
+    }
+    if (!d.amount || d.amount <= 0) {
+      showMessage("Enter a valid amount greater than 0.");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Updating...";
+
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "payment_vouchers", currentId), {
+        voucherDate: d.voucherDate,
+        clientId: d.clientId,
+        payeeName: d.payeeName,
+        debitLedger: d.debitLedger,
+        amount: d.amount,
+        paidFrom: d.paidFrom,
+        paymentMode: d.paymentMode,
+        referenceNo: d.referenceNo,
+        createdBy: d.createdBy,
+        narration: d.narration,
+        updatedAt: now
+      });
+
+      const idx = paymentRows.findIndex(c => String(c.voucherNo || c.id) === String(currentId));
+      if (idx >= 0) {
+        paymentRows[idx] = { ...paymentRows[idx], ...d, voucherNo: currentId, updatedAt: now };
+        localStorage.setItem(CACHE, JSON.stringify(paymentRows));
+      }
+
+      showMessage("Payment voucher updated successfully.", "success");
+      setTimeout(() => {
+        openList();
+      }, 450);
+    } catch (error) {
+      console.error("Payment update error:", error);
+      showMessage(error?.message || "Unable to update payment voucher.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Payment Voucher";
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    if (mode === "edit") {
+      await updatePayment();
+    } else {
+      await createPayment();
+    }
+  });
+
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadClients().then(loadPaymentList);
+</script>
+
+</body>
+</html>

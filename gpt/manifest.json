@@ -1,0 +1,1 @@
+{"name":"BIZODIT","short_name":"BIZODIT","description":"BIZODIT business management application","start_url":"./auth/login.html","display":"standalone","background_color":"#f4f6f8","theme_color":"#0b3b66","orientation":"portrait-primary","icons":[{"src":"assets/logo-app.png","sizes":"192x192","type":"image/png"},{"src":"assets/logo-app.png","sizes":"512x512","type":"image/png"}]}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        /* Reset and centering */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9fafb; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .loader-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Container to stack the spinner and logo */
+        .spinner-container {
+            position: relative;
+            width: 72px; /* Increased slightly to fit the logo */
+            height: 72px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The spinning ring */
+        .spinner {
+            position: absolute;
+            inset: 0; /* Stretches to fill the 72x72 container */
+            border: 3px solid #e5e7eb; 
+            border-top-color: #111827; 
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: spin 1s linear infinite;
+        }
+
+        /* The static logo in the center */
+        .spinner-logo {
+            width: 40px; /* 1x1 ratio, smaller than the ring to give breathing room */
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%; /* Optional: removes harsh corners if your logo has a background */
+            z-index: 1; /* Ensures logo sits on top */
+        }
+
+        /* Subtle pulsing text */
+        .loading-text {
+            color: #6b7280;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loader-wrapper">
+        <div class="spinner-container">
+            <!-- The animated ring -->
+            <div class="spinner"></div>
+            <!-- The static logo -->
+            <img src="../assets/logo.png" alt="Logo" class="spinner-logo">
+        </div>
+        <div class="loading-text">Loading</div>
+    </div>
+
+</body>
+</html>

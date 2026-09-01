@@ -1,0 +1,1 @@
+export function formatIndianDate(date){const d=date instanceof Date?date:new Date(date);const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return `${String(d.getDate()).padStart(2,'0')}/${m[d.getMonth()]}/${d.getFullYear()}`}export function todayISO(){return new Date().toISOString().slice(0,10)}

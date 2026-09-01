@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bank Cheque Print Preview — BIZODIT</title>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --primary: #0b3b66;
+      --border: #cbd5e1;
+      --text: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background: #f1f5f9;
+      color: var(--text);
+      padding: 24px 14px;
+    }
+
+    /* Top Action Bar (hidden on print) */
+    .action-bar {
+      max-width: 820px;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #334155;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .15s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Realistic CTS-2010 Bank Cheque Template Layout */
+    .cheque-leaf {
+      max-width: 820px;
+      width: 100%;
+      height: 360px;
+      margin: 0 auto;
+      background: #f8fafc;
+      border: 1px solid #94a3b8;
+      border-radius: 8px;
+      padding: 20px 28px;
+      position: relative;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+      background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    /* Account Payee Crossing */
+    .crossing-stamp {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      border-left: 2px solid #334155;
+      border-right: 2px solid #334155;
+      padding: 2px 8px;
+      transform: rotate(-30deg);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #334155;
+      text-transform: uppercase;
+    }
+
+    .bank-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .bank-title h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bank-title p {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* CTS Date Boxes: DD MM YYYY */
+    .date-boxes-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .date-box {
+      width: 20px;
+      height: 24px;
+      border: 1px solid #64748b;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .date-box.space {
+      border: none;
+      background: transparent;
+      width: 6px;
+    }
+
+    /* Payee Line */
+    .payee-section {
+      margin-top: 24px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .payee-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .payee-line {
+      flex: 1;
+      border-bottom: 1px dashed #475569;
+      padding-bottom: 2px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.5px;
+    }
+
+    .or-bearer {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    /* Amount in Words & Numeric Box */
+    .amount-words-section {
+      margin-top: 18px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .words-box {
+      flex: 1;
+    }
+
+    .words-line {
+      border-bottom: 1px dashed #475569;
+      padding-bottom: 2px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.6;
+      min-height: 24px;
+    }
+
+    .amount-numeric-box {
+      width: 170px;
+      height: 38px;
+      border: 1.5px solid #334155;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* Account Details & Signatures */
+    .cheque-bottom {
+      position: absolute;
+      bottom: 50px;
+      left: 28px;
+      right: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .account-num-box {
+      border: 1px solid #64748b;
+      padding: 4px 10px;
+      background: #fff;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .signature-box {
+      text-align: right;
+      font-size: 11.5px;
+      color: #334155;
+    }
+
+    .signature-company {
+      font-weight: 700;
+      margin-bottom: 32px;
+    }
+
+    /* MICR Strip */
+    .micr-band {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 14px;
+      letter-spacing: 4px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    /* Print Setup */
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+      .action-bar {
+        display: none;
+      }
+      .cheque-leaf {
+        box-shadow: none;
+        border: 1px solid #000;
+        max-width: 100%;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="action-bar">
+    <button class="btn" onclick="history.back()"><i data-lucide="arrow-left"></i> Back</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-primary" onclick="window.print()"><i data-lucide="printer"></i> Print Cheque</button>
+    </div>
+  </div>
+
+  <div class="cheque-leaf" id="chequeLeaf">
+    <!-- Account Payee Crossing -->
+    <div class="crossing-stamp">A/C PAYEE ONLY</div>
+
+    <!-- Bank Header -->
+    <div class="bank-header">
+      <div class="bank-title">
+        <h2 id="bankNameDisplay">HDFC BANK LTD</h2>
+        <p id="bankBranchDisplay">MG ROAD BRANCH, KOCHI • IFSC: HDFC0001234</p>
+      </div>
+
+      <!-- CTS-2010 Date Boxes -->
+      <div>
+        <div style="font-size: 9px; text-align:right; margin-bottom: 2px; color:#64748b;">VALID FOR 3 MONTHS ONLY</div>
+        <div class="date-boxes-wrap" id="dateBoxesContainer">
+          <div class="date-box" id="d1">D</div>
+          <div class="date-box" id="d2">D</div>
+          <div class="date-box space"></div>
+          <div class="date-box" id="m1">M</div>
+          <div class="date-box" id="m2">M</div>
+          <div class="date-box space"></div>
+          <div class="date-box" id="y1">Y</div>
+          <div class="date-box" id="y2">Y</div>
+          <div class="date-box" id="y3">Y</div>
+          <div class="date-box" id="y4">Y</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payee Row -->
+    <div class="payee-section">
+      <span class="payee-label">PAY</span>
+      <div class="payee-line" id="partyNameDisplay">ACME CORPORATION</div>
+      <span class="or-bearer">OR BEARER</span>
+    </div>
+
+    <!-- Amount in Words & Numeric Box -->
+    <div class="amount-words-section">
+      <div class="words-box">
+        <span style="font-size:12px; font-weight:700; color:#334155;">RUPEES</span>
+        <div class="words-line" id="amountWordsDisplay">Forty Five Thousand Only</div>
+      </div>
+
+      <div class="amount-numeric-box" id="amountNumberDisplay">
+        ₹ 45,000/-
+      </div>
+    </div>
+
+    <!-- Bottom Row (A/C No & Signatory) -->
+    <div class="cheque-bottom">
+      <div>
+        <div style="font-size: 10px; color:#64748b; margin-bottom: 2px;">A/C NO.</div>
+        <div class="account-num-box" id="accountNoDisplay">50200012345678</div>
+      </div>
+
+      <div class="signature-box">
+        <div class="signature-company" id="companyNameDisplay">For BIZODIT FINANCIAL SERVICES</div>
+        <div>AUTHORIZED SIGNATORY</div>
+      </div>
+    </div>
+
+    <!-- MICR Band -->
+    <div class="micr-band" id="micrBandDisplay">
+      ⑈104928⑈ 682024002⑈ 001234⑈ 29
+    </div>
+  </div>
+
+  <script type="module">
+    import { db } from "../../../js/firebase-config.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const recordId = urlParams.get("id");
+
+    // Convert Number to Indian English Words
+    function numToWords(n) {
+      if (n === 0) return "Zero Only";
+      const a = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+      const b = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+
+      function inWords(num) {
+        if (num < 20) return a[num];
+        if (num < 100) return b[Math.floor(num / 10)] + (num % 10 ? " " + a[num % 10] : "");
+        if (num < 1000) return a[Math.floor(num / 100)] + " Hundred" + (num % 100 ? " and " + inWords(num % 100) : "");
+        if (num < 100000) return inWords(Math.floor(num / 1000)) + " Thousand" + (num % 1000 ? " " + inWords(num % 1000) : "");
+        if (num < 10000000) return inWords(Math.floor(num / 100000)) + " Lakh" + (num % 100000 ? " " + inWords(num % 100000) : "");
+        return inWords(Math.floor(num / 10000000)) + " Crore" + (num % 10000000 ? " " + inWords(num % 10000000) : "");
+      }
+
+      const whole = Math.floor(n);
+      const fraction = Math.round((n - whole) * 100);
+      let res = inWords(whole) + " Rupees";
+      if (fraction > 0) res += " and " + inWords(fraction) + " Paise";
+      return res + " Only";
+    }
+
+    function setDateBoxes(dateStr) {
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = String(d.getFullYear());
+
+      document.getElementById("d1").textContent = day[0];
+      document.getElementById("d2").textContent = day[1];
+      document.getElementById("m1").textContent = month[0];
+      document.getElementById("m2").textContent = month[1];
+      document.getElementById("y1").textContent = year[0];
+      document.getElementById("y2").textContent = year[1];
+      document.getElementById("y3").textContent = year[2];
+      document.getElementById("y4").textContent = year[3];
+    }
+
+    async function init() {
+      // 1. Company Profile
+      try {
+        const compSnap = await getDoc(doc(db, "settings", "companyProfile"));
+        if (compSnap.exists()) {
+          const c = compSnap.data();
+          document.getElementById("companyNameDisplay").textContent = `For ${c.companyName || 'BIZODIT'}`;
+        }
+      } catch (e) {
+        console.warn("Company load error", e);
+      }
+
+      // 2. Cheque Record
+      if (!recordId) return;
+
+      try {
+        const snap = await getDoc(doc(db, "cheque_records", recordId));
+        if (!snap.exists()) {
+          alert(`Cheque record ${recordId} not found.`);
+          return;
+        }
+
+        const data = snap.data();
+        document.getElementById("partyNameDisplay").textContent = `*** ${data.partyName || 'Party'} ***`;
+        document.getElementById("amountWordsDisplay").textContent = `*** ${numToWords(data.amount || 0)} ***`;
+        document.getElementById("amountNumberDisplay").textContent = `₹ ${Number(data.amount || 0).toLocaleString('en-IN')}/-`;
+        document.getElementById("bankNameDisplay").textContent = data.bankLedger || "BANK NAME";
+        
+        setDateBoxes(data.chequeDate || data.entryDate);
+
+        // Fetch bank account details from ledgers
+        const ledgersSnap = await getDoc(doc(db, "ledgers", data.bankLedger || "none"));
+        if (ledgersSnap.exists()) {
+          const lData = ledgersSnap.data();
+          document.getElementById("accountNoDisplay").textContent = lData.accountNo || "A/C NOT SET";
+          document.getElementById("bankBranchDisplay").textContent = `${lData.bankBranch || 'MAIN BRANCH'} • IFSC: ${lData.ifscCode || '--'}`;
+        }
+
+        const chqNo = data.chequeNo || "000000";
+        document.getElementById("micrBandDisplay").textContent = `⑈${chqNo}⑈ 682024002⑈ 001234⑈ 29`;
+
+      } catch (e) {
+        console.error("Cheque template render error:", e);
+      }
+    }
+
+    window.lucide?.createIcons();
+    init();
+  </script>
+</body>
+</html>

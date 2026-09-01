@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tax Invoice — BIZODIT</title>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --primary: #0b3b66;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #f1f5f9;
+      color: var(--text);
+      padding: 20px 12px;
+    }
+
+    /* Top Action Bar (hidden on print) */
+    .action-bar {
+      max-width: 800px;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #334155;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .15s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .btn-whatsapp {
+      background: #15803d;
+      color: #fff;
+      border-color: #15803d;
+    }
+
+    /* Invoice Canvas */
+    .invoice-card {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 36px 40px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    /* Header */
+    .inv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 24px;
+      gap: 20px;
+    }
+
+    .company-brand {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .company-logo {
+      max-width: 90px;
+      max-height: 90px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .company-info h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .company-info p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .inv-title-box {
+      text-align: right;
+    }
+
+    .inv-title-box h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .inv-title-box .badge {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 4px;
+      background: #eff6ff;
+      color: #1e40af;
+    }
+
+    /* Meta Grid */
+    .inv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 24px 0;
+      font-size: 12.5px;
+    }
+
+    .meta-box h3 {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .meta-box p {
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .meta-table td {
+      padding: 2px 0;
+    }
+
+    .meta-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    /* Table */
+    .inv-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 13px;
+    }
+
+    .inv-table th {
+      background: #f8fafc;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .inv-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+
+    .inv-table .text-right {
+      text-align: right;
+    }
+
+    /* Summary & Banking */
+    .inv-bottom {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .bank-details-box {
+      background: #fafbfc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 12px;
+    }
+
+    .bank-details-box h4 {
+      font-size: 12px;
+      color: var(--primary);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .bank-details-box p {
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .upi-qr-box {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .upi-qr-img {
+      width: 68px;
+      height: 68px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .summary-table {
+      width: 100%;
+      font-size: 13px;
+      border-collapse: collapse;
+    }
+
+    .summary-table td {
+      padding: 6px 0;
+    }
+
+    .summary-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .summary-table tr.total-row {
+      border-top: 2px solid var(--primary);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .summary-table tr.total-row td {
+      padding-top: 8px;
+    }
+
+    .terms-box {
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .sign-box {
+      margin-top: 28px;
+      text-align: right;
+      font-size: 12px;
+    }
+
+    .sign-space {
+      height: 48px;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+      .action-bar {
+        display: none;
+      }
+      .invoice-card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="action-bar">
+    <button class="btn" onclick="history.back()"><i data-lucide="arrow-left"></i> Back</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-whatsapp" id="sendWhatsAppBtn"><i data-lucide="message-circle"></i> Send on WhatsApp</button>
+      <button class="btn btn-primary" onclick="window.print()"><i data-lucide="printer"></i> Print / Save PDF</button>
+    </div>
+  </div>
+
+  <div class="invoice-card" id="invoiceCard">
+    <!-- Header -->
+    <div class="inv-header">
+      <div class="company-brand">
+        <img id="companyLogo" class="company-logo" style="display:none;" alt="Logo">
+        <div class="company-info">
+          <h2 id="companyName">BIZODIT FINANCIAL SERVICES</h2>
+          <p id="companyAddress">Registered Office Address</p>
+          <p id="companyContact">Phone: -- | Email: --</p>
+          <p id="companyGstin">GSTIN: --</p>
+        </div>
+      </div>
+      <div class="inv-title-box">
+        <h1>TAX INVOICE</h1>
+        <div class="badge" id="paymentStatusBadge">UNPAID</div>
+      </div>
+    </div>
+
+    <!-- Meta Grid -->
+    <div class="inv-grid">
+      <div class="meta-box">
+        <h3>Billed To (Client):</h3>
+        <p><strong id="clientName">--</strong></p>
+        <p id="clientAddress">--</p>
+        <p id="clientMobile">Phone: --</p>
+        <p id="clientGstin">GSTIN: --</p>
+      </div>
+
+      <div class="meta-box">
+        <h3>Invoice Information:</h3>
+        <table class="meta-table">
+          <tr>
+            <td>Invoice No:</td>
+            <td id="invoiceNo">INV-26-0001</td>
+          </tr>
+          <tr>
+            <td>Invoice Date:</td>
+            <td id="invoiceDate">--</td>
+          </tr>
+          <tr>
+            <td>Due Date:</td>
+            <td id="dueDate">--</td>
+          </tr>
+          <tr>
+            <td>Place of Supply:</td>
+            <td id="placeOfSupply">Kerala (32)</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="inv-table">
+      <thead>
+        <tr>
+          <th style="width: 5%;">#</th>
+          <th style="width: 45%;">Description of Service / Goods</th>
+          <th style="width: 15%;">HSN/SAC</th>
+          <th class="text-right" style="width: 10%;">Qty</th>
+          <th class="text-right" style="width: 12%;">Rate (₹)</th>
+          <th class="text-right" style="width: 13%;">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="invoiceItemsBody">
+        <tr><td colspan="6" style="text-align:center; padding: 20px;">Loading invoice details...</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Bottom Breakdown & Bank -->
+    <div class="inv-bottom">
+      <div class="bank-details-box">
+        <h4>Bank & Payment Details:</h4>
+        <p id="bankDetails">
+          Bank: HDFC Bank<br>
+          A/c No: 50200012345678<br>
+          IFSC: HDFC0001234<br>
+          UPI ID: merchant@upi
+        </p>
+        <div class="upi-qr-box" id="upiQrSection" style="display:none;">
+          <img id="upiQrCode" class="upi-qr-img" alt="Scan to Pay">
+          <div>
+            <strong style="font-size: 11.5px;">Scan to Pay via UPI</strong><br>
+            <span style="font-size: 11px; color: var(--muted);" id="upiQrText">Instant QR Payment</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <table class="summary-table">
+          <tr>
+            <td>Taxable Subtotal:</td>
+            <td id="subTotal">₹0.00</td>
+          </tr>
+          <tr>
+            <td>GST (IGST / CGST+SGST):</td>
+            <td id="taxTotal">₹0.00</td>
+          </tr>
+          <tr class="total-row">
+            <td>Grand Total:</td>
+            <td id="grandTotal">₹0.00</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Terms -->
+    <div class="terms-box">
+      <strong>Terms & Conditions:</strong>
+      <p id="termsText">1. Payment is due within the stipulated due date.<br>2. Please quote invoice number during bank transfer.</p>
+    </div>
+
+    <!-- Sign -->
+    <div class="sign-box">
+      <p>For <strong id="signCompanyName">BIZODIT FINANCIAL SERVICES</strong></p>
+      <div class="sign-space"></div>
+      <p>Authorized Signatory</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { db } from "../../../js/firebase-config.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const invoiceId = urlParams.get("id");
+
+    let companyData = null;
+    let invoiceData = null;
+
+    function formatRupees(num) {
+      return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+    }
+
+    function whatsappClean(n) {
+      let x = String(n || "").replace(/\D/g, "");
+      if (x.length === 10) x = "91" + x;
+      if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+      return x;
+    }
+
+    async function init() {
+      // 1. Fetch Company Settings
+      try {
+        const compSnap = await getDoc(doc(db, "settings", "companyProfile"));
+        if (compSnap.exists()) {
+          companyData = compSnap.data();
+          document.getElementById("companyName").textContent = companyData.companyName || "BIZODIT";
+          document.getElementById("signCompanyName").textContent = companyData.companyName || "BIZODIT";
+          document.getElementById("companyAddress").textContent = companyData.address || "";
+          document.getElementById("companyContact").textContent = `Phone: ${companyData.mobile || '--'} | Email: ${companyData.email || '--'} | Web: ${companyData.website || '--'}`;
+          document.getElementById("companyGstin").textContent = companyData.gstin ? `GSTIN: ${companyData.gstin}` : "";
+          
+          if (companyData.logo) {
+            const logoEl = document.getElementById("companyLogo");
+            logoEl.src = companyData.logo;
+            logoEl.style.display = "block";
+          }
+
+          if (companyData.bankName || companyData.upiId) {
+            document.getElementById("bankDetails").innerHTML = `
+              Bank: ${companyData.bankName || '--'}<br>
+              A/c No: ${companyData.accountNo || '--'}<br>
+              IFSC: ${companyData.ifscCode || '--'} (${companyData.bankBranch || ''})<br>
+              UPI ID: ${companyData.upiId || '--'}
+            `;
+          }
+
+          if (companyData.invoiceTerms) {
+            document.getElementById("termsText").innerHTML = companyData.invoiceTerms.replace(/\n/g, "<br>");
+          }
+        }
+      } catch (e) {
+        console.error("Error loading company profile:", e);
+      }
+
+      // 2. Fetch Invoice
+      if (!invoiceId) {
+        document.getElementById("invoiceItemsBody").innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ef4444;">No Invoice ID specified in URL.</td></tr>`;
+        return;
+      }
+
+      try {
+        const invSnap = await getDoc(doc(db, "sales_vouchers", invoiceId));
+        if (!invSnap.exists()) {
+          document.getElementById("invoiceItemsBody").innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ef4444;">Invoice ${invoiceId} not found.</td></tr>`;
+          return;
+        }
+
+        invoiceData = invSnap.data();
+
+        document.getElementById("invoiceNo").textContent = invoiceData.invoiceNo || invoiceId;
+        document.getElementById("invoiceDate").textContent = invoiceData.invoiceDate || "--";
+        document.getElementById("dueDate").textContent = invoiceData.dueDate || "--";
+        
+        const badge = document.getElementById("paymentStatusBadge");
+        badge.textContent = (invoiceData.paymentStatus || "UNPAID").toUpperCase();
+        if (invoiceData.paymentStatus === "Paid") {
+          badge.style.background = "#f0fdf4";
+          badge.style.color = "#166534";
+        }
+
+        document.getElementById("clientName").textContent = invoiceData.clientName || "Client";
+        document.getElementById("clientAddress").textContent = invoiceData.clientAddress || "Address not provided";
+        document.getElementById("clientMobile").textContent = `Phone: ${invoiceData.clientMobile || '--'}`;
+        document.getElementById("clientGstin").textContent = invoiceData.clientGstin ? `GSTIN: ${invoiceData.clientGstin}` : "";
+
+        // Render Items
+        const items = invoiceData.items || [];
+        if (items.length) {
+          document.getElementById("invoiceItemsBody").innerHTML = items.map((it, idx) => `
+            <tr>
+              <td>${idx + 1}</td>
+              <td><strong>${it.desc || 'Service'}</strong></td>
+              <td>${it.hsn || '998311'}</td>
+              <td class="text-right">${it.qty || 1}</td>
+              <td class="text-right">${formatRupees(it.rate)}</td>
+              <td class="text-right">${formatRupees((it.qty || 1) * (it.rate || 0))}</td>
+            </tr>
+          `).join("");
+        }
+
+        document.getElementById("subTotal").textContent = formatRupees(invoiceData.subTotal);
+        document.getElementById("taxTotal").textContent = formatRupees(invoiceData.taxTotal);
+        document.getElementById("grandTotal").textContent = formatRupees(invoiceData.grandTotal);
+
+        // Dynamic UPI QR Code
+        if (companyData?.upiId && invoiceData.grandTotal > 0) {
+          const upiString = `upi://pay?pa=${encodeURIComponent(companyData.upiId)}&pn=${encodeURIComponent(companyData.upiPayeeName || companyData.companyName || 'Merchant')}&am=${invoiceData.grandTotal}&cu=INR&tn=${encodeURIComponent('Inv ' + (invoiceData.invoiceNo || invoiceId))}`;
+          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiString)}`;
+          document.getElementById("upiQrCode").src = qrUrl;
+          document.getElementById("upiQrSection").style.display = "flex";
+        }
+
+      } catch (e) {
+        console.error("Error rendering invoice:", e);
+      }
+    }
+
+    // Direct WhatsApp Sharing CTA
+    document.getElementById("sendWhatsAppBtn").addEventListener("click", () => {
+      if (!invoiceData) return;
+      const phone = invoiceData.clientMobile;
+      if (!phone) {
+        alert("Client phone number is missing.");
+        return;
+      }
+      const compName = companyData?.companyName || "BIZODIT";
+      const compUpi = companyData?.upiId || "";
+      const invUrl = window.location.href;
+
+      const text = `Dear ${invoiceData.clientName || 'Valued Client'},\n\n` +
+        `Thank you for your business. Your Tax Invoice *${invoiceData.invoiceNo || invoiceId}* for *${formatRupees(invoiceData.grandTotal)}* from *${compName}* is ready.\n\n` +
+        `📄 *View / Download Invoice PDF:* ${invUrl}\n` +
+        (compUpi ? `💳 *UPI Payment Link/ID:* ${compUpi}\n\n` : `\n`) +
+        `Please let us know once paid.`;
+
+      window.open(`https://wa.me/${whatsappClean(phone)}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+    });
+
+    window.lucide?.createIcons();
+    init();
+  </script>
+</body>
+</html>

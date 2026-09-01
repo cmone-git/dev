@@ -1,0 +1,1499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../../css/cm.css">
+  <link rel="stylesheet" href="../../../../css/forms.css">
+  <link rel="stylesheet" href="../../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Sales Voucher — BIZODIT</title>
+
+  <style>
+    .id-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .id-box input {
+      flex: 1;
+    }
+
+    .id-status {
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Toolbar standard */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .add-form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .date-range {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .date-range .field {
+      flex: 1 1 140px;
+      min-width: 130px;
+      margin-bottom: 0;
+    }
+
+    .date-range .field label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .list-panel {
+      display: block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display: none;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Item */
+    .data-row {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .data-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .data-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .data-row-sub {
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .data-row-meta {
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .data-row-date {
+      font-size: 11px;
+      color: #727983;
+    }
+
+    .sales-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0b3b66;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .status-badge.paid {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #dcfce7;
+    }
+
+    .status-badge.unpaid {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .status-badge.partial {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #dbeafe;
+    }
+
+    /* Card Action Toolbar */
+    .sales-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .sales-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .sales-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .sales-action-btn.call {
+      color: #0b3b66;
+    }
+
+    .sales-action-btn.whatsapp {
+      color: #15803d;
+    }
+
+    .sales-action-btn.invoice {
+      color: #b45309;
+    }
+
+    .sales-action-btn.open-btn {
+      color: #334155;
+    }
+
+    /* Multi-Item Line Table in Form */
+    .items-table-container {
+      grid-column: 1 / -1;
+      margin-top: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .items-table th {
+      background: #f8fafc;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .items-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .items-table input,
+    .items-table select {
+      width: 100%;
+      height: 32px;
+      font-size: 13px;
+      padding: 0 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .item-remove-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    .table-footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background: #fafbfc;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .totals-summary {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 13px;
+      margin-top: 6px;
+      padding: 10px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      width: 240px;
+    }
+
+    .totals-row.grand {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0b3b66;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 4px;
+      margin-top: 4px;
+    }
+
+    /* View / Edit Mode Form Actions */
+    .form-view-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      width: auto;
+      height: auto;
+      border: 0;
+      background: transparent;
+      margin: -4px 0 10px;
+    }
+
+    .form-view-action.delete {
+      color: #b42318;
+    }
+
+    .form-view-action.hidden {
+      display: none;
+    }
+
+    .view-mode input:not([readonly]),
+    .view-mode select,
+    .view-mode textarea {
+      background: #f7f8f9;
+      color: #33404c;
+      pointer-events: none;
+    }
+
+    .view-mode .form-actions {
+      display: none;
+    }
+
+    .form-mode-label {
+      display: none;
+      margin: -7px 0 14px;
+      font-size: 11px;
+      color: #7b8791;
+    }
+
+    .view-mode .form-mode-label {
+      display: block;
+    }
+
+    .empty-list {
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show {
+      display: block;
+    }
+
+    .filter-panel .field {
+      margin-bottom: 8px;
+    }
+
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .form-message.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">BZ</div>
+        <div class="cm-brand-title">BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" id="pageBackBtn" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Sales Voucher & Invoice</h1>
+            <p>Generate tax invoices, client billing & track payments</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="salesListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="salesSearch" class="list-search" type="search" placeholder="Search sales & invoices..." autocomplete="off">
+          <button id="salesSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="salesFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="salesRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportSalesBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importSalesBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+          <button id="addSalesBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+
+        <div id="salesSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="date">Date (Newest)</button>
+            <button class="sort-option" data-sort="date-asc">Date (Oldest)</button>
+            <button class="sort-option" data-sort="id">Invoice No.</button>
+            <button class="sort-option" data-sort="client">Client Name</button>
+            <button class="sort-option" data-sort="amount">Amount High–Low</button>
+          </div>
+        </div>
+
+        <div id="salesFilterPanel" class="filter-panel">
+          <div class="field">
+            <label>Payment Status</label>
+            <select id="salesStatusFilter">
+              <option value="">All Status</option>
+              <option value="Paid">Paid</option>
+              <option value="Unpaid">Unpaid</option>
+              <option value="Partial">Partial</option>
+            </select>
+          </div>
+          <div class="date-range">
+            <div class="field">
+              <label>From Date</label>
+              <input id="salesFromDate" type="date">
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input id="salesToDate" type="date">
+            </div>
+          </div>
+        </div>
+
+        <div id="salesList" class="data-list"><div class="empty-list">Loading sales invoices...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="salesForm">
+        <div class="form-view-actions">
+          <button id="viewInvoiceBtn" class="form-view-action" type="button" title="View / Print Tax Invoice"><i data-lucide="file-text"></i></button>
+          <button id="editSalesBtn" class="form-view-action" type="button" title="Edit sales record"><i data-lucide="pencil"></i></button>
+          <button id="deleteSalesBtn" class="form-view-action delete" type="button" title="Delete sales voucher"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <h2 id="salesFormTitle">Sales Entry</h2>
+        <div id="formModeLabel" class="form-mode-label">View mode — tap Edit to modify this invoice.</div>
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Invoice No.</label>
+            <div class="id-box">
+              <input id="invoiceNo" type="text" readonly placeholder="Generating (INV-26-0001)...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Invoice Date <span class="required">*</span></label>
+            <input id="invoiceDate" type="date" required>
+          </div>
+
+          <div class="field">
+            <label>Client ID <span class="required">*</span></label>
+            <input id="clientId" type="text" required list="clientIdList" placeholder="Search / select ID" autocomplete="off" style="text-transform:uppercase">
+            <datalist id="clientIdList"></datalist>
+          </div>
+
+          <div class="field">
+            <label>Client Name <span class="required">*</span></label>
+            <input id="clientName" type="text" required list="clientNameList" placeholder="Search / select Name" autocomplete="off">
+            <datalist id="clientNameList"></datalist>
+          </div>
+
+          <div class="field">
+            <label>GSTIN</label>
+            <input id="clientGstin" type="text" maxlength="15" placeholder="Client GSTIN (Auto-filled)" style="text-transform:uppercase">
+          </div>
+
+          <div class="field">
+            <label>Client Mobile <span class="required">*</span></label>
+            <input id="clientMobile" type="tel" inputmode="numeric" maxlength="10" required placeholder="10 digit number for WhatsApp">
+          </div>
+
+          <div class="field full">
+            <label>Billing Address</label>
+            <textarea id="clientAddress" rows="2" placeholder="Client registered billing address..."></textarea>
+          </div>
+
+          <div class="field">
+            <label>Payment Status</label>
+            <select id="paymentStatus">
+              <option value="Unpaid">Unpaid</option>
+              <option value="Paid">Paid</option>
+              <option value="Partial">Partial</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Due Date</label>
+            <input id="dueDate" type="date">
+          </div>
+
+          <!-- Items Table -->
+          <div class="items-table-container">
+            <table class="items-table" id="itemsTable">
+              <thead>
+                <tr>
+                  <th style="width: 42%;">Particulars / Service</th>
+                  <th style="width: 14%;">HSN/SAC</th>
+                  <th style="width: 10%;">Qty</th>
+                  <th style="width: 14%;">Rate (₹)</th>
+                  <th style="width: 12%;">GST (%)</th>
+                  <th style="width: 8%;"></th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody"></tbody>
+            </table>
+            <div class="table-footer-bar">
+              <button type="button" class="btn btn-secondary" id="addItemBtn" style="height: 30px; font-size: 12px; padding: 0 8px;">
+                <i data-lucide="plus"></i> Add Line Item
+              </button>
+            </div>
+          </div>
+
+          <!-- Total Calculation -->
+          <div class="totals-summary">
+            <div class="totals-row">
+              <span>Taxable Amount:</span>
+              <strong id="subTotalDisplay">₹0.00</strong>
+            </div>
+            <div class="totals-row">
+              <span>GST Amount:</span>
+              <strong id="taxTotalDisplay">₹0.00</strong>
+            </div>
+            <div class="totals-row grand">
+              <span>Total Invoice Amount:</span>
+              <strong id="grandTotalDisplay">₹0.00</strong>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Created By</label>
+            <input id="createdBy" type="text" value="Admin" placeholder="Created by">
+          </div>
+
+          <div class="field full">
+            <label>Notes & Payment Instructions</label>
+            <textarea id="narration" rows="2" placeholder="Services rendered for ITR/GST filing..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Invoice</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item active" href="../../accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { formatIndianDate, todayISO } from "../../../../js/date.js";
+  import { db } from "../../../../js/firebase-config.js";
+  import {
+    doc,
+    runTransaction,
+    updateDoc,
+    deleteDoc,
+    collection,
+    getDocs,
+    getDoc,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("salesForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const idInput = document.getElementById("invoiceNo");
+  const idStatus = document.getElementById("idStatus");
+  const invoiceDateInput = document.getElementById("invoiceDate");
+  const editSalesBtn = document.getElementById("editSalesBtn");
+  const deleteSalesBtn = document.getElementById("deleteSalesBtn");
+  const viewInvoiceBtn = document.getElementById("viewInvoiceBtn");
+  const cancelFormBtn = document.getElementById("cancelFormBtn");
+
+  const clientIdInput = document.getElementById("clientId");
+  const clientNameInput = document.getElementById("clientName");
+  const clientGstinInput = document.getElementById("clientGstin");
+  const clientMobileInput = document.getElementById("clientMobile");
+  const clientAddressInput = document.getElementById("clientAddress");
+  const clientIdList = document.getElementById("clientIdList");
+  const clientNameList = document.getElementById("clientNameList");
+
+  const itemsTableBody = document.getElementById("itemsTableBody");
+  const addItemBtn = document.getElementById("addItemBtn");
+
+  const CACHE = "bizodit_sales_cache_v1";
+  let salesRows = [];
+  let clientsCache = [];
+  let companyData = null;
+  let currentId = null;
+  let mode = "new"; // "new", "view", "edit"
+  let salesSort = "date";
+
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
+  invoiceDateInput.value = todayISO();
+
+  const clean = value => String(value || "").trim();
+  const upper = value => clean(value).toUpperCase();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
+  /* Load Company Profile for Invoice & WhatsApp CTA */
+  async function loadCompanyProfile() {
+    try {
+      const snap = await getDoc(doc(db, "settings", "companyProfile"));
+      if (snap.exists()) companyData = snap.data();
+    } catch (e) {
+      console.warn("Company profile load failed", e);
+    }
+  }
+
+  /* Load Clients */
+  async function loadClients() {
+    try {
+      const snapshot = await getDocs(query(collection(db, "clients"), limit(500)));
+      clientsCache = snapshot.docs.map(item => ({ id: item.id, ...item.data() })).filter(c => c.clientId && c.clientName);
+      clientIdList.innerHTML = "";
+      clientNameList.innerHTML = "";
+      clientsCache.forEach(client => {
+        const oId = document.createElement("option");
+        oId.value = client.clientId || client.id;
+        clientIdList.appendChild(oId);
+
+        const oName = document.createElement("option");
+        oName.value = client.clientName;
+        clientNameList.appendChild(oName);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function fillClientData(c) {
+    if (!c) return;
+    clientIdInput.value = c.clientId || c.id || "";
+    clientNameInput.value = c.clientName || "";
+    clientGstinInput.value = c.gstin || "";
+    clientMobileInput.value = c.mobile || "";
+    clientAddressInput.value = c.address || "";
+  }
+
+  clientIdInput.addEventListener("input", () => {
+    const c = clientsCache.find(x => upper(x.clientId || x.id) === upper(clientIdInput.value));
+    if (c) fillClientData(c);
+  });
+
+  clientNameInput.addEventListener("input", () => {
+    const c = clientsCache.find(x => clean(x.clientName).toLowerCase() === clean(clientNameInput.value).toLowerCase());
+    if (c) fillClientData(c);
+  });
+
+  /* Line Item Calculation Engine */
+  function createItemRow(item = { desc: "", hsn: "", qty: 1, rate: 0, taxRate: 18 }) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input type="text" class="item-desc" value="${escapeHtml(item.desc || '')}" required placeholder="Service description"></td>
+      <td><input type="text" class="item-hsn" value="${escapeHtml(item.hsn || '998311')}" placeholder="HSN/SAC"></td>
+      <td><input type="number" class="item-qty" min="1" step="1" value="${item.qty || 1}"></td>
+      <td><input type="number" class="item-rate" min="0" step="0.01" value="${item.rate || 0}"></td>
+      <td>
+        <select class="item-tax">
+          <option value="0" ${item.taxRate == 0 ? 'selected' : ''}>0%</option>
+          <option value="5" ${item.taxRate == 5 ? 'selected' : ''}>5%</option>
+          <option value="12" ${item.taxRate == 12 ? 'selected' : ''}>12%</option>
+          <option value="18" ${item.taxRate == 18 ? 'selected' : ''}>18%</option>
+          <option value="28" ${item.taxRate == 28 ? 'selected' : ''}>28%</option>
+        </select>
+      </td>
+      <td><button type="button" class="item-remove-btn"><i data-lucide="x"></i></button></td>
+    `;
+    tr.querySelectorAll("input, select").forEach(inp => inp.addEventListener("input", recalculateTotals));
+    tr.querySelector(".item-remove-btn").addEventListener("click", () => {
+      if (itemsTableBody.children.length > 1) {
+        tr.remove();
+        recalculateTotals();
+      }
+    });
+    itemsTableBody.appendChild(tr);
+    window.lucide?.createIcons();
+  }
+
+  addItemBtn.addEventListener("click", () => createItemRow());
+
+  function recalculateTotals() {
+    let subTotal = 0, taxTotal = 0;
+    Array.from(itemsTableBody.children).forEach(tr => {
+      const qty = Number(tr.querySelector(".item-qty").value) || 0;
+      const rate = Number(tr.querySelector(".item-rate").value) || 0;
+      const taxRate = Number(tr.querySelector(".item-tax").value) || 0;
+
+      const taxable = qty * rate;
+      const tax = (taxable * taxRate) / 100;
+      subTotal += taxable;
+      taxTotal += tax;
+    });
+
+    const grandTotal = subTotal + taxTotal;
+    document.getElementById("subTotalDisplay").textContent = formatRupees(subTotal);
+    document.getElementById("taxTotalDisplay").textContent = formatRupees(taxTotal);
+    document.getElementById("grandTotalDisplay").textContent = formatRupees(grandTotal);
+
+    return { subTotal, taxTotal, grandTotal };
+  }
+
+  function getItemsArray() {
+    return Array.from(itemsTableBody.children).map(tr => ({
+      desc: clean(tr.querySelector(".item-desc").value),
+      hsn: clean(tr.querySelector(".item-hsn").value),
+      qty: Number(tr.querySelector(".item-qty").value) || 1,
+      rate: Number(tr.querySelector(".item-rate").value) || 0,
+      taxRate: Number(tr.querySelector(".item-tax").value) || 0,
+      amount: (Number(tr.querySelector(".item-qty").value) || 1) * (Number(tr.querySelector(".item-rate").value) || 0)
+    }));
+  }
+
+  /* Auto ID Generator: INV-26-0001 series */
+  async function getNextInvoiceId(transaction, dateString) {
+    const yr = String(new Date(dateString || new Date()).getFullYear()).slice(-2);
+    const counterRef = doc(db, "counters", `sales_${yr}`);
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) nextNumber = lastNumber + 1;
+    }
+
+    while (true) {
+      const candidateId = `INV-${yr}-${String(nextNumber).padStart(4, "0")}`;
+      const candidateRef = doc(db, "sales_vouchers", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
+
+      if (!candidateSnap.exists()) {
+        return { id: candidateId, counterRef, nextNumber, yr };
+      }
+      nextNumber++;
+    }
+  }
+
+  function formData() {
+    const totals = recalculateTotals();
+    return {
+      invoiceNo: clean(idInput.value),
+      invoiceDate: clean(invoiceDateInput.value),
+      clientId: upper(clientIdInput.value),
+      clientName: clean(clientNameInput.value),
+      clientGstin: upper(clientGstinInput.value),
+      clientMobile: clean(clientMobileInput.value),
+      clientAddress: clean(clientAddressInput.value),
+      paymentStatus: clean(document.getElementById("paymentStatus").value),
+      dueDate: clean(document.getElementById("dueDate").value),
+      items: getItemsArray(),
+      subTotal: totals.subTotal,
+      taxTotal: totals.taxTotal,
+      grandTotal: totals.grandTotal,
+      createdBy: clean(document.getElementById("createdBy").value) || "Admin",
+      narration: clean(document.getElementById("narration").value)
+    };
+  }
+
+  function fillForm(s) {
+    currentId = s.invoiceNo || s.id;
+    idInput.value = currentId || "";
+    invoiceDateInput.value = s.invoiceDate || todayISO();
+    clientIdInput.value = s.clientId || "";
+    clientNameInput.value = s.clientName || "";
+    clientGstinInput.value = s.clientGstin || "";
+    clientMobileInput.value = s.clientMobile || "";
+    clientAddressInput.value = s.clientAddress || "";
+    document.getElementById("paymentStatus").value = s.paymentStatus || "Unpaid";
+    document.getElementById("dueDate").value = s.dueDate || "";
+    document.getElementById("createdBy").value = s.createdBy || "Admin";
+    document.getElementById("narration").value = s.narration || "";
+
+    itemsTableBody.innerHTML = "";
+    if (Array.isArray(s.items) && s.items.length) {
+      s.items.forEach(item => createItemRow(item));
+    } else {
+      createItemRow();
+    }
+    recalculateTotals();
+  }
+
+  function setInputs(disabled) {
+    form.querySelectorAll("input,select,textarea").forEach(x => x.disabled = disabled);
+    idInput.readOnly = true;
+    saveBtn.disabled = disabled;
+    addItemBtn.style.display = disabled ? "none" : "inline-flex";
+    document.querySelectorAll(".item-remove-btn").forEach(btn => btn.style.display = disabled ? "none" : "inline-flex");
+  }
+
+  function viewMode() {
+    mode = "view";
+    form.classList.add("view-mode");
+    document.getElementById("salesFormTitle").textContent = "Invoice Details";
+    editSalesBtn.classList.remove("hidden");
+    deleteSalesBtn.classList.remove("hidden");
+    viewInvoiceBtn.classList.remove("hidden");
+    setInputs(true);
+    cancelFormBtn.textContent = "Back";
+    clearMessage();
+  }
+
+  function editMode() {
+    mode = "edit";
+    form.classList.remove("view-mode");
+    document.getElementById("salesFormTitle").textContent = "Edit Invoice";
+    editSalesBtn.classList.add("hidden");
+    deleteSalesBtn.classList.remove("hidden");
+    viewInvoiceBtn.classList.remove("hidden");
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  function newMode() {
+    mode = "new";
+    currentId = null;
+    form.classList.remove("view-mode");
+    document.getElementById("salesFormTitle").textContent = "Sales Entry";
+    editSalesBtn.classList.add("hidden");
+    deleteSalesBtn.classList.add("hidden");
+    viewInvoiceBtn.classList.add("hidden");
+    form.reset();
+    invoiceDateInput.value = todayISO();
+    idInput.value = "";
+    idStatus.textContent = "";
+    itemsTableBody.innerHTML = "";
+    createItemRow();
+    recalculateTotals();
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  const salesListPanel = document.getElementById("salesListPanel");
+  const addSalesBtn = document.getElementById("addSalesBtn");
+  const salesSearch = document.getElementById("salesSearch");
+  const salesSortBtn = document.getElementById("salesSortBtn");
+  const salesFilterBtn = document.getElementById("salesFilterBtn");
+  const salesSortMenu = document.getElementById("salesSortMenu");
+  const salesFilterPanel = document.getElementById("salesFilterPanel");
+  const salesStatusFilter = document.getElementById("salesStatusFilter");
+  const salesFromDate = document.getElementById("salesFromDate");
+  const salesToDate = document.getElementById("salesToDate");
+  const salesRefreshBtn = document.getElementById("salesRefreshBtn");
+  const salesList = document.getElementById("salesList");
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadSalesList() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        salesRows = cached;
+        renderSalesList();
+      }
+    } catch (error) {
+      console.warn("Sales cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "sales_vouchers"), limit(500)));
+      salesRows = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE, JSON.stringify(salesRows));
+      renderSalesList();
+    } catch (error) {
+      console.error("Sales list load failed:", error);
+      if (!salesRows.length) {
+        salesList.innerHTML = '<div class="empty-list">Unable to load sales invoices. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function formatRupees(num) {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+  }
+
+  /* Direct WhatsApp CTA with Pre-Filled Message */
+  function openWhatsAppInvoice(invoice) {
+    const phone = clean(invoice.clientMobile);
+    if (!phone) {
+      alert("No client mobile number recorded for this invoice.");
+      return;
+    }
+    const compName = companyData?.companyName || "BIZODIT";
+    const compUpi = companyData?.upiId || "";
+    const invUrl = `${window.location.origin}/modules/accounts/template-invoice.html?id=${encodeURIComponent(invoice.invoiceNo || invoice.id)}`;
+    
+    const text = `Dear ${invoice.clientName || 'Valued Client'},\n\n` +
+      `Thank you for your business. Your Tax Invoice *${invoice.invoiceNo || invoice.id}* for *${formatRupees(invoice.grandTotal)}* has been generated by *${compName}*.\n\n` +
+      `📄 *View / Download Invoice PDF:* ${invUrl}\n` +
+      (compUpi ? `💳 *Pay via UPI:* ${compUpi}\n\n` : `\n`) +
+      `For queries, reply to this message.`;
+
+    const waUrl = `https://wa.me/${whatsappClean(phone)}?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, "_blank", "noopener");
+  }
+
+  function renderSalesList() {
+    const term = clean(salesSearch.value).toLowerCase();
+    const statusVal = clean(salesStatusFilter.value);
+
+    let rows = salesRows.filter(row => {
+      const vNo = row.invoiceNo || row.id || "";
+      const text = `${vNo} ${row.clientName || ""} ${row.clientId || ""} ${row.clientMobile || ""}`.toLowerCase();
+      const vDate = String(row.invoiceDate || "").slice(0, 10);
+      const matchesFrom = !salesFromDate.value || (vDate && vDate >= salesFromDate.value);
+      const matchesTo = !salesToDate.value || (vDate && vDate <= salesToDate.value);
+
+      return (!term || text.includes(term)) && (!statusVal || row.paymentStatus === statusVal) && matchesFrom && matchesTo;
+    });
+
+    rows.sort((a, b) => {
+      if (salesSort === "date") return String(b.invoiceDate || "").localeCompare(String(a.invoiceDate || ""));
+      if (salesSort === "date-asc") return String(a.invoiceDate || "").localeCompare(String(b.invoiceDate || ""));
+      if (salesSort === "id") return String(b.invoiceNo || b.id || "").localeCompare(String(a.invoiceNo || a.id || ""), undefined, { numeric: true });
+      if (salesSort === "client") return String(a.clientName || "").localeCompare(String(b.clientName || ""));
+      if (salesSort === "amount") return (Number(b.grandTotal) || 0) - (Number(a.grandTotal) || 0);
+      return 0;
+    });
+
+    if (!rows.length) {
+      salesList.innerHTML = '<div class="empty-list">No sales invoices found.</div>';
+      return;
+    }
+
+    salesList.innerHTML = rows.map(row => {
+      const id = String(row.invoiceNo || row.id);
+      const client = row.clientName || "Client";
+      const amt = formatRupees(row.grandTotal);
+      const st = row.paymentStatus || "Unpaid";
+      const phone = clean(row.clientMobile || "");
+
+      return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${escapeHtml(id)}">
+            <div class="data-row-title">${escapeHtml(client)}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · ${phone ? escapeHtml(phone) : 'No phone'} ${row.clientGstin ? `· GST: ${escapeHtml(row.clientGstin)}` : ''}</div>
+          </div>
+          <div class="data-row-meta">
+            <span class="data-row-date">${escapeHtml(row.invoiceDate || "")}</span>
+            <span class="sales-amount">${escapeHtml(amt)}</span>
+            <span class="status-badge ${st.toLowerCase()}">${escapeHtml(st)}</span>
+          </div>
+        </div>
+        <div class="sales-row-actions">
+          ${phone ? `<a class="sales-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Client"><i data-lucide="phone"></i></a>` : ""}
+          ${phone ? `<button class="sales-action-btn whatsapp" data-wa-id="${escapeHtml(id)}" type="button" title="Send Invoice on WhatsApp"><i data-lucide="message-circle"></i></button>` : ""}
+          <a class="sales-action-btn invoice" href="template-invoice.html?id=${escapeHtml(id)}" title="View Invoice PDF"><i data-lucide="file-text"></i></a>
+          <button class="sales-action-btn open-btn" data-open="${escapeHtml(id)}" type="button" title="Edit / View Details"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    salesList.querySelectorAll("[data-open]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        openView(b.dataset.open);
+      });
+    });
+
+    salesList.querySelectorAll("[data-wa-id]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        const inv = salesRows.find(x => String(x.invoiceNo || x.id) === String(b.dataset.waId));
+        if (inv) openWhatsAppInvoice(inv);
+      });
+    });
+  }
+
+  function findSales(id) {
+    return salesRows.find(c => String(c.invoiceNo || c.id) === String(id));
+  }
+
+  async function openView(id) {
+    const cached = findSales(id);
+    if (cached) {
+      fillForm(cached);
+      salesListPanel.classList.add("hidden");
+      form.classList.remove("hidden");
+      viewMode();
+      window.scrollTo(0, 0);
+    }
+    try {
+      const s = await getDoc(doc(db, "sales_vouchers", id));
+      if (!s.exists()) throw new Error("Invoice record no longer exists.");
+      fillForm({ id: s.id, ...s.data() });
+      viewMode();
+    } catch (e) {
+      if (!cached) showMessage(e.message || "Unable to open sales voucher.");
+    }
+  }
+
+  function openList() {
+    form.classList.add("hidden");
+    salesListPanel.classList.remove("hidden");
+    newMode();
+    renderSalesList();
+    window.scrollTo(0, 0);
+  }
+
+  function openNew() {
+    newMode();
+    salesListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  viewInvoiceBtn.addEventListener("click", () => {
+    if (currentId) window.location.href = `template-invoice.html?id=${encodeURIComponent(currentId)}`;
+  });
+
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Invoice Date,Client ID,Client Name,Client GSTIN,Client Mobile,Client Address,Particulars,HSN,Qty,Rate,GST Rate,Payment Status,Due Date\n" +
+                     "2026-08-23,C40001,Acme Corp,27ABCDE1234F1Z5,9876543210,\"Industrial Area\",ITR Filing Services,998311,1,2500,18,Unpaid,2026-08-31";
+    downloadBlob(template, "sales_invoice_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportSalesBtn").addEventListener("click", () => {
+    if (!salesRows.length) { alert("No sales vouchers to export."); return; }
+    const headers = ["Invoice No","Invoice Date","Client ID","Client Name","Client GSTIN","Client Mobile","Taxable Amount","GST Amount","Grand Total","Payment Status","Created At"];
+    const rows = salesRows.map(c => [
+      `"${c.invoiceNo||c.id||""}"`, `"${c.invoiceDate||""}"`, `"${c.clientId||""}"`,
+      `"${(c.clientName||"").replace(/"/g,'""')}"`, `"${c.clientGstin||""}"`, `"${c.clientMobile||""}"`,
+      `"${c.subTotal||0}"`, `"${c.taxTotal||0}"`, `"${c.grandTotal||0}"`,
+      `"${c.paymentStatus||"Unpaid"}"`, `"${c.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `sales_invoices_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importSalesBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} invoice record(s)?`)) { e.target.value = ""; return; }
+
+    salesRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const vDate = clean(r[0]) || todayISO();
+        const cId = upper(r[1]);
+        const cName = clean(r[2]);
+        const qty = Number(r[8]) || 1;
+        const rate = Number(r[9]) || 0;
+        const taxRate = Number(r[10]) || 18;
+        const taxable = qty * rate;
+        const tax = (taxable * taxRate) / 100;
+
+        if (!cName || !rate) continue;
+
+        await runTransaction(db, async tx => {
+          const result = await getNextInvoiceId(tx, vDate);
+          const salesRef = doc(db, "sales_vouchers", result.id);
+          const record = {
+            invoiceNo: result.id,
+            invoiceDate: vDate,
+            clientId: cId,
+            clientName: cName,
+            clientGstin: upper(r[3]),
+            clientMobile: clean(r[4]),
+            clientAddress: clean(r[5]),
+            items: [{ desc: clean(r[6]) || "Professional Service", hsn: clean(r[7]) || "998311", qty, rate, taxRate, amount: taxable }],
+            subTotal: taxable,
+            taxTotal: tax,
+            grandTotal: taxable + tax,
+            paymentStatus: clean(r[11]) || "Unpaid",
+            dueDate: clean(r[12]) || "",
+            createdBy: "Admin",
+            narration: "",
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+          tx.set(salesRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem(CACHE);
+      await loadSalesList();
+      alert(`Successfully imported ${imported} sales invoice(s).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during sales import: " + err.message);
+    } finally {
+      salesRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addSalesBtn.addEventListener("click", openNew);
+  cancelFormBtn.addEventListener("click", openList);
+  editSalesBtn.addEventListener("click", editMode);
+
+  deleteSalesBtn.addEventListener("click", async () => {
+    if (!currentId) return;
+    if (!confirm(`Delete sales invoice (${currentId})?\n\nThis action cannot be undone.`)) return;
+    deleteSalesBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "sales_vouchers", currentId));
+      salesRows = salesRows.filter(x => String(x.invoiceNo || x.id) !== String(currentId));
+      localStorage.setItem(CACHE, JSON.stringify(salesRows));
+      showMessage("Invoice deleted successfully.", "success");
+      setTimeout(openList, 450);
+    } catch (e) {
+      showMessage(e.message || "Unable to delete invoice.");
+    } finally {
+      deleteSalesBtn.disabled = false;
+    }
+  });
+
+  salesSearch.addEventListener("input", renderSalesList);
+  salesStatusFilter.addEventListener("change", renderSalesList);
+  salesFromDate.addEventListener("change", renderSalesList);
+  salesToDate.addEventListener("change", renderSalesList);
+
+  salesRefreshBtn.addEventListener("click", async () => {
+    salesRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE);
+      await loadSalesList();
+    } finally {
+      salesRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  salesSortBtn.addEventListener("click", () => salesSortMenu.classList.toggle("show"));
+  salesFilterBtn.addEventListener("click", () => salesFilterPanel.classList.toggle("show"));
+
+  salesSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      salesSort = option.dataset.sort;
+      salesSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      salesSortMenu.classList.remove("show");
+      renderSalesList();
+    });
+  });
+
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openList();
+    } else {
+      history.back();
+    }
+  });
+
+  /* Create Invoice via Atomic Transaction */
+  async function createSales() {
+    const d = formData();
+    if (!d.invoiceDate) { showMessage("Invoice Date is required."); invoiceDateInput.focus(); return; }
+    if (!d.clientName) { showMessage("Client Name is required."); clientNameInput.focus(); return; }
+    if (!d.clientMobile || !/^[0-9]{10}$/.test(d.clientMobile)) { showMessage("Enter a valid 10-digit mobile number."); clientMobileInput.focus(); return; }
+    if (!d.items.length || d.grandTotal <= 0) { showMessage("Add at least one valid line item."); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextInvoiceId(transaction, d.invoiceDate);
+        generatedId = result.id;
+        const salesRef = doc(db, "sales_vouchers", generatedId);
+        const data = {
+          ...d,
+          invoiceNo: generatedId,
+          createdAt: now,
+          updatedAt: now
+        };
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, updatedAt: now }, { merge: true });
+        transaction.set(salesRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Invoice ${generatedId} saved successfully.`, "success");
+      localStorage.removeItem(CACHE);
+
+      setTimeout(() => {
+        window.location.href = `template-invoice.html?id=${encodeURIComponent(generatedId)}`;
+      }, 500);
+    } catch (error) {
+      console.error("Sales save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save invoice. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Invoice";
+    }
+  }
+
+  /* Update existing Invoice */
+  async function updateSales() {
+    if (!currentId) return;
+    const d = formData();
+    if (!d.clientName || !d.clientMobile) {
+      showMessage("Client Name and Mobile are required.");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Updating...";
+
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "sales_vouchers", currentId), {
+        invoiceDate: d.invoiceDate,
+        clientId: d.clientId,
+        clientName: d.clientName,
+        clientGstin: d.clientGstin,
+        clientMobile: d.clientMobile,
+        clientAddress: d.clientAddress,
+        items: d.items,
+        subTotal: d.subTotal,
+        taxTotal: d.taxTotal,
+        grandTotal: d.grandTotal,
+        paymentStatus: d.paymentStatus,
+        dueDate: d.dueDate,
+        createdBy: d.createdBy,
+        narration: d.narration,
+        updatedAt: now
+      });
+
+      const idx = salesRows.findIndex(c => String(c.invoiceNo || c.id) === String(currentId));
+      if (idx >= 0) {
+        salesRows[idx] = { ...salesRows[idx], ...d, invoiceNo: currentId, updatedAt: now };
+        localStorage.setItem(CACHE, JSON.stringify(salesRows));
+      }
+
+      showMessage("Invoice updated successfully.", "success");
+      setTimeout(() => {
+        openList();
+      }, 450);
+    } catch (error) {
+      console.error("Sales update error:", error);
+      showMessage(error?.message || "Unable to update invoice.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Invoice";
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    if (mode === "edit") {
+      await updateSales();
+    } else {
+      await createSales();
+    }
+  });
+
+  document.getElementById("clientMobile").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10));
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadCompanyProfile();
+  loadClients().then(loadSalesList);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="../../../../css/cm.css">
+  <link rel="stylesheet" href="../../../../css/forms.css">
+  <link rel="stylesheet" href="../../../../css/responsive.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <title>Receipt Voucher — BIZODIT</title>
+
+  <style>
+    .id-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .id-box input {
+      flex: 1;
+    }
+
+    .id-status {
+      min-width: 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* Toolbar matching other modules */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-search {
+      flex: 1 1 160px;
+      min-width: 140px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      box-sizing: border-box;
+      transition: border-color .15s;
+    }
+
+    .list-search:focus {
+      border-color: #0b3b66;
+    }
+
+    .refresh-btn,
+    .list-icon-btn,
+    .form-view-action {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      color: #4b5563;
+      box-sizing: border-box;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin .8s linear infinite;
+    }
+
+    .list-icon-btn.active {
+      background: #f1f4f7;
+    }
+
+    .add-form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 68px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .date-range {
+      display: flex;
+      gap: 8px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .date-range .field {
+      flex: 1 1 140px;
+      min-width: 130px;
+      margin-bottom: 0;
+    }
+
+    .date-range .field label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .list-panel {
+      display: block;
+    }
+
+    .list-panel.hidden,
+    .entry-panel.hidden {
+      display: none;
+    }
+
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Card Item */
+    .data-row {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .data-row-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .data-row-content {
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .data-row-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .data-row-sub {
+      margin-top: 3px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .data-row-meta {
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .data-row-date {
+      font-size: 11px;
+      color: #727983;
+    }
+
+    .receipt-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: #15803d;
+    }
+
+    .mode-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #dcfce7;
+    }
+
+    /* Card Action Toolbar */
+    .receipt-row-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .receipt-action-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e2e8f0;
+      background: #fafafa;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .receipt-action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .receipt-action-btn.call {
+      color: #0b3b66;
+    }
+
+    .receipt-action-btn.whatsapp {
+      color: #15803d;
+    }
+
+    .receipt-action-btn.open-btn {
+      color: #334155;
+    }
+
+    /* View / Edit Mode Elements */
+    .form-view-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      width: auto;
+      height: auto;
+      border: 0;
+      background: transparent;
+      margin: -4px 0 10px;
+    }
+
+    .form-view-action.delete {
+      color: #b42318;
+    }
+
+    .form-view-action.hidden {
+      display: none;
+    }
+
+    .view-mode input:not([readonly]),
+    .view-mode select,
+    .view-mode textarea {
+      background: #f7f8f9;
+      color: #33404c;
+      pointer-events: none;
+    }
+
+    .view-mode .form-actions {
+      display: none;
+    }
+
+    .form-mode-label {
+      display: none;
+      margin: -7px 0 14px;
+      font-size: 11px;
+      color: #7b8791;
+    }
+
+    .view-mode .form-mode-label {
+      display: block;
+    }
+
+    .empty-list {
+      padding: 28px 12px;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .filter-panel {
+      display: none;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #e0e3e7;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+
+    .filter-panel.show {
+      display: block;
+    }
+
+    .filter-panel .field {
+      margin-bottom: 8px;
+    }
+
+    .sort-menu {
+      display: none;
+      position: relative;
+    }
+
+    .sort-menu.show {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sort-option {
+      border: 1px solid #d7dce2;
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .sort-option.active {
+      background: #eef2f5;
+      font-weight: 600;
+    }
+
+    .form-message {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f3c2c2;
+    }
+
+    .form-message.success {
+      background: #effaf3;
+      color: #16723a;
+      border: 1px solid #b9e4c7;
+    }
+
+    .saving .save-icon {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <button class="menu-toggle" id="menuToggle" type="button">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="cm-brand">
+        <div class="cm-logo">BZ</div>
+        <div class="cm-brand-title">BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page">
+
+      <section class="module-header">
+        <div class="module-header-left">
+          <button class="back-btn" id="pageBackBtn" type="button">
+            <i data-lucide="arrow-left"></i>
+          </button>
+
+          <div class="module-title">
+            <h1>Receipt Voucher</h1>
+            <p>Record client collections, fee receipts & incoming funds</p>
+            <div class="report-as-on">
+              Date : <strong id="presentDate">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="receiptListPanel" class="form-section list-panel">
+        <div class="list-toolbar">
+          <input id="receiptSearch" class="list-search" type="search" placeholder="Search receipt vouchers..." autocomplete="off">
+          <button id="receiptSortBtn" class="list-icon-btn" type="button" title="Sort"><i data-lucide="arrow-up-down"></i></button>
+          <button id="receiptFilterBtn" class="list-icon-btn" type="button" title="Filter"><i data-lucide="list-filter"></i></button>
+          <button id="receiptRefreshBtn" class="refresh-btn" type="button" title="Refresh"><i data-lucide="refresh-cw"></i></button>
+          <button id="exportReceiptBtn" class="list-icon-btn" type="button" title="Export CSV"><i data-lucide="download"></i></button>
+          <button id="importReceiptBtn" class="list-icon-btn" type="button" title="Import CSV"><i data-lucide="upload"></i></button>
+          <button id="downloadTemplateBtn" class="list-icon-btn" type="button" title="Download Template"><i data-lucide="file-spreadsheet"></i></button>
+          <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+          <button id="addReceiptBtn" class="btn btn-primary add-form-btn" type="button"><i data-lucide="plus"></i>Add</button>
+        </div>
+
+        <div id="receiptSortMenu" class="sort-menu">
+          <div class="sort-options">
+            <button class="sort-option active" data-sort="date">Date (Newest)</button>
+            <button class="sort-option" data-sort="date-asc">Date (Oldest)</button>
+            <button class="sort-option" data-sort="id">Voucher No.</button>
+            <button class="sort-option" data-sort="client">Received From</button>
+            <button class="sort-option" data-sort="amount">Amount High–Low</button>
+          </div>
+        </div>
+
+        <div id="receiptFilterPanel" class="filter-panel">
+          <div class="field">
+            <label>Payment Mode</label>
+            <select id="receiptModeFilter">
+              <option value="">All Modes</option>
+              <option value="UPI / QR">UPI / QR</option>
+              <option value="Bank Transfer / NEFT / RTGS">Bank Transfer / NEFT / RTGS</option>
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+            </select>
+          </div>
+          <div class="date-range">
+            <div class="field">
+              <label>From Date</label>
+              <input id="receiptFromDate" type="date">
+            </div>
+            <div class="field">
+              <label>To Date</label>
+              <input id="receiptToDate" type="date">
+            </div>
+          </div>
+        </div>
+
+        <div id="receiptList" class="data-list"><div class="empty-list">Loading receipt vouchers...</div></div>
+      </div>
+
+      <form class="form-section entry-panel hidden" id="receiptForm">
+        <div class="form-view-actions">
+          <button id="editReceiptBtn" class="form-view-action" type="button" title="Edit receipt voucher"><i data-lucide="pencil"></i></button>
+          <button id="deleteReceiptBtn" class="form-view-action delete" type="button" title="Delete receipt voucher"><i data-lucide="trash-2"></i></button>
+        </div>
+
+        <h2 id="receiptFormTitle">Receipt Entry</h2>
+        <div id="formModeLabel" class="form-mode-label">View mode — tap Edit to modify this voucher.</div>
+        <div id="formMessage" class="form-message"></div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Voucher No.</label>
+            <div class="id-box">
+              <input id="voucherNo" type="text" readonly placeholder="Generating on save (RV26080001)...">
+              <span id="idStatus" class="id-status"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Voucher Date <span class="required">*</span></label>
+            <input id="voucherDate" type="date" required>
+          </div>
+
+          <div class="field">
+            <label>Client ID</label>
+            <input id="clientId" type="text" list="clientIdList" placeholder="Search / select ID (Optional)" autocomplete="off" style="text-transform:uppercase">
+            <datalist id="clientIdList"></datalist>
+          </div>
+
+          <div class="field">
+            <label>Received From / Client Name <span class="required">*</span></label>
+            <input id="receivedFrom" type="text" required list="clientNameList" placeholder="Client / Payer name" autocomplete="off">
+            <datalist id="clientNameList"></datalist>
+          </div>
+
+          <div class="field">
+            <label>Credit Ledger / Income Head <span class="required">*</span></label>
+            <input id="creditLedger" type="text" required placeholder="e.g. Professional Fees, Consultancy Income" list="incomeSuggestions">
+            <datalist id="incomeSuggestions">
+              <option value="Professional Fees">
+              <option value="Consultancy Charges">
+              <option value="ITR Filing Charges">
+              <option value="GST Return Filing Fees">
+              <option value="Audit Fees">
+              <option value="Accounting Charges">
+              <option value="Client Advance">
+              <option value="Interest Received">
+              <option value="Reimbursement of Expenses">
+            </datalist>
+          </div>
+
+          <div class="field">
+            <label>Amount Received (₹) <span class="required">*</span></label>
+            <input id="amount" type="number" min="0.01" step="0.01" required placeholder="0.00">
+          </div>
+
+          <div class="field">
+            <label>Deposit To (Account / Bank) <span class="required">*</span></label>
+            <input id="depositTo" type="text" required placeholder="e.g. HDFC Bank / Cash in Hand" list="bankSuggestions">
+            <datalist id="bankSuggestions">
+              <option value="HDFC Bank">
+              <option value="State Bank of India">
+              <option value="ICICI Bank">
+              <option value="Axis Bank">
+              <option value="Cash in Hand">
+              <option value="Petty Cash">
+            </datalist>
+          </div>
+
+          <div class="field">
+            <label>Payment Mode <span class="required">*</span></label>
+            <select id="paymentMode" required>
+              <option value="UPI / QR">UPI / QR</option>
+              <option value="Bank Transfer / NEFT / RTGS">Bank Transfer / NEFT / RTGS</option>
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Cheque / Transaction / UTR No.</label>
+            <input id="referenceNo" type="text" placeholder="UPI Ref / Cheque / UTR No.">
+          </div>
+
+          <div class="field">
+            <label>Created By</label>
+            <input id="createdBy" type="text" value="Admin" placeholder="Created by">
+          </div>
+
+          <div class="field full">
+            <label>Narration / Remarks</label>
+            <textarea id="narration" rows="3" placeholder="Being amount received against invoice / professional services..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancel</button>
+          <button id="saveBtn" class="btn btn-primary" type="submit">
+            <i class="save-icon" data-lucide="save"></i>
+            <span class="save-text">Save Receipt Voucher</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a class="bottom-item" href="../../../../index.html">
+      <i data-lucide="house"></i>
+      <span>HOME</span>
+    </a>
+
+    <a class="bottom-item" href="../../../crm/crm.html">
+      <i data-lucide="users-round"></i>
+      <span>CRM</span>
+    </a>
+
+    <a class="bottom-item active" href="../../accounts.html">
+      <i data-lucide="wallet"></i>
+      <span>ACCOUNTS</span>
+    </a>
+
+    <a class="bottom-item" href="../../../settings/settings.html">
+      <i data-lucide="settings-2"></i>
+      <span>SETTINGS</span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { formatIndianDate, todayISO } from "../../../../js/date.js";
+  import { db } from "../../../../js/firebase-config.js";
+  import {
+    doc,
+    runTransaction,
+    updateDoc,
+    deleteDoc,
+    collection,
+    getDocs,
+    getDoc,
+    query,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const form = document.getElementById("receiptForm");
+  const saveBtn = document.getElementById("saveBtn");
+  const message = document.getElementById("formMessage");
+  const idInput = document.getElementById("voucherNo");
+  const idStatus = document.getElementById("idStatus");
+  const voucherDateInput = document.getElementById("voucherDate");
+  const editReceiptBtn = document.getElementById("editReceiptBtn");
+  const deleteReceiptBtn = document.getElementById("deleteReceiptBtn");
+  const cancelFormBtn = document.getElementById("cancelFormBtn");
+
+  const clientIdInput = document.getElementById("clientId");
+  const receivedFromInput = document.getElementById("receivedFrom");
+  const clientIdList = document.getElementById("clientIdList");
+  const clientNameList = document.getElementById("clientNameList");
+
+  const CACHE = "bizodit_receipts_cache_v1";
+  let receiptRows = [];
+  let clientsCache = [];
+  let currentId = null;
+  let mode = "new"; // "new", "view", "edit"
+  let receiptSort = "date";
+
+  document.getElementById("presentDate").textContent = formatIndianDate(new Date());
+  voucherDateInput.value = todayISO();
+
+  const clean = value => String(value || "").trim();
+  const upper = value => clean(value).toUpperCase();
+
+  const showMessage = (text, type = "error") => {
+    message.textContent = text;
+    message.className = `form-message show ${type}`;
+  };
+
+  const clearMessage = () => {
+    message.textContent = "";
+    message.className = "form-message";
+  };
+
+  const normalize = value => String(value || "").trim().toLowerCase();
+
+  function findClientById(value) {
+    const id = upper(value);
+    return clientsCache.find(c => upper(c.clientId || c.id || "") === id);
+  }
+
+  function findClientByName(value) {
+    const name = normalize(value);
+    return clientsCache.find(c => normalize(c.clientName) === name);
+  }
+
+  async function loadClients() {
+    const cacheKey = "bizodit_clients_cache_v3";
+    try {
+      const cached = JSON.parse(localStorage.getItem(cacheKey) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        clientsCache = cached;
+        populateClientLists();
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "clients"), limit(500)));
+      clientsCache = snapshot.docs.map(item => ({ id: item.id, ...item.data() })).filter(c => c.clientId && c.clientName);
+      localStorage.setItem(cacheKey, JSON.stringify(clientsCache));
+      populateClientLists();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function populateClientLists() {
+    clientIdList.innerHTML = "";
+    clientNameList.innerHTML = "";
+    clientsCache.forEach(client => {
+      const optId = document.createElement("option");
+      optId.value = client.clientId || client.id;
+      clientIdList.appendChild(optId);
+
+      const optName = document.createElement("option");
+      optName.value = client.clientName;
+      clientNameList.appendChild(optName);
+    });
+  }
+
+  clientIdInput.addEventListener("input", () => {
+    const client = findClientById(clientIdInput.value);
+    if (client) receivedFromInput.value = client.clientName || "";
+  });
+
+  receivedFromInput.addEventListener("input", () => {
+    const client = findClientByName(receivedFromInput.value);
+    if (client) clientIdInput.value = client.clientId || client.id || "";
+  });
+
+  /* Monthly Auto Counter Format: RVYYMM0001 (e.g., RV26080001) */
+  function getPeriodFromDate(dateString) {
+    const date = new Date(`${dateString}T00:00:00`);
+    if (Number.isNaN(date.getTime())) throw new Error("Invalid voucher date.");
+    const year = String(date.getFullYear()).slice(-2);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return { year, month, period: `${year}${month}` };
+  }
+
+  async function getNextReceiptId(transaction, dateString) {
+    const { year, month, period } = getPeriodFromDate(dateString);
+    const counterRef = doc(db, "counters", `receipt_${period}`);
+    const counterSnap = await transaction.get(counterRef);
+    let nextNumber = 1;
+
+    if (counterSnap.exists()) {
+      const lastNumber = Number(counterSnap.data().lastNumber);
+      if (Number.isFinite(lastNumber) && lastNumber >= 0) nextNumber = lastNumber + 1;
+    }
+
+    while (true) {
+      const candidateId = `RV${year}${month}${String(nextNumber).padStart(4, "0")}`;
+      const candidateRef = doc(db, "receipt_vouchers", candidateId);
+      const candidateSnap = await transaction.get(candidateRef);
+
+      if (!candidateSnap.exists()) {
+        return { id: candidateId, counterRef, nextNumber, period };
+      }
+      nextNumber++;
+    }
+  }
+
+  function formData() {
+    return {
+      voucherNo: clean(idInput.value),
+      voucherDate: clean(voucherDateInput.value),
+      clientId: upper(clientIdInput.value),
+      receivedFrom: clean(receivedFromInput.value),
+      creditLedger: clean(document.getElementById("creditLedger").value),
+      amount: Number(document.getElementById("amount").value) || 0,
+      depositTo: clean(document.getElementById("depositTo").value),
+      paymentMode: clean(document.getElementById("paymentMode").value),
+      referenceNo: clean(document.getElementById("referenceNo").value),
+      createdBy: clean(document.getElementById("createdBy").value) || "Admin",
+      narration: clean(document.getElementById("narration").value)
+    };
+  }
+
+  function fillForm(r) {
+    currentId = r.voucherNo || r.id;
+    idInput.value = currentId || "";
+    voucherDateInput.value = r.voucherDate || todayISO();
+    clientIdInput.value = r.clientId || "";
+    receivedFromInput.value = r.receivedFrom || "";
+    document.getElementById("creditLedger").value = r.creditLedger || "";
+    document.getElementById("amount").value = r.amount ?? "";
+    document.getElementById("depositTo").value = r.depositTo || "";
+    document.getElementById("paymentMode").value = r.paymentMode || "UPI / QR";
+    document.getElementById("referenceNo").value = r.referenceNo || "";
+    document.getElementById("createdBy").value = r.createdBy || "Admin";
+    document.getElementById("narration").value = r.narration || "";
+  }
+
+  function setInputs(disabled) {
+    form.querySelectorAll("input,select,textarea").forEach(x => x.disabled = disabled);
+    idInput.readOnly = true;
+    saveBtn.disabled = disabled;
+  }
+
+  function viewMode() {
+    mode = "view";
+    form.classList.add("view-mode");
+    document.getElementById("receiptFormTitle").textContent = "Receipt Voucher Details";
+    editReceiptBtn.classList.remove("hidden");
+    deleteReceiptBtn.classList.remove("hidden");
+    setInputs(true);
+    cancelFormBtn.textContent = "Back";
+    clearMessage();
+  }
+
+  function editMode() {
+    mode = "edit";
+    form.classList.remove("view-mode");
+    document.getElementById("receiptFormTitle").textContent = "Edit Receipt Voucher";
+    editReceiptBtn.classList.add("hidden");
+    deleteReceiptBtn.classList.remove("hidden");
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  function newMode() {
+    mode = "new";
+    currentId = null;
+    form.classList.remove("view-mode");
+    document.getElementById("receiptFormTitle").textContent = "Receipt Entry";
+    editReceiptBtn.classList.add("hidden");
+    deleteReceiptBtn.classList.add("hidden");
+    form.reset();
+    document.getElementById("paymentMode").value = "UPI / QR";
+    document.getElementById("createdBy").value = "Admin";
+    voucherDateInput.value = todayISO();
+    idInput.value = "";
+    idStatus.textContent = "";
+    setInputs(false);
+    cancelFormBtn.textContent = "Cancel";
+    clearMessage();
+  }
+
+  const receiptListPanel = document.getElementById("receiptListPanel");
+  const addReceiptBtn = document.getElementById("addReceiptBtn");
+  const receiptSearch = document.getElementById("receiptSearch");
+  const receiptSortBtn = document.getElementById("receiptSortBtn");
+  const receiptFilterBtn = document.getElementById("receiptFilterBtn");
+  const receiptSortMenu = document.getElementById("receiptSortMenu");
+  const receiptFilterPanel = document.getElementById("receiptFilterPanel");
+  const receiptModeFilter = document.getElementById("receiptModeFilter");
+  const receiptFromDate = document.getElementById("receiptFromDate");
+  const receiptToDate = document.getElementById("receiptToDate");
+  const receiptRefreshBtn = document.getElementById("receiptRefreshBtn");
+  const receiptList = document.getElementById("receiptList");
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function whatsappClean(n) {
+    let x = String(n || "").replace(/\D/g, "");
+    if (x.length === 10) x = "91" + x;
+    if (x.length === 11 && x.startsWith("0")) x = "91" + x.slice(1);
+    return x;
+  }
+
+  async function loadReceiptList() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE) || "[]");
+      if (Array.isArray(cached) && cached.length) {
+        receiptRows = cached;
+        renderReceiptList();
+      }
+    } catch (error) {
+      console.warn("Receipt cache read failed:", error);
+    }
+
+    try {
+      const snapshot = await getDocs(query(collection(db, "receipt_vouchers"), limit(500)));
+      receiptRows = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+      localStorage.setItem(CACHE, JSON.stringify(receiptRows));
+      renderReceiptList();
+    } catch (error) {
+      console.error("Receipt list load failed:", error);
+      if (!receiptRows.length) {
+        receiptList.innerHTML = '<div class="empty-list">Unable to load receipt vouchers. Tap Refresh to try again.</div>';
+      }
+    }
+  }
+
+  function formatRupees(num) {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(num || 0);
+  }
+
+  function renderReceiptList() {
+    const term = clean(receiptSearch.value).toLowerCase();
+    const modeVal = clean(receiptModeFilter.value);
+
+    let rows = receiptRows.filter(row => {
+      const vNo = row.voucherNo || row.id || "";
+      const text = `${vNo} ${row.receivedFrom || ""} ${row.creditLedger || ""} ${row.depositTo || ""} ${row.referenceNo || ""}`.toLowerCase();
+      const vDate = String(row.voucherDate || "").slice(0, 10);
+      const matchesFrom = !receiptFromDate.value || (vDate && vDate >= receiptFromDate.value);
+      const matchesTo = !receiptToDate.value || (vDate && vDate <= receiptToDate.value);
+
+      return (!term || text.includes(term)) && (!modeVal || row.paymentMode === modeVal) && matchesFrom && matchesTo;
+    });
+
+    rows.sort((a, b) => {
+      if (receiptSort === "date") return String(b.voucherDate || "").localeCompare(String(a.voucherDate || ""));
+      if (receiptSort === "date-asc") return String(a.voucherDate || "").localeCompare(String(b.voucherDate || ""));
+      if (receiptSort === "id") return String(b.voucherNo || b.id || "").localeCompare(String(a.voucherNo || a.id || ""), undefined, { numeric: true });
+      if (receiptSort === "client") return String(a.receivedFrom || "").localeCompare(String(b.receivedFrom || ""));
+      if (receiptSort === "amount") return (Number(b.amount) || 0) - (Number(a.amount) || 0);
+      return 0;
+    });
+
+    if (!rows.length) {
+      receiptList.innerHTML = '<div class="empty-list">No receipt vouchers found.</div>';
+      return;
+    }
+
+    receiptList.innerHTML = rows.map(row => {
+      const id = String(row.voucherNo || row.id);
+      const clientName = row.receivedFrom || "Unnamed Payer";
+      const ledger = row.creditLedger || "Receipt";
+      const pMode = row.paymentMode || "Received";
+      const amt = formatRupees(row.amount);
+      const client = findClientById(row.clientId) || findClientByName(row.receivedFrom);
+      const phone = clean(client?.mobile || "");
+      const wa = whatsappClean(phone);
+
+      return `
+      <div class="data-row">
+        <div class="data-row-main">
+          <div class="data-row-content" data-open="${escapeHtml(id)}">
+            <div class="data-row-title">${escapeHtml(clientName)}</div>
+            <div class="data-row-sub">${escapeHtml(id)} · ${escapeHtml(ledger)} · Deposited to ${escapeHtml(row.depositTo || "Bank/Cash")} ${row.referenceNo ? `· Ref: ${escapeHtml(row.referenceNo)}` : ''}</div>
+          </div>
+          <div class="data-row-meta">
+            <span class="data-row-date">${escapeHtml(row.voucherDate || "")}</span>
+            <span class="receipt-amount">${escapeHtml(amt)}</span>
+            <span class="mode-badge">${escapeHtml(pMode)}</span>
+          </div>
+        </div>
+        <div class="receipt-row-actions">
+          ${phone ? `<a class="receipt-action-btn call" href="tel:${escapeHtml(phone)}" title="Call Client"><i data-lucide="phone"></i></a>` : ""}
+          ${phone ? `<a class="receipt-action-btn whatsapp" href="https://wa.me/${escapeHtml(wa)}" target="_blank" rel="noopener" title="WhatsApp"><i data-lucide="message-circle"></i></a>` : ""}
+          <button class="receipt-action-btn open-btn" data-open="${escapeHtml(id)}" type="button" title="View Voucher"><i data-lucide="arrow-up-right"></i></button>
+        </div>
+      </div>`;
+    }).join("");
+
+    window.lucide?.createIcons();
+
+    receiptList.querySelectorAll("[data-open]").forEach(b => {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        openView(b.dataset.open);
+      });
+    });
+  }
+
+  function findReceipt(id) {
+    return receiptRows.find(c => String(c.voucherNo || c.id) === String(id));
+  }
+
+  async function openView(id) {
+    const cached = findReceipt(id);
+    if (cached) {
+      fillForm(cached);
+      receiptListPanel.classList.add("hidden");
+      form.classList.remove("hidden");
+      viewMode();
+      window.scrollTo(0, 0);
+    }
+    try {
+      const s = await getDoc(doc(db, "receipt_vouchers", id));
+      if (!s.exists()) throw new Error("Receipt voucher record no longer exists.");
+      fillForm({ id: s.id, ...s.data() });
+      viewMode();
+    } catch (e) {
+      if (!cached) showMessage(e.message || "Unable to open receipt voucher.");
+    }
+  }
+
+  function openList() {
+    form.classList.add("hidden");
+    receiptListPanel.classList.remove("hidden");
+    newMode();
+    renderReceiptList();
+    window.scrollTo(0, 0);
+  }
+
+  function openNew() {
+    newMode();
+    receiptListPanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  /* CSV Download/Export/Import Utilities */
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("downloadTemplateBtn").addEventListener("click", () => {
+    const template = "Voucher Date,Client ID,Received From,Income Ledger,Amount,Deposit To,Payment Mode,Reference No,Created By,Narration\n" +
+                     "2026-08-23,C40001,Acme Corp,Professional Fees,12500,HDFC Bank,UPI / QR,UPI-98234102,Admin,Income received for professional consultancy";
+    downloadBlob(template, "receipt_voucher_template.csv", "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("exportReceiptBtn").addEventListener("click", () => {
+    if (!receiptRows.length) { alert("No receipt vouchers to export."); return; }
+    const headers = ["Voucher No","Voucher Date","Client ID","Received From","Income Ledger","Amount","Deposit To","Payment Mode","Reference No","Created By","Narration","Created At"];
+    const rows = receiptRows.map(c => [
+      `"${c.voucherNo||c.id||""}"`, `"${c.voucherDate||""}"`, `"${c.clientId||""}"`,
+      `"${(c.receivedFrom||"").replace(/"/g,'""')}"`, `"${(c.creditLedger||"").replace(/"/g,'""')}"`,
+      `"${c.amount||0}"`, `"${(c.depositTo||"").replace(/"/g,'""')}"`, `"${c.paymentMode||""}"`,
+      `"${c.referenceNo||""}"`, `"${c.createdBy||"Admin"}"`, `"${(c.narration||"").replace(/"/g,'""')}"`, `"${c.createdAt||""}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    downloadBlob(csv, `receipts_export_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8;");
+  });
+
+  document.getElementById("importReceiptBtn").addEventListener("click", () => document.getElementById("csvFileInput").click());
+
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { alert("CSV file has no data rows."); return; }
+
+    const parseRow = row => {
+      const res = []; let inQ = false, val = "";
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') { if (inQ && row[i+1] === '"') { val += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { res.push(val.trim()); val = ""; }
+        else val += c;
+      }
+      res.push(val.trim());
+      return res;
+    };
+
+    const rows = lines.slice(1).map(parseRow);
+    if (!confirm(`Import ${rows.length} receipt voucher(s)?`)) { e.target.value = ""; return; }
+
+    receiptRefreshBtn.classList.add("spinning");
+    try {
+      let imported = 0;
+      const now = new Date().toISOString();
+      for (const r of rows) {
+        const vDate = clean(r[0]) || todayISO();
+        const cId = upper(r[1]);
+        const rFrom = clean(r[2]);
+        const ledger = clean(r[3]);
+        const amt = Number(r[4]) || 0;
+        const dTo = clean(r[5]);
+        const pMode = clean(r[6]) || "UPI / QR";
+        if (!rFrom || !amt || !dTo) continue;
+
+        await runTransaction(db, async tx => {
+          const result = await getNextReceiptId(tx, vDate);
+          const receiptRef = doc(db, "receipt_vouchers", result.id);
+          const record = {
+            voucherNo: result.id,
+            voucherDate: vDate,
+            clientId: cId,
+            receivedFrom: rFrom,
+            creditLedger: ledger || "Receipt",
+            amount: amt,
+            depositTo: dTo,
+            paymentMode: pMode,
+            referenceNo: clean(r[7]),
+            createdBy: clean(r[8]) || "Admin",
+            narration: clean(r[9]) || "",
+            createdAt: now,
+            updatedAt: now
+          };
+          tx.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+          tx.set(receiptRef, record);
+        });
+        imported++;
+      }
+      localStorage.removeItem(CACHE);
+      await loadReceiptList();
+      alert(`Successfully imported ${imported} receipt voucher(s).`);
+    } catch (err) {
+      console.error(err);
+      alert("Error during receipt import: " + err.message);
+    } finally {
+      receiptRefreshBtn.classList.remove("spinning");
+      e.target.value = "";
+    }
+  });
+
+  addReceiptBtn.addEventListener("click", openNew);
+  cancelFormBtn.addEventListener("click", openList);
+  editReceiptBtn.addEventListener("click", editMode);
+
+  deleteReceiptBtn.addEventListener("click", async () => {
+    if (!currentId) return;
+    if (!confirm(`Delete receipt voucher (${currentId})?\n\nThis action cannot be undone.`)) return;
+    deleteReceiptBtn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "receipt_vouchers", currentId));
+      receiptRows = receiptRows.filter(x => String(x.voucherNo || x.id) !== String(currentId));
+      localStorage.setItem(CACHE, JSON.stringify(receiptRows));
+      showMessage("Receipt voucher deleted successfully.", "success");
+      setTimeout(openList, 450);
+    } catch (e) {
+      showMessage(e.message || "Unable to delete receipt voucher.");
+    } finally {
+      deleteReceiptBtn.disabled = false;
+    }
+  });
+
+  receiptSearch.addEventListener("input", renderReceiptList);
+  receiptModeFilter.addEventListener("change", renderReceiptList);
+  receiptFromDate.addEventListener("change", renderReceiptList);
+  receiptToDate.addEventListener("change", renderReceiptList);
+
+  receiptRefreshBtn.addEventListener("click", async () => {
+    receiptRefreshBtn.classList.add("spinning");
+    try {
+      localStorage.removeItem(CACHE);
+      await loadReceiptList();
+    } finally {
+      receiptRefreshBtn.classList.remove("spinning");
+    }
+  });
+
+  receiptSortBtn.addEventListener("click", () => receiptSortMenu.classList.toggle("show"));
+  receiptFilterBtn.addEventListener("click", () => receiptFilterPanel.classList.toggle("show"));
+
+  receiptSortMenu.querySelectorAll(".sort-option").forEach(option => {
+    option.addEventListener("click", () => {
+      receiptSort = option.dataset.sort;
+      receiptSortMenu.querySelectorAll(".sort-option").forEach(x => x.classList.remove("active"));
+      option.classList.add("active");
+      receiptSortMenu.classList.remove("show");
+      renderReceiptList();
+    });
+  });
+
+  document.getElementById("pageBackBtn").addEventListener("click", () => {
+    if (!form.classList.contains("hidden")) {
+      openList();
+    } else {
+      history.back();
+    }
+  });
+
+  /* Create new receipt voucher via atomic transaction */
+  async function createReceipt() {
+    const d = formData();
+    if (!d.voucherDate) { showMessage("Voucher Date is required."); voucherDateInput.focus(); return; }
+    if (!d.receivedFrom) { showMessage("Received From / Client Name is required."); receivedFromInput.focus(); return; }
+    if (!d.creditLedger) { showMessage("Credit Ledger / Income Head is required."); document.getElementById("creditLedger").focus(); return; }
+    if (!d.amount || d.amount <= 0) { showMessage("Enter a valid amount greater than 0."); document.getElementById("amount").focus(); return; }
+    if (!d.depositTo) { showMessage("Deposit To account is required."); document.getElementById("depositTo").focus(); return; }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Saving...";
+    idStatus.textContent = "…";
+
+    try {
+      const now = new Date().toISOString();
+      let generatedId = "";
+
+      await runTransaction(db, async (transaction) => {
+        const result = await getNextReceiptId(transaction, d.voucherDate);
+        generatedId = result.id;
+        const receiptRef = doc(db, "receipt_vouchers", generatedId);
+        const data = {
+          ...d,
+          voucherNo: generatedId,
+          createdAt: now,
+          updatedAt: now
+        };
+        transaction.set(result.counterRef, { lastNumber: result.nextNumber, period: result.period, updatedAt: now }, { merge: true });
+        transaction.set(receiptRef, data);
+      });
+
+      idInput.value = generatedId;
+      idStatus.textContent = "✓";
+      showMessage(`Receipt voucher ${generatedId} saved successfully.`, "success");
+      localStorage.removeItem(CACHE);
+
+      setTimeout(() => {
+        openList();
+        loadReceiptList();
+      }, 450);
+    } catch (error) {
+      console.error("Receipt save error:", error);
+      idStatus.textContent = "";
+      showMessage(error?.message || "Unable to save receipt voucher. Please try again.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Receipt Voucher";
+    }
+  }
+
+  /* Update existing receipt voucher without duplicating */
+  async function updateReceipt() {
+    if (!currentId) return;
+    const d = formData();
+    if (!d.receivedFrom || !d.creditLedger || !d.depositTo) {
+      showMessage("Payer Name, Income Ledger, and Deposit Account are required.");
+      return;
+    }
+    if (!d.amount || d.amount <= 0) {
+      showMessage("Enter a valid amount greater than 0.");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    form.classList.add("saving");
+    saveBtn.querySelector(".save-text").textContent = "Updating...";
+
+    try {
+      const now = new Date().toISOString();
+      await updateDoc(doc(db, "receipt_vouchers", currentId), {
+        voucherDate: d.voucherDate,
+        clientId: d.clientId,
+        receivedFrom: d.receivedFrom,
+        creditLedger: d.creditLedger,
+        amount: d.amount,
+        depositTo: d.depositTo,
+        paymentMode: d.paymentMode,
+        referenceNo: d.referenceNo,
+        createdBy: d.createdBy,
+        narration: d.narration,
+        updatedAt: now
+      });
+
+      const idx = receiptRows.findIndex(c => String(c.voucherNo || c.id) === String(currentId));
+      if (idx >= 0) {
+        receiptRows[idx] = { ...receiptRows[idx], ...d, voucherNo: currentId, updatedAt: now };
+        localStorage.setItem(CACHE, JSON.stringify(receiptRows));
+      }
+
+      showMessage("Receipt voucher updated successfully.", "success");
+      setTimeout(() => {
+        openList();
+      }, 450);
+    } catch (error) {
+      console.error("Receipt update error:", error);
+      showMessage(error?.message || "Unable to update receipt voucher.");
+    } finally {
+      saveBtn.disabled = false;
+      form.classList.remove("saving");
+      saveBtn.querySelector(".save-text").textContent = "Save Receipt Voucher";
+    }
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearMessage();
+    if (saveBtn.disabled) return;
+
+    if (mode === "edit") {
+      await updateReceipt();
+    } else {
+      await createReceipt();
+    }
+  });
+
+  document.getElementById("menuToggle")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
+
+  window.lucide?.createIcons();
+  loadClients().then(loadReceiptList);
+</script>
+
+</body>
+</html>

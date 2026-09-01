@@ -1,0 +1,3193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+  <title>Repository — Admin</title>
+
+  <link rel="stylesheet"
+        href="../../css/cm.css">
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/material-darker.min.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+
+    :root {
+      --bg: #f5f6f8;
+      --card: #fff;
+      --text: #172033;
+      --muted: #64748b;
+      --primary: #0b3b66;
+      --primary-soft: #e8f0f7;
+      --border: #e1e5ea;
+      --border-light: #edf0f3;
+      --danger: #b42318;
+      --green: #15803d;
+      --yellow: #b45309;
+      --radius: 10px;
+      --safe-top: env(safe-area-inset-top,0px);
+      --safe-bottom: env(safe-area-inset-bottom,0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100vh;
+      height: 100dvh;
+
+      padding:
+        calc(8px + var(--safe-top))
+        8px
+        calc(8px + var(--safe-bottom));
+
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* =========================================================
+       TOP
+       ========================================================= */
+
+    .topbar {
+      flex: 0 0 56px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 7px 9px;
+
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: var(--primary-soft);
+      color: var(--primary);
+
+      border-radius: 9px;
+    }
+
+    .brand-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 2px 0 0;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .icon-btn,
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #475569;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .btn {
+      min-height: 36px;
+      padding: 0 11px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn-danger {
+      color: var(--danger);
+    }
+
+    .btn:disabled,
+    .icon-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    /* =========================================================
+       TOOLBAR
+       ========================================================= */
+
+    .toolbar {
+      flex: 0 0 auto;
+
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      padding: 7px;
+
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .search {
+      flex: 1 1 220px;
+      min-width: 0;
+      height: 38px;
+
+      border: 1px solid var(--border);
+      border-radius: 7px;
+
+      padding: 0 11px;
+
+      outline: none;
+
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .search:focus {
+      border-color: var(--primary);
+    }
+
+    /* =========================================================
+       WORKSPACE
+       ========================================================= */
+
+    .workspace {
+      flex: 1;
+      min-height: 0;
+
+      display: grid;
+
+      grid-template-columns:
+        280px
+        minmax(0,1fr);
+
+      gap: 8px;
+    }
+
+    .panel {
+      min-height: 0;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-head {
+      flex: 0 0 43px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 9px;
+
+      border-bottom: 1px solid var(--border);
+
+      background: #fafbfc;
+    }
+
+    .panel-head-title {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .path {
+      flex: 0 0 auto;
+
+      padding: 5px 9px;
+
+      border-bottom: 1px solid var(--border-light);
+
+      font-size: 10px;
+
+      color: var(--muted);
+
+      white-space: nowrap;
+
+      overflow-x: auto;
+    }
+
+    /* =========================================================
+       FILE TREE
+       ========================================================= */
+
+    .file-list {
+      flex: 1;
+      min-height: 0;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .file-row {
+      min-height: 43px;
+
+      display: flex;
+      align-items: center;
+
+      gap: 7px;
+
+      padding: 6px 8px;
+
+      border-bottom: 1px solid var(--border-light);
+
+      cursor: pointer;
+
+      background: #fff;
+    }
+
+    .file-row:hover {
+      background: #f8fafc;
+    }
+
+    .file-row.active {
+      background: var(--primary-soft);
+    }
+
+    .file-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: var(--primary);
+    }
+
+    .folder .file-icon {
+      color: var(--yellow);
+    }
+
+    .file-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .file-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-name {
+      font-size: 12px;
+      font-weight: 600;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-meta {
+      margin-top: 1px;
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .file-menu {
+      width: 28px;
+      height: 28px;
+
+      border: 0;
+      background: transparent;
+
+      color: #64748b;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      cursor: pointer;
+    }
+
+    /* =========================================================
+       EDITOR
+       ========================================================= */
+
+    .editor-head {
+      flex: 0 0 48px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 8px;
+
+      padding: 5px 7px;
+
+      border-bottom: 1px solid var(--border);
+      background: #fafbfc;
+    }
+
+    .editor-info {
+      min-width: 0;
+    }
+
+    .editor-name {
+      font-size: 12px;
+      font-weight: 700;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .editor-status {
+      margin-top: 2px;
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .editor-wrap {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    .CodeMirror {
+      position: absolute;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace;
+
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .CodeMirror-gutters {
+      background: #111827;
+      border-right: 1px solid #263244;
+    }
+
+    .CodeMirror-linenumber {
+      color: #64748b;
+    }
+
+    .editor-empty {
+      position: absolute;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      padding: 30px;
+
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* =========================================================
+       STATUS
+       ========================================================= */
+
+    .status {
+      flex: 0 0 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 9px;
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+      border-radius: 7px;
+
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .success {
+      color: var(--green);
+    }
+
+    .error {
+      color: var(--danger);
+    }
+
+    /* =========================================================
+       MODAL
+       ========================================================= */
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 15px;
+
+      background: rgba(15,23,42,.45);
+    }
+
+    .modal-bg.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 440px;
+
+      background: #fff;
+
+      border-radius: 11px;
+
+      border: 1px solid var(--border);
+
+      overflow: hidden;
+    }
+
+    .modal-head {
+      min-height: 46px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 11px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 12px;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 4px;
+
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .input,
+    .textarea {
+      width: 100%;
+
+      border: 1px solid var(--border);
+
+      border-radius: 7px;
+
+      outline: none;
+
+      padding: 9px;
+
+      font-size: 12px;
+    }
+
+    .input {
+      height: 38px;
+    }
+
+    .textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+
+      gap: 6px;
+
+      padding: 9px 11px;
+
+      border-top: 1px solid var(--border);
+    }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media(max-width:760px) {
+
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        height: auto;
+        min-height: 100dvh;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+
+        display: flex;
+        flex-direction: column;
+
+        min-height: 700px;
+      }
+
+      .file-panel {
+        flex: 0 0 310px;
+      }
+
+      .editor-panel {
+        flex: 1;
+        min-height: 520px;
+      }
+
+      .toolbar .btn {
+        flex: 1;
+      }
+
+      .search {
+        flex-basis: 100%;
+        order: -1;
+      }
+
+      .editor-actions .btn span {
+        display: none;
+      }
+
+      .editor-actions .btn {
+        width: 36px;
+        padding: 0;
+      }
+    }
+
+    @media(max-width:390px) {
+
+      .subtitle {
+        display: none;
+      }
+
+      .brand-icon {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+      }
+
+      .title {
+        font-size: 15px;
+      }
+
+      .file-panel {
+        flex-basis: 280px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- TOP -->
+
+  <header class="topbar">
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        <i data-lucide="code-2"></i>
+      </div>
+
+      <div>
+        <h1 class="title">Repository</h1>
+        <p class="subtitle">
+          cmone-git / dev · main
+        </p>
+      </div>
+
+    </div>
+
+    <div class="top-actions">
+
+      <button
+        class="icon-btn"
+        id="refreshBtn"
+        title="Refresh"
+      >
+        <i data-lucide="refresh-cw"></i>
+      </button>
+
+      <button
+        class="icon-btn"
+        id="logoutBtn"
+        title="Logout"
+      >
+        <i data-lucide="log-out"></i>
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- TOOLBAR -->
+
+  <section class="toolbar">
+
+    <input
+      id="searchInput"
+      class="search"
+      type="search"
+      placeholder="Search all files..."
+      autocomplete="off"
+    >
+
+    <button
+      class="btn btn-primary"
+      id="newFileBtn"
+    >
+      <i data-lucide="file-plus-2"></i>
+      <span>New File</span>
+    </button>
+
+    <button
+      class="btn"
+      id="uploadBtn"
+    >
+      <i data-lucide="upload"></i>
+      <span>Upload</span>
+    </button>
+
+  </section>
+
+
+  <!-- WORKSPACE -->
+
+  <main class="workspace">
+
+
+    <!-- FILE PANEL -->
+
+    <section class="panel file-panel">
+
+      <div class="panel-head">
+
+        <span class="panel-head-title">
+          Repository Files
+        </span>
+
+        <button
+          class="icon-btn"
+          id="upBtn"
+          title="Parent"
+        >
+          <i data-lucide="arrow-up"></i>
+        </button>
+
+      </div>
+
+
+      <div
+        class="path"
+        id="pathLabel"
+      >
+        /
+      </div>
+
+
+      <div
+        class="file-list"
+        id="fileList"
+      >
+
+        <div class="editor-empty">
+          Loading...
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- EDITOR PANEL -->
+
+    <section class="panel editor-panel">
+
+      <div class="editor-head">
+
+        <div class="editor-info">
+
+          <div
+            class="editor-name"
+            id="editorName"
+          >
+            No file selected
+          </div>
+
+          <div
+            class="editor-status"
+            id="editorStatus"
+          >
+            Select a code file
+          </div>
+
+        </div>
+
+
+        <div class="editor-actions">
+
+          <button
+            class="icon-btn"
+            id="findBtn"
+            title="Find / Replace"
+            disabled
+          >
+            <i data-lucide="search"></i>
+          </button>
+
+
+          <button
+            class="icon-btn"
+            id="previewBtn"
+            title="Preview HTML"
+            disabled
+          >
+            <i data-lucide="external-link"></i>
+          </button>
+
+
+          <button
+            class="icon-btn"
+            id="downloadBtn"
+            title="Download"
+            disabled
+          >
+            <i data-lucide="download"></i>
+          </button>
+
+
+          <button
+            class="btn btn-primary"
+            id="saveBtn"
+            disabled
+          >
+            <i data-lucide="save"></i>
+            <span>Save</span>
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="editor-wrap">
+
+        <textarea
+          id="codeEditor"
+          style="display:none"
+        ></textarea>
+
+        <div
+          class="editor-empty"
+          id="editorEmpty"
+        >
+          Select a file to edit
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- STATUS -->
+
+  <div class="status">
+
+    <span id="statusText">
+      Ready
+    </span>
+
+    <span id="userText">
+      Checking access...
+    </span>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     CREATE FILE MODAL
+     ========================================================= -->
+
+<div
+  class="modal-bg"
+  id="fileModal"
+>
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div class="modal-title">
+        New File
+      </div>
+
+      <button
+        class="icon-btn"
+        id="closeFileModal"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <div class="field">
+
+        <label>
+          File name
+        </label>
+
+        <input
+          id="newFileName"
+          class="input"
+          placeholder="example.html"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Initial content
+        </label>
+
+        <textarea
+          id="newFileContent"
+          class="textarea"
+          placeholder=""
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-foot">
+
+      <button
+        class="btn"
+        id="cancelFile"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-primary"
+        id="createFile"
+      >
+        Create
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     COMMIT MODAL
+     ========================================================= -->
+
+<div
+  class="modal-bg"
+  id="commitModal"
+>
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div class="modal-title">
+        Save to Repository
+      </div>
+
+      <button
+        class="icon-btn"
+        id="closeCommitModal"
+      >
+        <i data-lucide="x"></i>
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <div class="field">
+
+        <label>
+          Commit message
+        </label>
+
+        <input
+          id="commitMessage"
+          class="input"
+          value="Update file from Admin Repository"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-foot">
+
+      <button
+        class="btn"
+        id="cancelCommit"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-primary"
+        id="confirmCommit"
+      >
+        Save & Commit
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     UPLOAD
+     ========================================================= -->
+
+<input
+  id="uploadInput"
+  type="file"
+  multiple
+  hidden
+>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/markdown/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js"></script>
+
+<script type="module">
+
+  import {
+    auth
+  } from "../../js/firebase-config.js";
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+  /* =========================================================
+     API
+     ========================================================= */
+
+  const API =
+    "https://us-central1-YOUR_FIREBASE_PROJECT.cloudfunctions.net/repository";
+
+
+  /*
+     IMPORTANT:
+     Replace YOUR_FIREBASE_PROJECT with your Firebase
+     project ID after deploying the function.
+  */
+
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+
+  let user = null;
+
+  let currentPath = "";
+
+  let selected = null;
+
+  let items = [];
+
+  let editor = null;
+
+
+  /* =========================================================
+     ELEMENTS
+     ========================================================= */
+
+  const fileList =
+    document.getElementById(
+      "fileList"
+    );
+
+  const pathLabel =
+    document.getElementById(
+      "pathLabel"
+    );
+
+  const searchInput =
+    document.getElementById(
+      "searchInput"
+    );
+
+  const editorName =
+    document.getElementById(
+      "editorName"
+    );
+
+  const editorStatus =
+    document.getElementById(
+      "editorStatus"
+    );
+
+  const editorEmpty =
+    document.getElementById(
+      "editorEmpty"
+    );
+
+  const saveBtn =
+    document.getElementById(
+      "saveBtn"
+    );
+
+  const previewBtn =
+    document.getElementById(
+      "previewBtn"
+    );
+
+  const downloadBtn =
+    document.getElementById(
+      "downloadBtn"
+    );
+
+  const findBtn =
+    document.getElementById(
+      "findBtn"
+    );
+
+  const statusText =
+    document.getElementById(
+      "statusText"
+    );
+
+  const userText =
+    document.getElementById(
+      "userText"
+    );
+
+
+  /* =========================================================
+     STATUS
+     ========================================================= */
+
+  function status(
+    text,
+    type = ""
+  ) {
+
+    statusText.textContent =
+      text;
+
+    statusText.className = "";
+
+    if (type) {
+      statusText.classList.add(type);
+    }
+
+  }
+
+
+  /* =========================================================
+     API REQUEST
+     ========================================================= */
+
+  async function api(
+    endpoint,
+    options = {}
+  ) {
+
+    if (!user) {
+      throw new Error(
+        "You are not signed in."
+      );
+    }
+
+
+    const token =
+      await user.getIdToken();
+
+
+    const response =
+      await fetch(
+        `${API}${endpoint}`,
+        {
+          ...options,
+
+          headers: {
+            ...(options.headers || {}),
+
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+
+
+    if (!response.ok) {
+
+      let message =
+        `Request failed (${response.status})`;
+
+      try {
+
+        const data =
+          await response.json();
+
+        message =
+          data.error ||
+          data.message ||
+          message;
+
+      } catch {}
+
+      throw new Error(
+        message
+      );
+
+    }
+
+
+    return response.json();
+
+  }
+
+
+  /* =========================================================
+     FILE ICON
+     ========================================================= */
+
+  function iconFor(
+    item
+  ) {
+
+    if (
+      item.type ===
+      "folder"
+    ) {
+
+      return "folder";
+
+    }
+
+
+    const name =
+      String(
+        item.name || ""
+      ).toLowerCase();
+
+
+    if (
+      name.endsWith(".html") ||
+      name.endsWith(".htm")
+    ) {
+
+      return "file-code-2";
+
+    }
+
+
+    if (
+      name.endsWith(".css")
+    ) {
+
+      return "palette";
+
+    }
+
+
+    if (
+      name.endsWith(".js") ||
+      name.endsWith(".mjs") ||
+      name.endsWith(".ts") ||
+      name.endsWith(".tsx") ||
+      name.endsWith(".jsx")
+    ) {
+
+      return "braces";
+
+    }
+
+
+    if (
+      name.endsWith(".json")
+    ) {
+
+      return "braces";
+
+    }
+
+
+    if (
+      name.endsWith(".md") ||
+      name.endsWith(".txt")
+    ) {
+
+      return "file-text";
+
+    }
+
+
+    if (
+      /\.(png|jpg|jpeg|gif|webp|svg)$/i
+        .test(name)
+    ) {
+
+      return "image";
+
+    }
+
+
+    if (
+      name.endsWith(".pdf")
+    ) {
+
+      return "file-text";
+
+    }
+
+
+    return "file";
+
+  }
+
+
+  /* =========================================================
+     EDITABLE
+     ========================================================= */
+
+  function editable(
+    name
+  ) {
+
+    return /\.(html?|css|js|mjs|ts|tsx|jsx|json|md|txt|xml|svg|php|py|sql|csv)$/i
+      .test(name);
+
+  }
+
+
+  /* =========================================================
+     CODEMIRROR MODE
+     ========================================================= */
+
+  function modeFor(
+    name
+  ) {
+
+    const lower =
+      name.toLowerCase();
+
+
+    if (
+      lower.endsWith(".html") ||
+      lower.endsWith(".htm")
+    ) {
+
+      return "htmlmixed";
+
+    }
+
+
+    if (
+      lower.endsWith(".css")
+    ) {
+
+      return "css";
+
+    }
+
+
+    if (
+      lower.endsWith(".json")
+    ) {
+
+      return {
+        name: "javascript",
+        json: true
+      };
+
+    }
+
+
+    if (
+      lower.endsWith(".js") ||
+      lower.endsWith(".mjs") ||
+      lower.endsWith(".jsx")
+    ) {
+
+      return "javascript";
+
+    }
+
+
+    if (
+      lower.endsWith(".ts") ||
+      lower.endsWith(".tsx")
+    ) {
+
+      return {
+        name: "javascript",
+        typescript: true
+      };
+
+    }
+
+
+    if (
+      lower.endsWith(".py")
+    ) {
+
+      return "python";
+
+    }
+
+
+    if (
+      lower.endsWith(".md")
+    ) {
+
+      return "markdown";
+
+    }
+
+
+    if (
+      lower.endsWith(".xml") ||
+      lower.endsWith(".svg")
+    ) {
+
+      return "xml";
+
+    }
+
+
+    return null;
+
+  }
+
+
+  /* =========================================================
+     INIT EDITOR
+     ========================================================= */
+
+  function initEditor() {
+
+    editor =
+      CodeMirror.fromTextArea(
+        document.getElementById(
+          "codeEditor"
+        ),
+        {
+          lineNumbers: true,
+
+          mode: "htmlmixed",
+
+          theme:
+            "material-darker",
+
+          lineWrapping: false,
+
+          tabSize: 2,
+
+          indentUnit: 2,
+
+          indentWithTabs: false,
+
+          autofocus: false,
+
+          extraKeys: {
+
+            "Ctrl-S":
+              () =>
+                saveFile(),
+
+            "Cmd-S":
+              () =>
+                saveFile(),
+
+            "Ctrl-F":
+              "findPersistent",
+
+            "Cmd-F":
+              "findPersistent"
+
+          }
+
+        }
+      );
+
+
+    editor.setSize(
+      "100%",
+      "100%"
+    );
+
+
+    editor.on(
+      "change",
+      () => {
+
+        if (
+          selected
+        ) {
+
+          editorStatus.textContent =
+            "Unsaved changes";
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     LOAD REPOSITORY TREE
+     ========================================================= */
+
+  async function loadRepository() {
+
+    status(
+      "Loading repository..."
+    );
+
+
+    try {
+
+      const data =
+        await api(
+          `/list?path=${encodeURIComponent(
+            currentPath
+          )}`
+        );
+
+
+      items =
+        data.items ||
+        [];
+
+
+      pathLabel.textContent =
+        currentPath
+          ? "/" + currentPath
+          : "/";
+
+
+      renderFiles();
+
+
+      status(
+        `${items.length} items`,
+        "success"
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      status(
+        error.message,
+        "error"
+      );
+
+
+      fileList.innerHTML = `
+
+        <div class="editor-empty">
+
+          Unable to load repository
+
+          <br><br>
+
+          ${escapeHtml(
+            error.message
+          )}
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     RENDER FILES
+     ========================================================= */
+
+  function renderFiles() {
+
+    const term =
+      searchInput.value
+        .trim()
+        .toLowerCase();
+
+
+    let visible =
+      items.filter(
+        item =>
+          !term ||
+          String(
+            item.path ||
+            item.name ||
+            ""
+          )
+          .toLowerCase()
+          .includes(term)
+      );
+
+
+    visible.sort(
+      (a,b) => {
+
+        if (
+          a.type ===
+          "folder" &&
+          b.type !==
+          "folder"
+        ) {
+
+          return -1;
+
+        }
+
+        if (
+          a.type !==
+          "folder" &&
+          b.type ===
+          "folder"
+        ) {
+
+          return 1;
+
+        }
+
+        return String(
+          a.name
+        ).localeCompare(
+          String(
+            b.name
+          )
+        );
+
+      }
+    );
+
+
+    if (
+      !visible.length
+    ) {
+
+      fileList.innerHTML = `
+
+        <div class="editor-empty">
+          No files found.
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    fileList.innerHTML =
+      visible
+        .map(
+          item => `
+
+            <div
+              class="file-row
+                ${
+                  item.type ===
+                  "folder"
+                    ? "folder"
+                    : ""
+                }
+                ${
+                  selected &&
+                  selected.path ===
+                  item.path
+                    ? "active"
+                    : ""
+                }
+              "
+              data-path="${escapeHtml(
+                item.path
+              )}"
+              data-type="${item.type}"
+            >
+
+              <div class="file-icon">
+
+                <i
+                  data-lucide="${iconFor(
+                    item
+                  )}"
+                ></i>
+
+              </div>
+
+
+              <div class="file-info">
+
+                <div class="file-name">
+
+                  ${escapeHtml(
+                    item.name
+                  )}
+
+                </div>
+
+                <div class="file-meta">
+
+                  ${
+                    item.type ===
+                    "folder"
+
+                      ? "Folder"
+
+                      : formatSize(
+                          item.size
+                        )
+                  }
+
+                </div>
+
+              </div>
+
+
+              <button
+                class="file-menu"
+                data-action-path="${escapeHtml(
+                  item.path
+                )}"
+                title="Actions"
+              >
+
+                <i
+                  data-lucide="more-vertical"
+                ></i>
+
+              </button>
+
+            </div>
+
+          `
+        )
+        .join("");
+
+
+    window.lucide?.createIcons();
+
+
+    fileList
+      .querySelectorAll(
+        ".file-row"
+      )
+      .forEach(
+        row => {
+
+          row.addEventListener(
+            "click",
+            event => {
+
+              if (
+                event.target.closest(
+                  ".file-menu"
+                )
+              ) {
+                return;
+              }
+
+
+              const path =
+                row.dataset.path;
+
+
+              if (
+                row.dataset.type ===
+                "folder"
+              ) {
+
+                currentPath =
+                  path;
+
+                loadRepository();
+
+                return;
+
+              }
+
+
+              openFile(
+                path
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    fileList
+      .querySelectorAll(
+        "[data-action-path]"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            event => {
+
+              event.stopPropagation();
+
+              fileActions(
+                button.dataset
+                  .actionPath
+              );
+
+            }
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     OPEN FILE
+     ========================================================= */
+
+  async function openFile(
+    path
+  ) {
+
+    status(
+      "Opening file..."
+    );
+
+
+    try {
+
+      const data =
+        await api(
+          `/file?path=${encodeURIComponent(
+            path
+          )}`
+        );
+
+
+      selected = {
+
+        path,
+
+        name:
+          path.split("/")
+            .pop(),
+
+        sha:
+          data.sha,
+
+        content:
+          data.content || ""
+
+      };
+
+
+      editorEmpty.style.display =
+        "none";
+
+
+      editorName.textContent =
+        selected.name;
+
+
+      editorStatus.textContent =
+        "Loaded";
+
+
+      editor.setOption(
+        "mode",
+        modeFor(
+          selected.name
+        )
+      );
+
+
+      editor.setValue(
+        selected.content
+      );
+
+
+      editor.clearHistory();
+
+
+      saveBtn.disabled =
+        !editable(
+          selected.name
+        );
+
+
+      findBtn.disabled =
+        !editable(
+          selected.name
+        );
+
+
+      downloadBtn.disabled =
+        false;
+
+
+      previewBtn.disabled =
+        !/\.html?$/i.test(
+          selected.name
+        );
+
+
+      renderFiles();
+
+
+      status(
+        `Opened ${selected.name}`,
+        "success"
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      status(
+        error.message,
+        "error"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SAVE
+     ========================================================= */
+
+  async function saveFile() {
+
+    if (
+      !selected ||
+      !editable(
+        selected.name
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    document
+      .getElementById(
+        "commitModal"
+      )
+      .classList
+      .add("show");
+
+
+    document
+      .getElementById(
+        "commitMessage"
+      )
+      .focus();
+
+  }
+
+
+  async function performSave() {
+
+    if (!selected) {
+      return;
+    }
+
+
+    const message =
+      document
+        .getElementById(
+          "commitMessage"
+        )
+        .value
+        .trim();
+
+
+    if (!message) {
+
+      alert(
+        "Enter a commit message."
+      );
+
+      return;
+
+    }
+
+
+    const button =
+      document
+        .getElementById(
+          "confirmCommit"
+        );
+
+
+    button.disabled =
+      true;
+
+
+    status(
+      "Saving to GitHub..."
+    );
+
+
+    try {
+
+      const result =
+        await api(
+          "/save",
+          {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify({
+
+                path:
+                  selected.path,
+
+                content:
+                  editor.getValue(),
+
+                sha:
+                  selected.sha,
+
+                message
+
+              })
+
+          }
+        );
+
+
+      selected.sha =
+        result.sha ||
+        selected.sha;
+
+
+      selected.content =
+        editor.getValue();
+
+
+      editorStatus.textContent =
+        "Saved";
+
+
+      status(
+        "Saved and committed successfully",
+        "success"
+      );
+
+
+      closeCommitModal();
+
+
+    }
+
+    catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      status(
+        error.message,
+        "error"
+      );
+
+    }
+
+    finally {
+
+      button.disabled =
+        false;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     CREATE FILE
+     ========================================================= */
+
+  async function createFile() {
+
+    const name =
+      document
+        .getElementById(
+          "newFileName"
+        )
+        .value
+        .trim();
+
+
+    const content =
+      document
+        .getElementById(
+          "newFileContent"
+        )
+        .value;
+
+
+    if (!name) {
+
+      alert(
+        "Enter a file name."
+      );
+
+      return;
+
+    }
+
+
+    const path =
+      currentPath
+        ? `${currentPath}/${name}`
+        : name;
+
+
+    try {
+
+      await api(
+        "/create",
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+
+              path,
+
+              content,
+
+              message:
+                `Create ${name}`
+
+            })
+
+        }
+      );
+
+
+      closeFileModal();
+
+      await loadRepository();
+
+
+      status(
+        "File created",
+        "success"
+      );
+
+    }
+
+    catch (error) {
+
+      alert(
+        error.message
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     UPLOAD
+     ========================================================= */
+
+  document
+    .getElementById(
+      "uploadBtn"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        document
+          .getElementById(
+            "uploadInput"
+          )
+          .click();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "uploadInput"
+    )
+    .addEventListener(
+      "change",
+      async event => {
+
+        const files =
+          Array.from(
+            event.target.files
+          );
+
+
+        if (!files.length) {
+          return;
+        }
+
+
+        for (
+          const file of files
+        ) {
+
+          try {
+
+            status(
+              `Uploading ${file.name}...`
+            );
+
+
+            const base64 =
+              await fileToBase64(
+                file
+              );
+
+
+            const path =
+              currentPath
+                ? `${currentPath}/${file.name}`
+                : file.name;
+
+
+            await api(
+              "/upload",
+              {
+
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body:
+                  JSON.stringify({
+
+                    path,
+
+                    content:
+                      base64,
+
+                    encoding:
+                      "base64",
+
+                    message:
+                      `Upload ${file.name}`
+
+                  })
+
+                }
+            );
+
+          }
+
+          catch (error) {
+
+            alert(
+              `${file.name}: ${error.message}`
+            );
+
+          }
+
+        }
+
+
+        event.target.value =
+          "";
+
+
+        await loadRepository();
+
+
+        status(
+          "Upload complete",
+          "success"
+        );
+
+      }
+    );
+
+
+  function fileToBase64(
+    file
+  ) {
+
+    return new Promise(
+      (resolve, reject) => {
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload =
+          () => {
+
+            const result =
+              String(
+                reader.result
+              );
+
+
+            resolve(
+              result.split(
+                ","
+              )[1] || ""
+            );
+
+          };
+
+
+        reader.onerror =
+          reject;
+
+
+        reader.readAsDataURL(
+          file
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     PREVIEW
+     ========================================================= */
+
+  previewBtn.addEventListener(
+    "click",
+    () => {
+
+      if (
+        !selected ||
+        !/\.html?$/i.test(
+          selected.name
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      const blob =
+        new Blob(
+          [
+            editor.getValue()
+          ],
+          {
+            type:
+              "text/html;charset=utf-8"
+          }
+        );
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      window.open(
+        url,
+        "_blank",
+        "noopener"
+      );
+
+
+      setTimeout(
+        () =>
+          URL.revokeObjectURL(
+            url
+          ),
+        60000
+      );
+
+    }
+  );
+
+
+  /* =========================================================
+     DOWNLOAD
+     ========================================================= */
+
+  downloadBtn.addEventListener(
+    "click",
+    () => {
+
+      if (!selected) {
+        return;
+      }
+
+
+      const blob =
+        new Blob(
+          [
+            editor.getValue()
+          ],
+          {
+            type:
+              "text/plain;charset=utf-8"
+          }
+        );
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const a =
+        document.createElement(
+          "a"
+        );
+
+
+      a.href =
+        url;
+
+      a.download =
+        selected.name;
+
+
+      document.body.appendChild(
+        a
+      );
+
+
+      a.click();
+
+
+      a.remove();
+
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    }
+  );
+
+
+  /* =========================================================
+     FIND
+     ========================================================= */
+
+  findBtn.addEventListener(
+    "click",
+    () => {
+
+      if (editor) {
+
+        editor.execCommand(
+          "findPersistent"
+        );
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     FILE ACTIONS
+     ========================================================= */
+
+  async function fileActions(
+    path
+  ) {
+
+    const action =
+      prompt(
+        "Enter action:\n\n" +
+        "rename\n" +
+        "delete"
+      );
+
+
+    if (!action) {
+      return;
+    }
+
+
+    if (
+      action.toLowerCase() ===
+      "rename"
+    ) {
+
+      const oldName =
+        path.split("/")
+          .pop();
+
+
+      const newName =
+        prompt(
+          "New file name:",
+          oldName
+        );
+
+
+      if (!newName) {
+        return;
+      }
+
+
+      try {
+
+        await api(
+          "/rename",
+          {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify({
+
+                path,
+
+                newName,
+
+                message:
+                  `Rename ${oldName} to ${newName}`
+
+              })
+
+          }
+        );
+
+
+        if (
+          selected &&
+          selected.path ===
+          path
+        ) {
+
+          selected =
+            null;
+
+          resetEditor();
+
+        }
+
+
+        await loadRepository();
+
+
+        status(
+          "Renamed successfully",
+          "success"
+        );
+
+      }
+
+      catch (error) {
+
+        alert(
+          error.message
+        );
+
+      }
+
+
+      return;
+
+    }
+
+
+    if (
+      action.toLowerCase() ===
+      "delete"
+    ) {
+
+      if (
+        !confirm(
+          `Delete ${path}?`
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      try {
+
+        await api(
+          "/delete",
+          {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify({
+
+                path,
+
+                sha:
+                  selected &&
+                  selected.path ===
+                  path
+                    ? selected.sha
+                    : undefined,
+
+                message:
+                  `Delete ${path}`
+
+              })
+
+          }
+        );
+
+
+        if (
+          selected &&
+          selected.path ===
+          path
+        ) {
+
+          selected =
+            null;
+
+          resetEditor();
+
+        }
+
+
+        await loadRepository();
+
+
+        status(
+          "Deleted successfully",
+          "success"
+        );
+
+      }
+
+      catch (error) {
+
+        alert(
+          error.message
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================================================
+     RESET EDITOR
+     ========================================================= */
+
+  function resetEditor() {
+
+    selected =
+      null;
+
+
+    editorName.textContent =
+      "No file selected";
+
+
+    editorStatus.textContent =
+      "Select a code file";
+
+
+    editorEmpty.style.display =
+      "flex";
+
+
+    editor.setValue(
+      ""
+    );
+
+
+    saveBtn.disabled =
+      true;
+
+    findBtn.disabled =
+      true;
+
+    previewBtn.disabled =
+      true;
+
+    downloadBtn.disabled =
+      true;
+
+  }
+
+
+  /* =========================================================
+     UP
+     ========================================================= */
+
+  document
+    .getElementById(
+      "upBtn"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        if (!currentPath) {
+          return;
+        }
+
+
+        const parts =
+          currentPath
+            .split("/")
+            .filter(Boolean);
+
+
+        parts.pop();
+
+
+        currentPath =
+          parts.join("/");
+
+
+        loadRepository();
+
+      }
+    );
+
+
+  /* =========================================================
+     SEARCH
+     ========================================================= */
+
+  searchInput.addEventListener(
+    "input",
+    renderFiles
+  );
+
+
+  /* =========================================================
+     REFRESH
+     ========================================================= */
+
+  document
+    .getElementById(
+      "refreshBtn"
+    )
+    .addEventListener(
+      "click",
+      loadRepository
+    );
+
+
+  /* =========================================================
+     MODALS
+     ========================================================= */
+
+  const fileModal =
+    document.getElementById(
+      "fileModal"
+    );
+
+  const commitModal =
+    document.getElementById(
+      "commitModal"
+    );
+
+
+  document
+    .getElementById(
+      "newFileBtn"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        fileModal
+          .classList
+          .add("show");
+
+
+        document
+          .getElementById(
+            "newFileName"
+          )
+          .focus();
+
+      }
+    );
+
+
+  function closeFileModal() {
+
+    fileModal
+      .classList
+      .remove(
+        "show"
+      );
+
+  }
+
+
+  function closeCommitModal() {
+
+    commitModal
+      .classList
+      .remove(
+        "show"
+      );
+
+  }
+
+
+  document
+    .getElementById(
+      "closeFileModal"
+    )
+    .addEventListener(
+      "click",
+      closeFileModal
+    );
+
+
+  document
+    .getElementById(
+      "cancelFile"
+    )
+    .addEventListener(
+      "click",
+      closeFileModal
+    );
+
+
+  document
+    .getElementById(
+      "createFile"
+    )
+    .addEventListener(
+      "click",
+      createFile
+    );
+
+
+  document
+    .getElementById(
+      "closeCommitModal"
+    )
+    .addEventListener(
+      "click",
+      closeCommitModal
+    );
+
+
+  document
+    .getElementById(
+      "cancelCommit"
+    )
+    .addEventListener(
+      "click",
+      closeCommitModal
+    );
+
+
+  document
+    .getElementById(
+      "confirmCommit"
+    )
+    .addEventListener(
+      "click",
+      performSave
+    );
+
+
+  /* =========================================================
+     LOGOUT
+     ========================================================= */
+
+  document
+    .getElementById(
+      "logoutBtn"
+    )
+    .addEventListener(
+      "click",
+      async () => {
+
+        await signOut(
+          auth
+        );
+
+        location.href =
+          "auth/signin.html";
+
+      }
+    );
+
+
+  /* =========================================================
+     AUTH
+     ========================================================= */
+
+  onAuthStateChanged(
+    auth,
+    async firebaseUser => {
+
+      if (!firebaseUser) {
+
+        user = null;
+
+        userText.textContent =
+          "Not signed in";
+
+        status(
+          "Authentication required",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      user =
+        firebaseUser;
+
+
+      userText.textContent =
+        firebaseUser.email ||
+        "Admin";
+
+
+      /*
+        The backend performs the real admin
+        authorization check.
+
+        The client does not trust a local
+        role value.
+      */
+
+
+      try {
+
+        await loadRepository();
+
+      }
+
+      catch {}
+
+    }
+  );
+
+
+  /* =========================================================
+     ESCAPE
+     ========================================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(
+      value ?? ""
+    )
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  function formatSize(
+    bytes
+  ) {
+
+    const value =
+      Number(
+        bytes
+      );
+
+
+    if (
+      !Number.isFinite(
+        value
+      )
+    ) {
+
+      return "";
+
+    }
+
+
+    if (
+      value < 1024
+    ) {
+
+      return `${value} B`;
+
+    }
+
+
+    if (
+      value < 1024 * 1024
+    ) {
+
+      return `${(
+        value / 1024
+      ).toFixed(1)} KB`;
+
+    }
+
+
+    return `${(
+      value /
+      (1024 * 1024)
+    ).toFixed(1)} MB`;
+
+  }
+
+
+  /* =========================================================
+     INIT
+     ========================================================= */
+
+  initEditor();
+
+  window.lucide?.createIcons();
+
+</script>
+
+</body>
+</html>

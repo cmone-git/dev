@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <link rel="apple-touch-icon" href="../assets/logo.png">
+  
+  <!-- Correct 1-level relative paths for auth/ directory -->
+  <link rel="stylesheet" href="../css/cm.css">
+  <link rel="stylesheet" href="../css/forms.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>Login — BIZODIT</title>
+
+  <style>
+    .login-container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .password-field-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-field-wrapper input {
+      padding-right: 40px !important;
+      width: 100%;
+    }
+    .password-toggle-btn {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #707985;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .password-toggle-btn:hover {
+      color: #16263F;
+    }
+    .form-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    .remember-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      color: #4D5867;
+      font-size: 13px;
+    }
+    .remember-label input {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+    .reset-link-btn {
+      background: none;
+      border: none;
+      color: #16263F;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-family: inherit;
+    }
+    .auth-alert {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .auth-alert.error {
+      background: #FFF5F5;
+      color: #C74B4B;
+      border: 1px solid #FCD4D4;
+      display: block;
+    }
+    .auth-alert.success {
+      background: #F0FDF4;
+      color: #2F8F62;
+      border: 1px solid #DCFCE7;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<header class="cm-header">
+  <div class="cm-header-inner">
+    <div class="cm-header-left">
+      <div class="cm-brand">
+        <div class="cm-logo">BZ</div>
+        <div class="cm-brand-title">BIZODIT</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page">
+    <div class="form-page login-container">
+      
+      <section class="module-header">
+        <div class="module-header-left">
+          <div class="module-title">
+            <h1>Account Login</h1>
+            <p>Access your BIZODIT business workspace</p>
+            <div class="report-as-on">Date : <strong id="presentDate">--</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <div id="authAlert" class="auth-alert"></div>
+
+      <form class="form-section" id="loginForm">
+        <h2>Sign In Details</h2>
+        
+        <div class="form-grid">
+          <div class="field full">
+            <label>Admin Email <span class="required">*</span></label>
+            <input type="email" id="loginEmail" placeholder="admin@cmfilings.com" required>
+          </div>
+
+          <div class="field full">
+            <label>Password <span class="required">*</span></label>
+            <div class="password-field-wrapper">
+              <input type="password" id="loginPassword" placeholder="••••••••" required>
+              <button type="button" class="password-toggle-btn" id="togglePasswordBtn" aria-label="Toggle password view">
+                <i data-lucide="eye" id="togglePasswordIcon" width="18" height="18"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="field full">
+            <div class="form-options-row">
+              <label class="remember-label">
+                <input type="checkbox" id="rememberMeCheckbox">
+                <span>Remember me</span>
+              </label>
+              <button type="button" class="reset-link-btn" id="forgotPasswordBtn">Forgot Password?</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%; justify-content: center;">
+            <i data-lucide="log-in"></i> Sign In
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+  // Date setup without external module dependencies
+  document.getElementById("presentDate").textContent = new Date().toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCXyKSTlmlzkYnH2LW408cVVWV1CPvlfBo",
+    authDomain: "cmfilings-6a37c.firebaseapp.com",
+    projectId: "cmfilings-6a37c",
+    storageBucket: "cmfilings-6a37c.firebasestorage.app",
+    messagingSenderId: "138705123778",
+    appId: "1:138705123778:web:9561bff9f0f5d89bb6fe5b",
+    measurementId: "G-09DM4NZF8D"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const loginForm = document.getElementById("loginForm");
+  const loginEmail = document.getElementById("loginEmail");
+  const loginPassword = document.getElementById("loginPassword");
+  const rememberMeCheckbox = document.getElementById("rememberMeCheckbox");
+  const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+  const togglePasswordIcon = document.getElementById("togglePasswordIcon");
+  const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
+  const authAlert = document.getElementById("authAlert");
+  const submitBtn = document.getElementById("submitBtn");
+
+  function showAlert(msg, type = "error") {
+    authAlert.textContent = msg;
+    authAlert.className = `auth-alert ${type}`;
+    authAlert.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function hideAlert() {
+    authAlert.className = "auth-alert";
+    authAlert.style.display = "none";
+  }
+
+  // Remember Me Auto-fill
+  const savedEmail = localStorage.getItem("cm_admin_remember_email");
+  if (savedEmail) {
+    loginEmail.value = savedEmail;
+    rememberMeCheckbox.checked = true;
+  }
+
+  // Toggle Password
+  togglePasswordBtn.addEventListener("click", () => {
+    const isPassword = loginPassword.type === "password";
+    loginPassword.type = isPassword ? "text" : "password";
+    togglePasswordIcon.setAttribute("data-lucide", isPassword ? "eye-off" : "eye");
+    if (window.lucide) window.lucide.createIcons();
+  });
+
+  // Password Reset
+  forgotPasswordBtn.addEventListener("click", async () => {
+    hideAlert();
+    const email = loginEmail.value.trim();
+    if (!email) {
+      showAlert("Please enter your Admin Email above to receive a reset link.", "error");
+      loginEmail.focus();
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showAlert(`Password reset link sent to ${email}. Please check your inbox.`, "success");
+    } catch (err) {
+      showAlert(err.message, "error");
+    }
+  });
+
+  // Submit Login
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideAlert();
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `Signing in...`;
+
+    const email = loginEmail.value.trim();
+    const pass = loginPassword.value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      if (rememberMeCheckbox.checked) {
+        localStorage.setItem("cm_admin_remember_email", email);
+      } else {
+        localStorage.removeItem("cm_admin_remember_email");
+      }
+      // Redirect to CRM Dashboard
+      window.location.href = "../modules/crm/crm.html";
+    } catch (err) {
+      showAlert(err.message, "error");
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<i data-lucide="log-in"></i> Sign In`;
+      if (window.lucide) window.lucide.createIcons();
+    }
+  });
+
+  if (window.lucide) window.lucide.createIcons();
+</script>
+</body>
+</html>

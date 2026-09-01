@@ -1,0 +1,2863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BIZODIT — LLP Deed Generator</title>
+
+    <link rel="stylesheet" href="../../../css/llp-deed.css">
+
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Word -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.js"></script>
+</head>
+
+<body>
+
+<header class="cm-header">
+
+    <div class="cm-header-inner">
+
+        <div class="cm-brand">
+
+            <div class="cm-logo">
+                BZ
+            </div>
+
+            <div>
+                <div class="cm-brand-title">
+                    BIZODIT
+                </div>
+
+                <div class="cm-brand-subtitle">
+                    LLP Deed Generator
+                </div>
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+
+            <button
+                class="btn btn-outline"
+                onclick="loadSample()">
+                Load Sample
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                onclick="resetForm()">
+                Reset
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="intro">
+
+        <h1>LLP Agreement / Deed</h1>
+
+        <p>
+            Create a professional LLP Deed with automatic BIZODIT document numbering.
+        </p>
+
+    </section>
+
+
+    <div id="errorBox" class="error-box"></div>
+
+
+    <!-- DOCUMENT DETAILS -->
+
+    <section class="card">
+
+        <div class="card-head">
+
+            <div>
+                <h2>1. LLP Details</h2>
+                <span class="section-help">
+                    Basic details of the LLP
+                </span>
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Document Number
+                    </label>
+
+                    <input
+                        id="documentNo"
+                        readonly
+                        placeholder="Generated automatically">
+
+                    <small class="help">
+                        Format: BZ-YY-0001
+                    </small>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Agreement Date <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="agreementDate"
+                        type="date">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        LLP Name <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="llpName"
+                        placeholder="Example: ABC BUSINESS LLP">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Principal Business Activity <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="businessActivity"
+                        placeholder="Example: Consultancy and advisory services">
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Registered Office Address <span class="required">*</span>
+                    </label>
+
+                    <textarea
+                        id="officeAddress"
+                        placeholder="Complete registered office address"></textarea>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        City <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="city"
+                        placeholder="City">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        State <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="state"
+                        placeholder="State">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        PIN Code <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="pincode"
+                        maxlength="6"
+                        inputmode="numeric"
+                        placeholder="695001">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Total Contribution ₹ <span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="totalContribution"
+                        type="number"
+                        min="0"
+                        placeholder="100000">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PARTNERS -->
+
+    <section class="card">
+
+        <div class="card-head">
+
+            <div>
+                <h2>2. Partners</h2>
+
+                <span class="section-help">
+                    Minimum two partners required
+                </span>
+            </div>
+
+            <button
+                class="btn btn-outline"
+                onclick="addPartner()">
+
+                + Add Partner
+
+            </button>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div id="partnersContainer"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TERMS -->
+
+    <section class="card">
+
+        <div class="card-head">
+
+            <div>
+                <h2>3. Agreement Terms</h2>
+
+                <span class="section-help">
+                    Optional terms
+                </span>
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Retirement Notice Period
+                    </label>
+
+                    <input
+                        id="noticePeriod"
+                        type="number"
+                        min="1"
+                        value="30">
+
+                    <small class="help">
+                        Number of days
+                    </small>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Arbitration City
+                    </label>
+
+                    <input
+                        id="arbitrationCity"
+                        placeholder="Example: Thiruvananthapuram">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- GENERATE -->
+
+    <section class="generate-panel">
+
+        <div>
+
+            <strong>
+                Ready to generate?
+            </strong>
+
+            <span>
+                Review all details before generating the deed.
+            </span>
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="btn btn-primary"
+                onclick="generateDocument()">
+
+                Generate LLP Deed
+
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- DOCUMENT PREVIEW -->
+
+<section
+    id="previewWrapper"
+    class="preview-wrapper">
+
+    <div class="preview-toolbar">
+
+        <div>
+
+            <h2>Generated LLP Deed</h2>
+
+            <div id="previewDocumentNo"></div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="btn btn-primary"
+                onclick="downloadPDF()">
+
+                Download PDF
+
+            </button>
+
+
+            <button
+                class="btn btn-secondary"
+                onclick="downloadWord()">
+
+                Download Word
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="documentArea">
+
+        <div
+            id="documentContent"
+            class="document">
+        </div>
+
+    </div>
+
+</section>
+
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+import { db } from "../../../js/firebase-config.js";
+
+import {
+    doc,
+    runTransaction
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let partnerCount = 0;
+
+let generatedData = null;
+
+let generatedHTML = "";
+
+let documentNumber = "";
+
+
+/* =========================================================
+   INITIALISE
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const today = new Date();
+
+    document.getElementById("agreementDate").value =
+        formatInputDate(today);
+
+    addPartner();
+    addPartner();
+
+});
+
+
+/* =========================================================
+   FIREBASE DOCUMENT NUMBER
+========================================================= */
+
+async function generateDocumentNumber(){
+
+    const year =
+        new Date().getFullYear();
+
+    const shortYear =
+        String(year).slice(-2);
+
+    const counterId =
+        `llp_deed_${year}`;
+
+    const counterRef =
+        doc(
+            db,
+            "cm_document_counters",
+            counterId
+        );
+
+
+    const nextNumber =
+        await runTransaction(
+            db,
+            async transaction => {
+
+                const snapshot =
+                    await transaction.get(counterRef);
+
+                let currentNumber = 0;
+
+                if(snapshot.exists()){
+
+                    const data =
+                        snapshot.data();
+
+                    currentNumber =
+                        Number(data.lastNumber || 0);
+
+                }
+
+                const next =
+                    currentNumber + 1;
+
+
+                transaction.set(
+                    counterRef,
+                    {
+                        lastNumber: next,
+                        year: year,
+                        documentType: "LLP_DEED",
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        merge:true
+                    }
+                );
+
+
+                return next;
+
+            }
+        );
+
+
+    return `CM-${shortYear}-${String(nextNumber).padStart(4,"0")}`;
+
+}
+
+
+/* =========================================================
+   ADD PARTNER
+========================================================= */
+
+function addPartner(data = {}){
+
+    partnerCount++;
+
+    const container =
+        document.getElementById(
+            "partnersContainer"
+        );
+
+
+    const partner =
+        document.createElement("div");
+
+    partner.className = "partner-card";
+
+
+    partner.innerHTML = `
+
+        <div class="partner-header">
+
+            <div class="partner-heading">
+
+                <div class="partner-number">
+                    ${partnerCount}
+                </div>
+
+                <div>
+
+                    <strong>
+                        Partner ${partnerCount}
+                    </strong>
+
+                    <small>
+                        Partner details
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            ${
+                partnerCount > 2
+                ?
+                `
+                <button
+                    class="btn btn-danger"
+                    onclick="removePartner(this)">
+
+                    Remove
+
+                </button>
+                `
+                :
+                ""
+            }
+
+        </div>
+
+
+        <div class="grid">
+
+            <div class="field">
+
+                <label>
+                    Full Name <span class="required">*</span>
+                </label>
+
+                <input
+                    class="p-name"
+                    value="${escapeHtml(data.name || "")}"
+                    placeholder="Full legal name">
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Father / Mother / Spouse Name
+                </label>
+
+                <input
+                    class="p-parent"
+                    value="${escapeHtml(data.parent || "")}"
+                    placeholder="Parent / spouse name">
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    PAN <span class="required">*</span>
+                </label>
+
+                <input
+                    class="p-pan"
+                    maxlength="10"
+                    value="${escapeHtml(data.pan || "")}"
+                    placeholder="ABCDE1234F">
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    DIN / DPIN
+                </label>
+
+                <input
+                    class="p-dpin"
+                    value="${escapeHtml(data.dpin || "")}"
+                    placeholder="DIN / DPIN">
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Designation <span class="required">*</span>
+                </label>
+
+                <select class="p-designation">
+
+                    <option value="Designated Partner"
+                        ${data.designation === "Designated Partner"
+                            ? "selected"
+                            : ""}>
+
+                        Designated Partner
+
+                    </option>
+
+
+                    <option value="Partner"
+                        ${data.designation === "Partner"
+                            ? "selected"
+                            : ""}>
+
+                        Partner
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Contribution ₹ <span class="required">*</span>
+                </label>
+
+                <input
+                    class="p-contribution"
+                    type="number"
+                    min="0"
+                    value="${data.contribution || ""}"
+                    placeholder="50000">
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Profit Sharing % <span class="required">*</span>
+                </label>
+
+                <input
+                    class="p-profit"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value="${data.profit || ""}"
+                    placeholder="50">
+
+            </div>
+
+
+            <div class="field full">
+
+                <label>
+                    Residential Address <span class="required">*</span>
+                </label>
+
+                <textarea
+                    class="p-address"
+                    placeholder="Complete residential address">${escapeHtml(data.address || "")}</textarea>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    container.appendChild(partner);
+
+}
+
+
+/* =========================================================
+   REMOVE PARTNER
+========================================================= */
+
+window.removePartner = function(button){
+
+    button
+        .closest(".partner-card")
+        .remove();
+
+    renumberPartners();
+
+};
+
+
+/* =========================================================
+   RENUMBER PARTNERS
+========================================================= */
+
+function renumberPartners(){
+
+    const partners =
+        document.querySelectorAll(
+            ".partner-card"
+        );
+
+
+    partners.forEach((partner,index)=>{
+
+        partner.querySelector(
+            ".partner-number"
+        ).textContent = index + 1;
+
+
+        partner.querySelector(
+            ".partner-heading strong"
+        ).textContent =
+            `Partner ${index + 1}`;
+
+    });
+
+
+    partnerCount =
+        partners.length;
+
+}
+
+
+/* =========================================================
+   COLLECT DATA
+========================================================= */
+
+function collectData(){
+
+    const partners = [];
+
+
+    document.querySelectorAll(
+        ".partner-card"
+    ).forEach(partner => {
+
+        partners.push({
+
+            name:
+                partner.querySelector(
+                    ".p-name"
+                ).value.trim(),
+
+            parent:
+                partner.querySelector(
+                    ".p-parent"
+                ).value.trim(),
+
+            pan:
+                partner.querySelector(
+                    ".p-pan"
+                ).value.trim().toUpperCase(),
+
+            dpin:
+                partner.querySelector(
+                    ".p-dpin"
+                ).value.trim(),
+
+            designation:
+                partner.querySelector(
+                    ".p-designation"
+                ).value,
+
+            contribution:
+                Number(
+                    partner.querySelector(
+                        ".p-contribution"
+                    ).value || 0
+                ),
+
+            profit:
+                Number(
+                    partner.querySelector(
+                        ".p-profit"
+                    ).value || 0
+                ),
+
+            address:
+                partner.querySelector(
+                    ".p-address"
+                ).value.trim()
+
+        });
+
+    });
+
+
+    return {
+
+        documentNo:
+            documentNumber,
+
+        agreementDate:
+            document.getElementById(
+                "agreementDate"
+            ).value,
+
+        llpName:
+            document.getElementById(
+                "llpName"
+            ).value.trim(),
+
+        officeAddress:
+            document.getElementById(
+                "officeAddress"
+            ).value.trim(),
+
+        city:
+            document.getElementById(
+                "city"
+            ).value.trim(),
+
+        state:
+            document.getElementById(
+                "state"
+            ).value.trim(),
+
+        pincode:
+            document.getElementById(
+                "pincode"
+            ).value.trim(),
+
+        businessActivity:
+            document.getElementById(
+                "businessActivity"
+            ).value.trim(),
+
+        totalContribution:
+            Number(
+                document.getElementById(
+                    "totalContribution"
+                ).value || 0
+            ),
+
+        noticePeriod:
+            document.getElementById(
+                "noticePeriod"
+            ).value || 30,
+
+        arbitrationCity:
+            document.getElementById(
+                "arbitrationCity"
+            ).value.trim(),
+
+        partners
+
+    };
+
+}
+
+
+/* =========================================================
+   VALIDATION
+========================================================= */
+
+function validate(data){
+
+    const errors = [];
+
+
+    if(!data.llpName)
+        errors.push(
+            "LLP Name is required."
+        );
+
+
+    if(!data.agreementDate)
+        errors.push(
+            "Agreement Date is required."
+        );
+
+
+    if(!data.officeAddress)
+        errors.push(
+            "Registered Office Address is required."
+        );
+
+
+    if(!data.city)
+        errors.push(
+            "City is required."
+        );
+
+
+    if(!data.state)
+        errors.push(
+            "State is required."
+        );
+
+
+    if(!/^\d{6}$/.test(data.pincode))
+        errors.push(
+            "Valid 6 digit PIN Code is required."
+        );
+
+
+    if(!data.businessActivity)
+        errors.push(
+            "Principal Business Activity is required."
+        );
+
+
+    if(data.totalContribution <= 0)
+        errors.push(
+            "Total Contribution must be greater than zero."
+        );
+
+
+    if(data.partners.length < 2)
+        errors.push(
+            "Minimum two partners are required."
+        );
+
+
+    data.partners.forEach((p,index)=>{
+
+        const number = index + 1;
+
+
+        if(!p.name)
+            errors.push(
+                `Partner ${number}: Full Name is required.`
+            );
+
+
+        if(!p.pan)
+            errors.push(
+                `Partner ${number}: PAN is required.`
+            );
+
+
+        if(p.contribution <= 0)
+            errors.push(
+                `Partner ${number}: Contribution is required.`
+            );
+
+
+        if(!p.address)
+            errors.push(
+                `Partner ${number}: Residential Address is required.`
+            );
+
+
+        if(p.profit < 0 || p.profit > 100)
+            errors.push(
+                `Partner ${number}: Invalid profit percentage.`
+            );
+
+    });
+
+
+    const profitTotal =
+        data.partners.reduce(
+            (sum,p)=>sum + p.profit,
+            0
+        );
+
+
+    if(
+        Math.abs(
+            profitTotal - 100
+        ) > 0.01
+    ){
+
+        errors.push(
+            `Profit sharing must total 100%. Current total: ${profitTotal}%.`
+        );
+
+    }
+
+
+    const contributionTotal =
+        data.partners.reduce(
+            (sum,p)=>sum + p.contribution,
+            0
+        );
+
+
+    if(
+        Math.abs(
+            contributionTotal -
+            data.totalContribution
+        ) > 0.01
+    ){
+
+        errors.push(
+            `Partner contribution total (${formatMoney(contributionTotal)}) does not match LLP contribution (${formatMoney(data.totalContribution)}).`
+        );
+
+    }
+
+
+    return errors;
+
+}
+
+
+/* =========================================================
+   GENERATE DOCUMENT
+========================================================= */
+
+window.generateDocument = async function(){
+
+    const button =
+        event?.target;
+
+
+    const dataBefore =
+        collectData();
+
+
+    const errors =
+        validate(dataBefore);
+
+
+    if(errors.length){
+
+        showErrors(errors);
+
+        return;
+
+    }
+
+
+    hideErrors();
+
+
+    try{
+
+        showLoading(
+            button,
+            "Generating..."
+        );
+
+
+        /*
+         * Generate the number ONLY once.
+         */
+
+        if(!documentNumber){
+
+            documentNumber =
+                await generateDocumentNumber();
+
+        }
+
+
+        document.getElementById(
+            "documentNo"
+        ).value =
+            documentNumber;
+
+
+        const data =
+            collectData();
+
+
+        generatedData =
+            data;
+
+
+        generatedHTML =
+            buildDocument(data);
+
+
+        document.getElementById(
+            "documentContent"
+        ).innerHTML =
+            generatedHTML;
+
+
+        document.getElementById(
+            "previewDocumentNo"
+        ).textContent =
+            documentNumber;
+
+
+        document.getElementById(
+            "previewWrapper"
+        ).classList.add("active");
+
+
+        document.getElementById(
+            "previewWrapper"
+        ).scrollIntoView({
+            behavior:"smooth"
+        });
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        showErrors([
+            "Unable to generate document.",
+            error.message
+        ]);
+
+    }
+    finally{
+
+        hideLoading(
+            button,
+            "Generate LLP Deed"
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+   BUILD DOCUMENT
+========================================================= */
+
+function buildDocument(d){
+
+    let html = "";
+
+
+    /* PAGE 1 */
+
+    html += makePage(`
+
+        <div class="document-heading">
+
+            <div class="document-title">
+                LIMITED LIABILITY PARTNERSHIP AGREEMENT
+            </div>
+
+            <div class="document-subtitle">
+                OF<br>
+                ${escapeHtml(d.llpName)} LLP
+            </div>
+
+        </div>
+
+
+        <div class="document-body">
+
+            <div class="document-meta">
+
+                <span>
+                    Document No.: <strong>
+                    ${escapeHtml(d.documentNo)}
+                    </strong>
+                </span>
+
+                <span>
+                    Date: <strong>
+                    ${formatDocumentDate(d.agreementDate)}
+                    </strong>
+                </span>
+
+            </div>
+
+
+            <p>
+                This Limited Liability Partnership Agreement
+                (“Agreement”) is made and executed on
+                <strong>${formatDocumentDate(d.agreementDate)}</strong>
+                at <strong>${escapeHtml(d.city)},
+                ${escapeHtml(d.state)}</strong>.
+            </p>
+
+
+            <p>
+                This Agreement is entered into by and between the
+                Partners whose particulars are set out below.
+            </p>
+
+
+            ${d.partners.map((p,i)=>`
+
+                <div class="party-block">
+
+                    <strong>
+                        ${i + 1}. ${escapeHtml(p.name)}
+                    </strong>
+                    ${
+                        p.parent
+                        ?
+                        `, S/o / D/o / W/o
+                        ${escapeHtml(p.parent)},`
+                        :
+                        ","
+                    }
+
+                    residing at
+                    ${escapeHtml(p.address)},
+                    PAN:
+                    ${escapeHtml(p.pan)},
+                    hereinafter referred to as the
+                    “${ordinal(i + 1)} Partner”.
+
+                </div>
+
+            `).join("")}
+
+
+            <p>
+                The Partners have agreed to carry on business in the
+                form of a Limited Liability Partnership under the
+                provisions of the Limited Liability Partnership Act,
+                2008 and the rules made thereunder.
+            </p>
+
+
+            <h3>1. NAME OF THE LLP</h3>
+
+            <p>
+                The name of the Limited Liability Partnership shall be
+                <strong>${escapeHtml(d.llpName)} LLP</strong>.
+            </p>
+
+
+            <h3>2. REGISTERED OFFICE</h3>
+
+            <p>
+                The registered office of the LLP shall be situated at:
+            </p>
+
+            <p class="indented">
+                <strong>
+                    ${escapeHtml(d.officeAddress)},
+                    ${escapeHtml(d.city)},
+                    ${escapeHtml(d.state)} -
+                    ${escapeHtml(d.pincode)}
+                </strong>
+            </p>
+
+
+            <h3>3. BUSINESS OBJECTS</h3>
+
+            <p>
+                The LLP shall carry on the business of
+                <strong>${escapeHtml(d.businessActivity)}</strong>.
+                The LLP may also undertake any other lawful business,
+                activity or service incidental or conducive to the
+                attainment of its principal objects, subject to
+                applicable laws.
+            </p>
+
+
+            <h3>4. DURATION</h3>
+
+            <p>
+                The LLP shall have perpetual succession unless
+                dissolved in accordance with this Agreement and
+                applicable law.
+            </p>
+
+        </div>
+
+        ${pageSignature(d)}
+
+        ${documentFooter(d,1)}
+
+    `);
+
+
+    /* PAGE 2 */
+
+    html += makePage(`
+
+        <div class="document-heading">
+
+            <div class="document-section-title">
+                PARTNERS AND CONTRIBUTION
+            </div>
+
+        </div>
+
+
+        <div class="document-body">
+
+            <h3>5. PARTNERS AND DESIGNATED PARTNERS</h3>
+
+            <p>
+                The initial Partners and Designated Partners of the
+                LLP shall be as follows:
+            </p>
+
+
+            ${partnerTable(d)}
+
+
+            <h3>6. CONTRIBUTION</h3>
+
+            <p>
+                The initial total contribution of the LLP shall be
+                <strong>
+                    ${formatMoney(d.totalContribution)}
+                </strong>.
+            </p>
+
+            <p>
+                Each Partner shall contribute the amount specified
+                against his or her name in the above schedule.
+            </p>
+
+
+            <h3>7. PROFIT AND LOSS SHARING</h3>
+
+            <p>
+                The net profits and losses of the LLP shall be
+                distributed among the Partners in the ratio specified
+                in the above table.
+            </p>
+
+
+            <h3>8. MANAGEMENT OF THE LLP</h3>
+
+            <p>
+                The business and affairs of the LLP shall be managed
+                by the Partners. The Designated Partners shall be
+                responsible for statutory and regulatory compliance
+                as required under applicable law.
+            </p>
+
+
+            <h3>9. POWERS OF PARTNERS</h3>
+
+            <p>
+                Subject to this Agreement, the Partners may open and
+                operate bank accounts, enter into contracts, acquire
+                assets, employ staff and consultants, borrow funds,
+                make investments and undertake all lawful acts
+                necessary for carrying on the business of the LLP.
+            </p>
+
+
+            <h3>10. BANK ACCOUNT</h3>
+
+            <p>
+                The LLP shall maintain one or more bank accounts with
+                such bank or banks as may be approved by the Partners.
+                Such accounts shall be operated in the manner approved
+                by the Partners.
+            </p>
+
+        </div>
+
+        ${pageSignature(d)}
+
+        ${documentFooter(d,2)}
+
+    `);
+
+
+    /* PAGE 3 */
+
+    html += makePage(`
+
+        <div class="document-heading">
+
+            <div class="document-section-title">
+                ACCOUNTS AND PARTNER OBLIGATIONS
+            </div>
+
+        </div>
+
+
+        <div class="document-body">
+
+            <h3>11. BOOKS OF ACCOUNT</h3>
+
+            <p>
+                Proper books of account and records shall be maintained
+                at the registered office of the LLP or at such other
+                place as may be decided by the Partners. Every Partner
+                shall have reasonable access to the books and records.
+            </p>
+
+
+            <h3>12. FINANCIAL YEAR</h3>
+
+            <p>
+                The financial year of the LLP shall be the financial
+                year prescribed under applicable law.
+            </p>
+
+
+            <h3>13. AUDIT</h3>
+
+            <p>
+                The accounts of the LLP shall be audited whenever
+                required under applicable law. Where audit is not
+                mandatory, the Partners may nevertheless decide to
+                have the accounts audited.
+            </p>
+
+
+            <h3>14. REMUNERATION TO PARTNERS</h3>
+
+            <p>
+                The Designated Partners or working Partners may be paid
+                remuneration for services rendered to the LLP, subject
+                to applicable law and the limits permitted under the
+                Income-tax Act, 1961.
+            </p>
+
+
+            <h3>15. INTEREST ON CAPITAL AND LOANS</h3>
+
+            <p>
+                Interest may be paid on capital contribution or loans
+                provided by Partners to the LLP at such rate as may be
+                mutually agreed, subject to applicable law.
+            </p>
+
+
+            <h3>16. DRAWINGS</h3>
+
+            <p>
+                Partners may withdraw amounts from the LLP towards
+                drawings, remuneration, profit distribution or other
+                permitted purposes, subject to the approval of the
+                Partners.
+            </p>
+
+
+            <h3>17. DUTIES OF PARTNERS</h3>
+
+            <p>
+                Every Partner shall act in good faith towards the LLP,
+                devote reasonable attention to its affairs, maintain
+                confidentiality, avoid conflicts of interest and comply
+                with applicable laws and this Agreement.
+            </p>
+
+
+            <h3>18. RESTRICTION ON AUTHORITY</h3>
+
+            <p>
+                No Partner shall use LLP funds for personal purposes,
+                create a charge over LLP assets for personal liabilities
+                or undertake material transactions outside the ordinary
+                course of business without the required approval.
+            </p>
+
+        </div>
+
+        ${pageSignature(d)}
+
+        ${documentFooter(d,3)}
+
+    `);
+
+
+    /* PAGE 4 */
+
+    html += makePage(`
+
+        <div class="document-heading">
+
+            <div class="document-section-title">
+                PARTNER CHANGES
+            </div>
+
+        </div>
+
+
+        <div class="document-body">
+
+            <h3>19. ADMISSION OF NEW PARTNER</h3>
+
+            <p>
+                A new Partner may be admitted with the consent of the
+                existing Partners. The incoming Partner shall provide
+                such information and documents as may be required under
+                applicable law.
+            </p>
+
+
+            <h3>20. RETIREMENT OF PARTNER</h3>
+
+            <p>
+                A Partner may retire from the LLP by giving
+                <strong>${escapeHtml(d.noticePeriod)} days</strong>
+                written notice to the other Partners, subject to
+                applicable law.
+            </p>
+
+
+            <h3>21. RESIGNATION</h3>
+
+            <p>
+                A Partner may resign from the LLP by giving written
+                notice to the other Partners. The effective date shall
+                be determined in accordance with this Agreement and
+                applicable law.
+            </p>
+
+
+            <h3>22. DEATH OR INCAPACITY OF PARTNER</h3>
+
+            <p>
+                In the event of death or permanent incapacity of a
+                Partner, the amount due to such Partner shall be
+                determined in accordance with the books of account
+                and this Agreement. Legal heirs shall not automatically
+                become Partners unless admitted in accordance with
+                this Agreement and applicable law.
+            </p>
+
+
+            <h3>23. TRANSFER OF PARTNERSHIP INTEREST</h3>
+
+            <p>
+                No Partner shall transfer, assign, pledge or otherwise
+                dispose of his or her partnership interest without the
+                prior written consent of the other Partners, except
+                to the extent permitted by applicable law.
+            </p>
+
+
+            <h3>24. CONFIDENTIALITY</h3>
+
+            <p>
+                The Partners shall maintain confidentiality regarding
+                client information, financial information, business
+                plans, trade secrets, technical information, pricing
+                and other confidential information belonging to the LLP.
+            </p>
+
+
+            <h3>25. INTELLECTUAL PROPERTY</h3>
+
+            <p>
+                Intellectual property created specifically for and at
+                the expense of the LLP in connection with its business
+                shall belong to the LLP unless otherwise agreed in writing.
+            </p>
+
+        </div>
+
+        ${pageSignature(d)}
+
+        ${documentFooter(d,4)}
+
+    `);
+
+
+    /* PAGE 5 */
+
+    html += makePage(`
+
+        <div class="document-heading">
+
+            <div class="document-section-title">
+                GOVERNANCE AND DISPUTE RESOLUTION
+            </div>
+
+        </div>
+
+
+        <div class="document-body">
+
+            <h3>26. INDEMNITY</h3>
+
+            <p>
+                The LLP shall indemnify a Partner for acts done by
+                such Partner in good faith and in the ordinary course
+                of the LLP's business, subject to applicable law.
+                A Partner shall indemnify the LLP for losses caused
+                by fraud, wilful misconduct or unauthorised acts.
+            </p>
+
+
+            <h3>27. MEETINGS OF PARTNERS</h3>
+
+            <p>
+                The Partners may conduct meetings whenever necessary.
+                Meetings may be conducted physically or through
+                electronic communication. Important decisions shall
+                be recorded in writing.
+            </p>
+
+
+            <h3>28. DECISION MAKING</h3>
+
+            <p>
+                Ordinary business decisions shall be taken by the
+                Partners in accordance with the agreed arrangement.
+                Matters involving admission of a new Partner, change
+                in principal business, change in profit-sharing ratio,
+                substantial borrowing, sale of substantial assets,
+                restructuring or dissolution shall require the
+                approval required under this Agreement and applicable law.
+            </p>
+
+
+            <h3>29. CONFLICT OF INTEREST</h3>
+
+            <p>
+                A Partner shall disclose any direct or indirect interest
+                in a transaction involving the LLP. The Partners shall
+                determine whether such transaction may be undertaken
+                in the best interests of the LLP.
+            </p>
+
+
+            <h3>30. BORROWINGS</h3>
+
+            <p>
+                The LLP may borrow money from banks, financial
+                institutions, Partners or other permitted sources
+                for its business purposes.
+            </p>
+
+
+            <h3>31. TAXES AND STATUTORY COMPLIANCES</h3>
+
+            <p>
+                The LLP shall comply with applicable statutory
+                requirements including income-tax, GST, TDS and
+                applicable MCA and other regulatory filings.
+            </p>
+
+
+            <h3>32. NOTICES</h3>
+
+            <p>
+                Any notice under this Agreement shall be given in
+                writing and may be delivered personally, by registered
+                post, courier or electronic communication.
+            </p>
+
+
+            <h3>33. DISPUTE RESOLUTION</h3>
+
+            <p>
+                Any dispute arising between the Partners concerning
+                the LLP or this Agreement shall first be attempted
+                to be resolved amicably. If unresolved, the dispute
+                shall be referred to arbitration in accordance with
+                the Arbitration and Conciliation Act, 1996.
+            </p>
+
+
+            <p>
+                The seat and venue of arbitration shall be
+                <strong>
+                    ${escapeHtml(
+                        d.arbitrationCity || d.city
+                    )},
+                    ${escapeHtml(d.state)}
+                </strong>.
+            </p>
+
+        </div>
+
+        ${pageSignature(d)}
+
+        ${documentFooter(d,5)}
+
+    `);
+
+
+    /* PAGE 6 */
+
+    html += makePage(`
+
+        <div class="document-heading">
+
+            <div class="document-section-title">
+                GENERAL PROVISIONS
+            </div>
+
+        </div>
+
+
+        <div class="document-body">
+
+            <h3>34. GOVERNING LAW</h3>
+
+            <p>
+                This Agreement shall be governed by and interpreted
+                in accordance with the laws of India, including the
+                Limited Liability Partnership Act, 2008 and the rules
+                made thereunder.
+            </p>
+
+
+            <h3>35. AMENDMENT</h3>
+
+            <p>
+                Any amendment to this Agreement shall be made in
+                writing and signed by the Partners. Where any amendment
+                requires statutory filing, the LLP shall complete the
+                necessary filings.
+            </p>
+
+
+            <h3>36. SEVERABILITY</h3>
+
+            <p>
+                If any provision of this Agreement becomes invalid or
+                unenforceable, the remaining provisions shall continue
+                to remain effective to the extent permitted by law.
+            </p>
+
+
+            <h3>37. ENTIRE AGREEMENT</h3>
+
+            <p>
+                This Agreement constitutes the understanding between
+                the Partners regarding the management and operation
+                of the LLP and supersedes previous understandings
+                relating to the same subject matter.
+            </p>
+
+
+            <h3>38. DISSOLUTION</h3>
+
+            <p>
+                The LLP may be dissolved in accordance with applicable
+                law and with the consent of the Partners. Upon
+                dissolution, the assets shall be realised and applied
+                towards costs, liabilities and amounts due to Partners,
+                with the remaining balance distributed in accordance
+                with the applicable profit-sharing arrangement and law.
+            </p>
+
+
+            <h3>39. EXECUTION</h3>
+
+            <p>
+                IN WITNESS WHEREOF, the Partners have executed this
+                Limited Liability Partnership Agreement on the date
+                and place first mentioned above.
+            </p>
+
+        </div>
+
+        ${documentFooter(d,6)}
+
+    `);
+
+
+    /* FINAL SIGNATURE PAGE */
+
+    html += makePage(`
+
+        <div class="document-heading">
+
+            <div class="document-section-title">
+                EXECUTION & SIGNATURE
+            </div>
+
+        </div>
+
+
+        <div class="document-body">
+
+            <p class="center-text">
+
+                IN WITNESS WHEREOF, the Partners have signed this
+                Agreement in acceptance of all the terms and
+                conditions contained herein.
+
+            </p>
+
+
+            <div class="execution-date">
+
+                Date:
+                ${formatDocumentDate(d.agreementDate)}
+
+                <br>
+
+                Place:
+                ${escapeHtml(d.city)},
+                ${escapeHtml(d.state)}
+
+            </div>
+
+
+            <div class="final-signatures">
+
+                ${d.partners.map((p,i)=>`
+
+                    <div class="final-signature">
+
+                        <div class="signature-space"></div>
+
+                        <div class="signature-line"></div>
+
+                        <strong>
+                            ${i + 1}. ${escapeHtml(p.name)}
+                        </strong>
+
+                        <span>
+                            ${escapeHtml(p.designation)}
+                        </span>
+
+                        <span>
+                            Partner,
+                            ${escapeHtml(d.llpName)} LLP
+                        </span>
+
+                        <span>
+                            Date: __________________
+                        </span>
+
+                    </div>
+
+                `).join("")}
+
+            </div>
+
+
+            <div class="witness-heading">
+                WITNESSES
+            </div>
+
+
+            <div class="witness-grid">
+
+                <div class="witness">
+
+                    <strong>
+                        WITNESS 1
+                    </strong>
+
+                    <div class="signature-space"></div>
+
+                    <div class="signature-line"></div>
+
+                    Name: __________________________
+
+                    <br><br>
+
+                    Address: ________________________
+
+                    <br><br>
+
+                    Signature: ______________________
+
+                </div>
+
+
+                <div class="witness">
+
+                    <strong>
+                        WITNESS 2
+                    </strong>
+
+                    <div class="signature-space"></div>
+
+                    <div class="signature-line"></div>
+
+                    Name: __________________________
+
+                    <br><br>
+
+                    Address: ________________________
+
+                    <br><br>
+
+                    Signature: ______________________
+
+                </div>
+
+            </div>
+
+        </div>
+
+        ${documentFooter(d,7)}
+
+    `);
+
+
+    return html;
+
+}
+
+
+/* =========================================================
+   PAGE SIGNATURE STRIP
+========================================================= */
+
+function pageSignature(d){
+
+    return `
+
+        <div class="page-signature-strip">
+
+            <div class="page-signature-label">
+                Partner Initial / Signature
+            </div>
+
+            <div class="page-signatures">
+
+                ${d.partners.map(p=>`
+
+                    <div class="mini-signature">
+
+                        <span>
+                            ${escapeHtml(p.name)}
+                        </span>
+
+                        <div></div>
+
+                    </div>
+
+                `).join("")}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   PARTNER TABLE
+========================================================= */
+
+function partnerTable(d){
+
+    return `
+
+        <table class="details-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Partner
+                    </th>
+
+                    <th>
+                        Designation
+                    </th>
+
+                    <th>
+                        Contribution
+                    </th>
+
+                    <th>
+                        Profit Share
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                ${d.partners.map(p=>`
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                ${escapeHtml(p.name)}
+                            </strong>
+
+                            <br>
+
+                            PAN:
+                            ${escapeHtml(p.pan)}
+
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(p.designation)}
+                        </td>
+
+
+                        <td>
+                            ${formatMoney(p.contribution)}
+                        </td>
+
+
+                        <td>
+                            ${p.profit}%
+                        </td>
+
+                    </tr>
+
+                `).join("")}
+
+
+                <tr>
+
+                    <th colspan="2">
+                        Total
+                    </th>
+
+                    <th>
+                        ${formatMoney(d.totalContribution)}
+                    </th>
+
+                    <th>
+                        100%
+                    </th>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}
+
+
+/* =========================================================
+   DOCUMENT FOOTER
+========================================================= */
+
+function documentFooter(d,page){
+
+    return `
+
+        <div class="document-footer">
+
+            <span>
+                ${escapeHtml(d.documentNo)}
+            </span>
+
+            <span>
+                ${escapeHtml(d.llpName)} LLP
+            </span>
+
+            <span>
+                Page ${page}
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   MAKE PAGE
+========================================================= */
+
+function makePage(content){
+
+    return `
+
+        <div class="document-page">
+
+            ${content}
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   PDF
+========================================================= */
+
+window.downloadPDF = async function(){
+
+    if(!generatedData){
+
+        await generateDocument();
+
+        if(!generatedData)
+            return;
+
+    }
+
+
+    const { jsPDF } =
+        window.jspdf;
+
+
+    const pdf =
+        new jsPDF({
+
+            orientation:"portrait",
+
+            unit:"mm",
+
+            format:"a4"
+
+        });
+
+
+    const pages =
+        document.querySelectorAll(
+            "#documentContent .document-page"
+        );
+
+
+    for(let i=0;i<pages.length;i++){
+
+        const canvas =
+            await html2canvas(
+                pages[i],
+                {
+                    scale:2,
+                    useCORS:true,
+                    backgroundColor:"#ffffff"
+                }
+            );
+
+
+        const image =
+            canvas.toDataURL(
+                "image/jpeg",
+                0.95
+            );
+
+
+        if(i > 0)
+            pdf.addPage();
+
+
+        pdf.addImage(
+            image,
+            "JPEG",
+            0,
+            0,
+            210,
+            297
+        );
+
+    }
+
+
+    pdf.save(
+        `${sanitizeFilename(
+            generatedData.documentNo
+        )}_${sanitizeFilename(
+            generatedData.llpName
+        )}_LLP_Deed.pdf`
+    );
+
+};
+
+
+/* =========================================================
+   WORD
+========================================================= */
+
+window.downloadWord = async function(){
+
+    if(!generatedData){
+
+        await generateDocument();
+
+        if(!generatedData)
+            return;
+
+    }
+
+
+    const {
+        Document,
+        Packer,
+        Paragraph,
+        TextRun,
+        PageBreak,
+        AlignmentType
+    } = window.docx;
+
+
+    const children = [];
+
+
+    const pages =
+        document.querySelectorAll(
+            "#documentContent .document-page"
+        );
+
+
+    pages.forEach(
+        (page,pageIndex)=>{
+
+            const title =
+                page.querySelector(
+                    ".document-title"
+                );
+
+
+            const sectionTitle =
+                page.querySelector(
+                    ".document-section-title"
+                );
+
+
+            if(title){
+
+                children.push(
+                    new Paragraph({
+
+                        alignment:
+                            AlignmentType.CENTER,
+
+                        children:[
+                            new TextRun({
+
+                                text:
+                                    title.innerText,
+
+                                bold:true,
+
+                                size:28,
+
+                                font:
+                                    "Times New Roman"
+
+                            })
+                        ]
+
+                    })
+                );
+
+            }
+
+
+            if(sectionTitle){
+
+                children.push(
+                    new Paragraph({
+
+                        alignment:
+                            AlignmentType.CENTER,
+
+                        children:[
+                            new TextRun({
+
+                                text:
+                                    sectionTitle.innerText,
+
+                                bold:true,
+
+                                size:26,
+
+                                font:
+                                    "Times New Roman"
+
+                            })
+                        ]
+
+                    })
+                );
+
+            }
+
+
+            const body =
+                page.querySelector(
+                    ".document-body"
+                );
+
+
+            if(body){
+
+                const paragraphs =
+                    body.querySelectorAll(
+                        "p,h3,.party-block"
+                    );
+
+
+                paragraphs.forEach(
+                    element=>{
+
+                        const text =
+                            element.innerText
+                                .trim();
+
+
+                        if(!text)
+                            return;
+
+
+                        children.push(
+
+                            new Paragraph({
+
+                                children:[
+                                    new TextRun({
+
+                                        text:text,
+
+                                        bold:
+                                            element.tagName
+                                            === "H3",
+
+                                        size:24,
+
+                                        font:
+                                            "Times New Roman"
+
+                                    })
+                                ],
+
+                                spacing:{
+                                    after:180
+                                }
+
+                            })
+
+                        );
+
+                    }
+                );
+
+            }
+
+
+            if(pageIndex <
+                pages.length - 1){
+
+                children.push(
+                    new Paragraph({
+                        children:[
+                            new PageBreak()
+                        ]
+                    })
+                );
+
+            }
+
+        }
+    );
+
+
+    const doc =
+        new Document({
+
+            sections:[{
+
+                properties:{
+
+                    page:{
+
+                        size:{
+                            width:11906,
+                            height:16838
+                        },
+
+                        margin:{
+                            top:1134,
+                            bottom:1134,
+                            left:1134,
+                            right:1134
+                        }
+
+                    }
+
+                },
+
+                children
+
+            }]
+
+        });
+
+
+    const blob =
+        await Packer.toBlob(doc);
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+
+    link.download =
+        `${sanitizeFilename(
+            generatedData.documentNo
+        )}_${sanitizeFilename(
+            generatedData.llpName
+        )}_LLP_Deed.docx`;
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(url);
+
+};
+
+
+/* =========================================================
+   SAMPLE
+========================================================= */
+
+window.loadSample = function(){
+
+    document.getElementById(
+        "llpName"
+    ).value =
+        "ABC BUSINESS LLP";
+
+
+    document.getElementById(
+        "businessActivity"
+    ).value =
+        "Business consultancy, accounting, tax and advisory services";
+
+
+    document.getElementById(
+        "officeAddress"
+    ).value =
+        "Door No. 10/123, Business Centre, Main Road";
+
+
+    document.getElementById(
+        "city"
+    ).value =
+        "Thiruvananthapuram";
+
+
+    document.getElementById(
+        "state"
+    ).value =
+        "Kerala";
+
+
+    document.getElementById(
+        "pincode"
+    ).value =
+        "695001";
+
+
+    document.getElementById(
+        "totalContribution"
+    ).value =
+        "100000";
+
+
+    document.getElementById(
+        "noticePeriod"
+    ).value =
+        "30";
+
+
+    document.getElementById(
+        "arbitrationCity"
+    ).value =
+        "Thiruvananthapuram";
+
+
+    document.getElementById(
+        "partnersContainer"
+    ).innerHTML = "";
+
+
+    partnerCount = 0;
+
+
+    addPartner({
+
+        name:"MOHAMMED SHANID",
+
+        parent:"[Parent Name]",
+
+        pan:"ABCDE1234F",
+
+        designation:"Designated Partner",
+
+        contribution:50000,
+
+        profit:50,
+
+        address:"[Residential Address]"
+
+    });
+
+
+    addPartner({
+
+        name:"PARTNER TWO",
+
+        parent:"[Parent Name]",
+
+        pan:"FGHIJ5678K",
+
+        designation:"Designated Partner",
+
+        contribution:50000,
+
+        profit:50,
+
+        address:"[Residential Address]"
+
+    });
+
+};
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+window.resetForm = function(){
+
+    if(!confirm(
+        "Clear all LLP details?"
+    ))
+        return;
+
+
+    document.querySelectorAll(
+        "input, textarea"
+    ).forEach(element=>{
+
+        if(
+            element.id !==
+            "agreementDate"
+        ){
+
+            element.value = "";
+
+        }
+
+    });
+
+
+    document.getElementById(
+        "partnersContainer"
+    ).innerHTML = "";
+
+
+    partnerCount = 0;
+
+    documentNumber = "";
+
+    generatedData = null;
+
+    generatedHTML = "";
+
+
+    document.getElementById(
+        "documentNo"
+    ).value = "";
+
+
+    document.getElementById(
+        "previewWrapper"
+    ).classList.remove("active");
+
+
+    addPartner();
+    addPartner();
+
+
+    hideErrors();
+
+};
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+function showErrors(errors){
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    box.style.display = "block";
+
+
+    box.innerHTML =
+        `<strong>Please correct the following:</strong>
+        <br>
+        ${errors
+            .map(e=>`• ${escapeHtml(e)}`)
+            .join("<br>")}`;
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+function hideErrors(){
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    box.style.display =
+        "none";
+
+
+    box.innerHTML = "";
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function formatMoney(value){
+
+    return "₹" +
+        Number(value || 0)
+            .toLocaleString(
+                "en-IN",
+                {
+                    maximumFractionDigits:2
+                }
+            );
+
+}
+
+
+function formatInputDate(date){
+
+    const year =
+        date.getFullYear();
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2,"0");
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2,"0");
+
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+/*
+ * Required format:
+ *
+ * DD/MMM/YYYY
+ *
+ * Example:
+ * 18/Aug/2026
+ */
+
+function formatDocumentDate(date){
+
+    if(!date)
+        return "";
+
+
+    const d =
+        new Date(
+            date + "T00:00:00"
+        );
+
+
+    const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ];
+
+
+    return (
+        String(
+            d.getDate()
+        ).padStart(2,"0")
+        +
+        "/"
+        +
+        months[
+            d.getMonth()
+        ]
+        +
+        "/"
+        +
+        d.getFullYear()
+    );
+
+}
+
+
+function ordinal(n){
+
+    if(n === 1)
+        return "First";
+
+    if(n === 2)
+        return "Second";
+
+    if(n === 3)
+        return "Third";
+
+    if(n === 4)
+        return "Fourth";
+
+    return `${n}th`;
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function sanitizeFilename(value){
+
+    return String(value || "LLP")
+        .replace(
+            /[<>:"/\\|?*]+/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            "_"
+        );
+
+}
+
+
+function showLoading(button,text){
+
+    if(!button)
+        return;
+
+    button.dataset.oldText =
+        button.innerText;
+
+    button.innerText = text;
+
+    button.disabled = true;
+
+}
+
+
+function hideLoading(button,text){
+
+    if(!button)
+        return;
+
+    button.innerText =
+        button.dataset.oldText ||
+        text;
+
+    button.disabled = false;
+
+}
+
+
+/* =========================================================
+   EXPOSE
+========================================================= */
+
+window.addPartner = addPartner;
+
+</script>
+
+</body>
+</html>
